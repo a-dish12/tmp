@@ -3,19 +3,16 @@
 <div class="container">
   <div class="row">
     <div class="col-12">
-      <h1>Welcome to your dashboard {{ user.username }}</h1>
+      <h1 class="list-title">My Recipes</h1>
+      
+      <a href="{% url 'create_recipe' %}" class="btn btn-primary mb-3">
+        Create New Recipe
+      </a>
 
-       <div class="mt-4">
-          <a href="{% url 'create_recipe' %}" class="btn btn-primary btn-lg me-3">
-            Create New Recipe
-          </a>
-          <a href="{% url 'user_recipes' %}" class="btn btn-secondary btn-lg">
-            My Recipes
-          </a>
-      </div>
+      <a href="{% url 'dashboard' %}" class="btn btn-secondary mb-3">
+        Go To Dashboard
+      </a>
 
-
-      <h2 class="list-title mt-5">Explore Recipes from Others</h2>
       
       {% if recipes %}
         <div class="list-group">
@@ -24,17 +21,19 @@
               <h5>{{ recipe.title }}</h5>
               <p class="low-key">{{ recipe.description|truncatewords:20 }}</p>
               <small class="text-muted">
-                By {{ recipe.author.username }} | 
                 Prep time: {{ recipe.time }} minutes | 
-                Created: {{ recipe.created_at|date:"M d, Y" }}
+                Created: {{ recipe.created_at|date:"M d, Y" }} |
+                Meal type :{{recipe.meal_type}}
               </small>
             </div>
           {% endfor %}
         </div>
       {% else %}
-        <p class="low-key">No recipes available from other users yet.</p>
+        <p class="low-key">You haven't created any recipes yet.</p>
+        <a href="{% url 'create_recipe' %}" class="btn btn-primary">
+          Create Your First Recipe
+        </a>
       {% endif %}
-
     </div>
   </div>
 </div>

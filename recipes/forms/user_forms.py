@@ -149,7 +149,7 @@ class SignUpForm(NewPasswordMixin, forms.ModelForm):
     Form enabling new users to register for an account.
 
     This form extends both `NewPasswordMixin` (for password and confirmation
-    fields) and Django’s `ModelForm` to create a new `User` instance.
+    fields) and Django's `ModelForm` to create a new `User` instance.
     It validates password strength and matching through the mixin, then
     creates the user with a hashed password using `create_user()`.
 

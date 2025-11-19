@@ -3,10 +3,10 @@ from django.views.generic import ListView
 from recipes.models import Recipe
 
 
-class DashboardView(LoginRequiredMixin, ListView):
+class UserRecipesView(LoginRequiredMixin, ListView):
     model = Recipe
-    template_name = 'dashboard.html'
+    template_name = 'user_recipes.html'
     context_object_name = 'recipes'
     
     def get_queryset(self):
-        return Recipe.objects.exclude(author=self.request.user)
+        return Recipe.objects.filter(author=self.request.user)
