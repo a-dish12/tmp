@@ -9,4 +9,6 @@ class DashboardView(LoginRequiredMixin, ListView):
     context_object_name = 'recipes'
     
     def get_queryset(self):
-        return Recipe.objects.exclude(author=self.request.user)
+        min_time = self.request.GET.get('min_time', 0)
+        max_time = self.request.GET.get('max_time', 1000)
+        return Recipe.objects.exclude(author=self.request.user).filter(time__range=[min_time, max_time])
