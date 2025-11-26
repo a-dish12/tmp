@@ -7,3 +7,5 @@ from .profile_view import *
 from .sign_up_view import *
 from .create_recipe_view import *
 from .user_recipes_view import *
+from .follow_view import *
+from .user_profile_view import *
