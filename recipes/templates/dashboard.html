@@ -26,8 +26,20 @@
           </ul>
       </div>
 
-
       <h2 class="list-title mt-5">Explore Recipes from Others</h2>
+
+      <form method="GET" class="mb-4">
+        <label for="meal_type">Filter by meal type:</label>
+        <select name="meal_type" id="meal_type" class="form-select" onchange="this.form.submit()">
+          <option value="">All</option>
+          <option value="breakfast" {% if selected_meal_type == "breakfast" %}selected{% endif %}>Breakfast</option>
+          <option value="lunch" {% if selected_meal_type == "lunch" %}selected{% endif %}>Lunch</option>
+          <option value="dinner" {% if selected_meal_type == "dinner" %}selected{% endif %}>Dinner</option>
+          <option value="snack" {% if selected_meal_type == "snack" %}selected{% endif %}>Snack</option>
+          <option value="dessert" {% if selected_meal_type == "dessert" %}selected{% endif %}>Dessert</option>
+        </select>
+      </form>
+
       
       {% if recipes %}
         <div class="list-group">
@@ -44,7 +56,13 @@
           {% endfor %}
         </div>
       {% else %}
-        <p class="low-key">No recipes available from other users yet.</p>
+        {% if selected_meal_type %}
+          <p class="low-key">
+            No recipes of the requested meal type are available from other users yet.
+          </p>
+        {% else %}
+          <p class="low-key">No recipes available from other users yet.</p>
+        {% endif %}
       {% endif %}
 
     </div>

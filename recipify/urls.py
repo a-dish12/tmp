@@ -30,6 +30,10 @@ urlpatterns = [
     path('profile/', views.ProfileUpdateView.as_view(), name='profile'),
     path('sign_up/', views.SignUpView.as_view(), name='sign_up'),
     path('recipes/create/',views.CreateRecipeView.as_view(),name='create_recipe'),
-    path('recipes/my-recipes/',views.UserRecipesView.as_view(),name='user_recipes')
+    path('recipes/my-recipes/',views.UserRecipesView.as_view(),name='user_recipes'),
+    path('users/<int:user_id>/', views.user_profile, name='user_profile'),
+    path('users/<int:user_id>/follow/', views.follow_user, name = 'follow_user'),
+    path('users/<int:user_id>/unfollow/', views.unfollow_user, name = 'unfollow_user'),
+
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
