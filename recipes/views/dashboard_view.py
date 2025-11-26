@@ -9,4 +9,15 @@ class DashboardView(LoginRequiredMixin, ListView):
     context_object_name = 'recipes'
     
     def get_queryset(self):
-        return Recipe.objects.exclude(author=self.request.user)
+        queryset= Recipe.objects.exclude(author=self.request.user)
+
+        # Get the search term from the input URL
+        search_term = self.request.GET.get('search')
+
+        #If user typed something in the search bar
+        if search_term:
+            queryset = queryset.filter(title__icontains=search_term)
+        
+        return queryset
+    
+    
