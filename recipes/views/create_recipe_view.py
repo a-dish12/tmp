@@ -11,6 +11,8 @@ class CreateRecipeView(LoginRequiredMixin,CreateView):
     success_url=reverse_lazy('user_recipes')
 
     def form_valid(self, form):
-        form.instance.author=self.request.user
+        form.instance.author = self.request.user
+        form.instance.meal_type = form.instance.meal_type.strip().lower()
         return super().form_valid(form)
+
     
