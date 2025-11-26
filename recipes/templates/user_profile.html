@@ -1,0 +1,36 @@
+{% extends 'base_content.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+        <h1> {{ profile_user.full_name}} {{ profile_user.username }} </h1>
+
+        <p> 
+            Followers: {{ followers_count }} | Following: {{ following_count }}
+        </p>
+
+        
+        {% if user.is_authenticated and user.id != profile_user.id %}
+            {% if is_following %}
+                <form method="post" action="{% url 'unfollow_user' profile_user.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger">Unfollow</button>
+                </form>
+        {% else %}
+            <form method="post" action="{% url 'follow_user' profile_user.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Follow</button>
+            </form>
+            {% endif %}
+        {% endif %}
+        
+        <hr> 
+
+        <p> user content </p>
+    
+    </div>
+  </div>
+</div>
+
+{% endblock %}
