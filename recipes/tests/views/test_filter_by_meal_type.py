@@ -1,0 +1,43 @@
+from django.test import TestCase
+from django.urls import reverse
+from django.contrib.auth import get_user_model
+from recipes.models import Recipe
+
+class DashboardFilteringTests(TestCase):
+    def test_filter_by_breakfast(self):
+        """Filter should return only breakfast recipes."""
+        response = self.client.get(reverse('dashboard'), {'meal_type': 'breakfast'})
+        self.assertEqual(response.status_code, 302)
+
+        # Should contain breakfast recipe
+        self.assertContains(response, 'Banana Pancakes')
+
+        # Should NOT contain lunch recipe
+        self.assertNotContains(response, 'Pesto Pasta')
+
+    def test_filter_by_lunch(self):
+        """Filter should return only lunch recipes."""
+        response = self.client.get(reverse('dashboard'), {'meal_type': 'lunch'})
+        self.assertEqual(response.status_code, 302)
+
+        self.assertContains(response, 'Pesto Pasta')
+        self.assertNotContains(response, 'Banana Pancakes')
+
+    def test_filter_by_meal_type_with_no_results(self):
+        """If no recipes match the filter, show the custom empty message."""
+        response = self.client.get(reverse('dashboard'), {'meal_type': 'dinner'})
+        self.assertEqual(response.status_code, 302)
+
+        self.assertContains(
+            response,
+            "No recipes of the requested meal type are available from other users yet."
+        )
+
+    def test_no_recipes_at_all_shows_default_message(self):
+        """If no recipes exist at all, show the default message."""
+        Recipe.objects.all().delete()  # remove the seeded recipes
+
+        response = self.client.get(reverse('dashboard'))
+        self.assertEqual(response.status_code, 302)
+
+        self.assertContains(response, "No recipes available from other users yet.")
