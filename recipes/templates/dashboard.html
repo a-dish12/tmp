@@ -57,7 +57,18 @@
         </select>
       </form>
 
-      
+      <!-- Following/ For You chooser-->
+      <nav class="nav nav-tabs justify-content-center">
+          {% if following_page %}
+            <a class="nav-link active" aria-current="page" href="{% url 'dashboard' %}?following=True">Following</a>
+            <a class="nav-link" href="{% url 'dashboard' %}">For You</a>
+          {% else %}
+            <a class="nav-link" href="{% url 'dashboard' %}?following=True">Following</a>
+            <a class="nav-link active" aria-current="page" href="{% url 'dashboard' %}">For You</a>
+          {% endif %}
+      </nav>
+
+      <!-- Display recipes-->
       {% if recipes %}
         <div class="list-group">
           {% for recipe in recipes %}
