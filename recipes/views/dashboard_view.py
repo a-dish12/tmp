@@ -1,8 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from recipes.models import Recipe
-from django.db.models import Avg, Count
-from django.db.models import Q
+from django.db.models import Avg, Count, Q
+from recipes.models import Recipe, Follow, User
 
 
 class DashboardView(LoginRequiredMixin, ListView):
@@ -25,6 +25,9 @@ class DashboardView(LoginRequiredMixin, ListView):
         {"key": "under_60", "label": "Up to 60 minutes", "min": 0, "max": 60},
         {"key": "over_90", "label": "90 minutes and above", "min": 90, "max": 1000},
     )
+    using = Follow
+    template_name = 'dashboard.html'
+    context_object_name = 'recipes'
 
     def get_queryset(self):
         # Start with recipes excluding current user's recipes and add rating annotations
@@ -37,7 +40,8 @@ class DashboardView(LoginRequiredMixin, ListView):
         queryset = self.filter_by_meal_types(queryset)
         queryset = self.filter_by_time(queryset)
         queryset = self.search_feature(queryset)
-        
+        queryset = self.following_only(queryset)
+
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -60,6 +64,8 @@ class DashboardView(LoginRequiredMixin, ListView):
             selected_meal_types or selected_time_filter or search_term
         )
 
+        context["selected_meal_type"] = self.request.GET.get("meal_type", "")
+        context["following_page"] = self.request.GET.get('following', False)
         return context
 
     def get_selected_meal_types(self):
@@ -126,4 +132,15 @@ class DashboardView(LoginRequiredMixin, ListView):
         #If user typed something in the search bar
         if search_term:
             queryset = queryset.filter(title__icontains=search_term)
+        return queryset
+
+    #Activates the following-only dashboard, if selected
+    def following_only(self, queryset):
+
+        following_page = self.request.GET.get('following', False)
+        #currently either this filter or the one after doesn't work. The queryset is unchanged.
+        recipe_set = Follow.objects.filter(follower=self.request.user)
+
+        if following_page:
+            queryset.filter(author__in=recipe_set.values_list('following'))
         return queryset
