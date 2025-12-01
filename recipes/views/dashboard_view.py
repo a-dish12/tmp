@@ -2,6 +2,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from recipes.models import Recipe, Follow
 from django.urls import reverse
+from django.db.models import Avg, Count, Q
+from recipes.models import Recipe, Follow, User
 
 
 class DashboardView(LoginRequiredMixin, ListView):
@@ -197,4 +199,15 @@ class DashboardView(LoginRequiredMixin, ListView):
             for r in recipe_set.values_list('following'):
                 queryset = queryset.exclude(author=r)
 
+        return queryset
+
+    #Activates the following-only dashboard, if selected
+    def following_only(self, queryset):
+
+        following_page = self.request.GET.get('following', False)
+        #currently either this filter or the one after doesn't work. The queryset is unchanged.
+        recipe_set = Follow.objects.filter(follower=self.request.user)
+
+        if following_page:
+            queryset.filter(author__in=recipe_set.values_list('following'))
         return queryset

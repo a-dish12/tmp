@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from recipes.models import Recipe, User
+from recipes.models import Recipe
 from recipes.forms import RecipeForm
 
 class DashboardTimeFilteringTests(TestCase):
@@ -16,7 +16,6 @@ class DashboardTimeFilteringTests(TestCase):
             'time':t,
             'meal_type':'breakfast'}
 
-            #self.client.force_login(get_user_model().objects.get(pk=1))
             self.client.post(reverse('create_recipe'), self.form_input)
 
     def test_filter_time_range_0_to_20(self):
@@ -31,6 +30,10 @@ class DashboardTimeFilteringTests(TestCase):
     def test_filter_time_range_0_to_45(self):
         '''Need to make it learn how to post recipes properly in a test(rewatch vids)'''
 
+        before = Recipe.objects.count()
+        self.client.post(reverse('create_recipe'), self.form_input)
+        after =  Recipe.objects.count()
+        self.assertNotEqual(before, after)
         url_response = self.client.get(self.url+'?min_time=0&max_time=45')
         query_response = self.client.get(self.url, query_params={'time__range': [0, 45]})
 
