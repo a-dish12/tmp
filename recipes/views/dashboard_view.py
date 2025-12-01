@@ -4,10 +4,12 @@ from recipes.models import Recipe
 from django.db.models import Avg, Count, Q
 from recipes.models import Recipe, Follow
 from django.urls import reverse
+from recipes.models import Recipe, Follow, User
 
 
 class DashboardView(LoginRequiredMixin, ListView):
     model = Recipe
+    using = Follow
     template_name = "dashboard.html"
     context_object_name = "recipes"
 
@@ -47,6 +49,7 @@ class DashboardView(LoginRequiredMixin, ListView):
         queryset = self.filter_by_time(queryset)
         queryset = self.search_feature(queryset)
         queryset = self.following_only(queryset)
+        queryset = self.following_only(queryset)
         queryset = self.filter_by_diet(queryset)
 
         return queryset
@@ -76,6 +79,7 @@ class DashboardView(LoginRequiredMixin, ListView):
 
         context["selected_meal_type"] = self.request.GET.get("meal_type", "")
         context["following_page"] = self.request.path == reverse('following_dashboard')
+        context["following_page"] = self.request.GET.get('following', False)
         return context
 
 
@@ -181,4 +185,15 @@ class DashboardView(LoginRequiredMixin, ListView):
             for r in recipe_set.values_list('following'):
                 queryset = queryset.exclude(author=r)
 
+        return queryset
+
+    #Activates the following-only dashboard, if selected
+    def following_only(self, queryset):
+
+        following_page = self.request.GET.get('following', False)
+        #currently either this filter or the one after doesn't work. The queryset is unchanged.
+        recipe_set = Follow.objects.filter(follower=self.request.user)
+
+        if following_page:
+            queryset.filter(author__in=recipe_set.values_list('following'))
         return queryset
