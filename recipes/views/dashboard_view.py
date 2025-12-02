@@ -187,13 +187,13 @@ class DashboardView(LoginRequiredMixin, ListView):
 
         return queryset
 
-    #Activates the following-only dashboard, if selected
     def following_only(self, queryset):
-
         following_page = self.request.GET.get('following', False)
-        #currently either this filter or the one after doesn't work. The queryset is unchanged.
-        recipe_set = Follow.objects.filter(follower=self.request.user)
+        recipe_set = Follow.objects.exclude(follower=self.request.user)
 
+        #Remove recipes from people you don't follow
         if following_page:
-            queryset.filter(author__in=recipe_set.values_list('following'))
+            for r in recipe_set.values_list('following'):
+                queryset = queryset.exclude(author=r)
+
         return queryset
