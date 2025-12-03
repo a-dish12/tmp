@@ -67,10 +67,6 @@ class DashboardView(LoginRequiredMixin, ListView):
 
         context["selected_meal_type"] = self.request.GET.get("meal_type", "")
         context["following_page"] = self.request.path == reverse('following_dashboard')
-        if self.request.path == self.request.get_full_path():
-            context["add_on"] = '?'
-        else:
-            context["add_on"] = '&'
         return context
 
     def get_selected_meal_types(self):
