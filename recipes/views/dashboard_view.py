@@ -2,6 +2,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from recipes.models import Recipe, Follow
 from django.urls import reverse
+from django.db.models import Avg, Count
+from django.db.models import Q
 
 
 class DashboardView(LoginRequiredMixin, ListView):
@@ -9,8 +11,6 @@ class DashboardView(LoginRequiredMixin, ListView):
     using = Follow
     template_name = 'dashboard.html'
     context_object_name = 'recipes'
-    template_name = "dashboard.html"
-    context_object_name = "recipes"
 
     MEAL_TYPE_FILTERS = (
         ("breakfast", "Breakfast"),
@@ -29,7 +29,13 @@ class DashboardView(LoginRequiredMixin, ListView):
     )
 
     def get_queryset(self):
-        queryset = Recipe.objects.exclude(author=self.request.user)
+        # Start with recipes excluding current user's recipes and add rating annotations
+        queryset = Recipe.objects.exclude(author=self.request.user).annotate(
+            avg_rating=Avg('ratings__stars'),
+            rating_count=Count('ratings')
+        )
+        
+        # Apply all filters
         queryset = self.filter_by_meal_types(queryset)
         queryset = self.filter_by_time(queryset)
         queryset = self.search_feature(queryset)
@@ -119,7 +125,10 @@ class DashboardView(LoginRequiredMixin, ListView):
         return queryset.filter(time__range=[min_time, max_time])
 
     def search_feature(self, queryset):
-        search_term = self.request.GET.get("search")
+        # Get the search term from the input URL
+        search_term = self.request.GET.get('search')
+
+        #If user typed something in the search bar
         if search_term:
             queryset = queryset.filter(title__icontains=search_term)
 
@@ -134,5 +143,4 @@ class DashboardView(LoginRequiredMixin, ListView):
             for r in recipe_set.values_list('following'):
                 queryset = queryset.exclude(author=r)
 
-        return queryset
         return queryset

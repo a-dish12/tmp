@@ -114,6 +114,39 @@ h3.profile-title {
   color: #0d6efd;
 }
 
+.star-rating-label {
+  cursor: pointer;
+  font-size: 2rem;
+  color: #ddd;
+  transition: color 0.2s;
+  display: inline-block;
+}
+
+.star-rating-label input[type="radio"] {
+  display: none;
+}
+
+.star-rating-label:hover .star-rating-icon,
+.star-rating-label:hover ~ .star-rating-label .star-rating-icon {
+  color: #ffc107;
+}
+
+.star-rating-label:has(input[type="radio"]:checked) .star-rating-icon,
+.star-rating-label:has(input[type="radio"]:checked) ~ .star-rating-label .star-rating-icon {
+  color: #ffc107;
+}
+
+/* Clickable recipe cards */
+.list-group-item-action {
+  transition: background-color 0.2s;
+  text-decoration: none;
+  color: inherit;
+}
+
+.list-group-item-action:hover {
+  background-color: #f8f9fa;
+  color: inherit;
+}
 
 /*
  * Dashboard filters
