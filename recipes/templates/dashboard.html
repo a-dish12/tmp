@@ -93,9 +93,9 @@
       <h1>Welcome to your dashboard {{ user.username }}</h1>
 
       <div class="mt-4 d-flex align-items-center gap-3 flex-wrap">
-          <a href="{% url 'user_profile' user.id %}" class="btn btn-primary btn-lg me-3">
-            My profile
-          </a>
+        <a href="{% url 'user_profile' user.id %}" class="btn btn-primary btn-lg me-3">
+          My profile
+        </a>
         <a href="{% url 'create_recipe' %}" class="btn btn-primary btn-lg">
           Create New Recipe
         </a>
@@ -110,7 +110,7 @@
           Showing recipes for:
           {% if search_term %}
             <span class="badge bg-secondary me-1">
-              “{{ search_term }}”
+              "{{ search_term }}"
             </span>
           {% endif %}
 
@@ -136,7 +136,6 @@
 
       <h2 class="list-title mt-3">Explore Recipes from Others</h2>
 
-       
       {% if recipes %}
         <div class="list-group">
           {% for recipe in recipes %}
@@ -149,7 +148,6 @@
                     By {{ recipe.author.username }} | 
                     Prep time: {{ recipe.time }} minutes | 
                     Meal type: {{ recipe.meal_type|capfirst }}
-                    <!-- Created: {{ recipe.created_at|date:"M d, Y" }} -->
                   </small>
                 </div>
                 
@@ -168,19 +166,6 @@
                 </div>
               </div>
             </a>
-
-      {% if recipes %}
-        <div class="list-group">
-          {% for recipe in recipes %}
-            <div class="list-group-item">
-              <h5>{{ recipe.title }}</h5>
-              <p class="low-key">{{ recipe.description|truncatewords:20 }}</p>
-              <small class="text-muted">
-                By {{ recipe.author.username }} |
-                Prep time: {{ recipe.time }} minutes |
-                Created: {{ recipe.created_at|date:"M d, Y" }}
-              </small>
-            </div>
           {% endfor %}
         </div>
       {% else %}
