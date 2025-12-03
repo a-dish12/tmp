@@ -100,20 +100,6 @@
             My Recipes
           </a>
 
-          <!-- Time Filter-->
-          <a class="btn btn-primary dropdown-toggle" href="#" id="time-filter-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Sort by Time
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="time-filter-dropdown">
-            <li><a class="dropdown-item" href="{{request.path}}?max_time=20">20 mins or Less</a></li>
-            <li><a class="dropdown-item" href="{{request.path}}?max_time=45">45 mins or Less</a></li>
-            <li><a class="dropdown-item" href="{{request.path}}?max_time=60">60 mins or Less</a></li>
-            <li><a class="dropdown-item" href="{{request.path}}?max_time=90">90 mins or Less</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="{{request.path}}?min_time=90">Over 90 mins</a></li>
-            <li><a class="dropdown-item" href="{{request.path}}">All Recipes</a></li>
-          </ul>
-
           <!-- Search Form -->
           <form method="get" action="" class="d-flex ms-auto">
             <input 
@@ -127,12 +113,6 @@
               Search
             </button>
           </form>
-        <a href="{% url 'create_recipe' %}" class="btn btn-primary btn-lg">
-          Create New Recipe
-        </a>
-        <a href="{% url 'user_recipes' %}" class="btn btn-secondary btn-lg">
-          My Recipes
-        </a>
       </div>
 
       <!-- Active filters summary -->
@@ -169,7 +149,6 @@
 
       <!-- Following/ For You chooser-->
       <nav class="nav nav-tabs justify-content-center">
-        <!--Figure out the if, with, and how to apply request.path (google it)-->
           {% if following_page %}
             <a class="nav-link" href="{% url 'dashboard' %}">For You</a>
             <a class="nav-link active" aria-current="page" href="{% url 'following_dashboard' %}">Following</a>
