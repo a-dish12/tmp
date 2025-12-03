@@ -1,6 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from recipes.models import Recipe
+from django.db.models import Avg,Count
+
 
 
 class DashboardView(LoginRequiredMixin, ListView):
@@ -9,7 +11,10 @@ class DashboardView(LoginRequiredMixin, ListView):
     context_object_name = 'recipes'
 
     def get_queryset(self):
-        queryset = Recipe.objects.exclude(author=self.request.user)
+        queryset = Recipe.objects.exclude(author=self.request.user).annotate(
+            avg_rating=Avg('ratings__stars'),
+            rating_count=Count('ratings')
+        )
         queryset = self.filter_by_meal_type(queryset)
         queryset = self.filter_by_time(queryset)
         queryset = self.search_feature(queryset)

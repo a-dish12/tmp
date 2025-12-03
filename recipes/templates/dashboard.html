@@ -57,19 +57,39 @@
         </select>
       </form>
 
-      
+       
       {% if recipes %}
         <div class="list-group">
           {% for recipe in recipes %}
-            <div class="list-group-item">
-              <h5>{{ recipe.title }}</h5>
-              <p class="low-key">{{ recipe.description|truncatewords:20 }}</p>
-              <small class="text-muted">
-                By {{ recipe.author.username }} | 
-                Prep time: {{ recipe.time }} minutes | 
-                Created: {{ recipe.created_at|date:"M d, Y" }}
-              </small>
-            </div>
+            <a href="{% url 'recipe_detail' pk=recipe.pk %}" class="list-group-item list-group-item-action text-decoration-none">
+              <div class="d-flex w-100 justify-content-between align-items-start">
+                <div>
+                  <h5 class="mb-1">{{ recipe.title }}</h5>
+                  <p class="low-key mb-1">{{ recipe.description|truncatewords:20 }}</p>
+                  <small class="text-muted">
+                    By {{ recipe.author.username }} | 
+                    Prep time: {{ recipe.time }} minutes | 
+                    Meal type: {{ recipe.meal_type|capfirst }}
+                    <!-- Created: {{ recipe.created_at|date:"M d, Y" }} -->
+                  </small>
+                </div>
+                
+                <!-- Rating Display -->
+                <div class="text-end">
+                  <div class="rating-stars">
+                    {% with avg=recipe.average_rating %}
+                      {% for i in "12345" %}
+                        <span class="{% if forloop.counter <= avg %}text-warning{% else %}text-muted{% endif %}">★</span>
+                      {% endfor %}
+                    {% endwith %}
+                  </div>
+                  <small class="text-muted d-block">
+                    {{ recipe.average_rating|floatformat:1 }} ({{ recipe.rating_count }})
+                  </small>
+                </div>
+              </div>
+            </a>
+
           {% endfor %}
         </div>
       {% else %}
