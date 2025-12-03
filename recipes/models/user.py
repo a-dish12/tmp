@@ -17,7 +17,42 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=50, blank=False)
     last_name = models.CharField(max_length=50, blank=False)
     email = models.EmailField(unique=True, blank=False)
+    followers = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        related_name='following',
+        blank=True,
+    )
 
+    friends = models.ManyToManyField(
+        'self',
+        symmetrical=True,
+        blank=True,
+    )
+
+
+    def follow(self, other_user):
+        other_user.followers.add(self)
+
+    def unfollow(self, other_user):
+        other_user.followers.remove(self)
+
+    def is_following(self, other_user):
+        return other_user.followers.filter(pk=self.pk).exists()
+
+    def is_followed_by(self, other_user):
+        return self.followers.filter(pk=other_user.pk).exists()
+    
+    def befriend(self, other_user):
+        self.friends.add(other_user)
+
+    def unfriend(self, other_user):
+        self.friends.remove(other_user)
+
+    def is_friends_with(self, other_user):
+        return self.friends.filter(pk=other_user.pk).exists()
+
+    
 
     class Meta:
         """Model options."""

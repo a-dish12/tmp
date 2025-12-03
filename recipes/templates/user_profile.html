@@ -6,8 +6,14 @@
     <div class="col-12">
         <h1> {{ profile_user.full_name}} {{ profile_user.username }} </h1>
 
-        <p> 
-            Followers: {{ followers_count }} | Following: {{ following_count }}
+        <p>
+            <a href="{% url 'user_followers' profile_user.id %}">
+                Followers: {{ followers_count }}
+            </a>
+            |
+            <a href="{% url 'user_following' profile_user.id %}">
+                Following: {{ following_count }}
+            </a>
         </p>
 
         
@@ -17,15 +23,74 @@
                     {% csrf_token %}
                     <button type="submit" class="btn btn-outline-danger">Unfollow</button>
                 </form>
-        {% else %}
-            <form method="post" action="{% url 'follow_user' profile_user.id %}">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-primary">Follow</button>
-            </form>
+            {% else %}
+                <form method="post" action="{% url 'follow_user' profile_user.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Follow</button>
+                </form>
             {% endif %}
         {% endif %}
         
         <hr> 
+
+        {% if user.is_authenticated and user.id != profile_user.id %}
+            {% if is_friend %}
+                <p class="mt-2">You are friends </p>
+                <form method="post" action="{% url 'unfriend_user' profile_user.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Unfriend</button>
+                </form>
+
+            {% elif incoming_request %}
+                <p class="mt-2">{{ profile_user.username }} has sent you a friend request.</p>
+                <form method="post" action="{% url 'accept_friend_request' incoming_request.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                </form>
+                <form method="post" action="{% url 'reject_friend_request' incoming_request.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">Reject</button>
+                </form>
+
+            {% elif outgoing_request %}
+                <p class="mt-2">Friend request pending </p>
+
+            {% else %}
+                <form method="post" action="{% url 'send_friend_request' profile_user.id %}" class="mt-2">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-primary btn-sm">Add friend</button>
+                </form>
+            {% endif %}
+        {% endif %}
+
+        <hr>
+
+    {% if user.is_authenticated and user.id == profile_user.id %}s
+        <h3>Friend requests</h3>
+        {% if incoming_friend_requests %}
+            <ul class="list-group">
+                {% for fr in incoming_friend_requests %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{% url 'user_profile' fr.from_user.id %}">
+                            {{ fr.from_user.username }}
+                        </a>
+                        <div>
+                            <form method="post" action="{% url 'accept_friend_request' fr.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                            </form>
+                            <form method="post" action="{% url 'reject_friend_request' fr.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">Reject</button>
+                            </form>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No pending friend requests.</p>
+        {% endif %}
+    {% endif %}
 
         <p> user content </p>
     
