@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import get_user_model
+
 
 from recipes.models import Follow
 
@@ -21,7 +22,7 @@ def follow_user(request, user_id):
         follower = request.user,
         following = followed
     )
-
+    
     return redirect("user_profile", user_id = user_id)
 
 
@@ -37,3 +38,28 @@ def unfollow_user(request, user_id):
     ).delete()
 
     return redirect("user_profile", user_id = user_id)
+
+def user_followers(request, user_id):
+    profile_user = get_object_or_404(User, pk=user_id)
+
+    followers = User.objects.filter(
+        id__in=Follow.objects.filter(following=profile_user).values("follower_id")
+    )
+
+    return render(request, "user_followers.html", {
+        "profile_user": profile_user,
+        "followers": followers,
+    })
+
+
+def user_following(request, user_id):
+    profile_user = get_object_or_404(User, pk=user_id)
+
+    following = User.objects.filter(
+        id__in=Follow.objects.filter(follower=profile_user).values("following_id")
+    )
+
+    return render(request, "user_following.html", {
+        "profile_user": profile_user,
+        "following": following,
+    })

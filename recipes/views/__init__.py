@@ -9,3 +9,4 @@ from .create_recipe_view import *
 from .user_recipes_view import *
 from .follow_view import *
 from .user_profile_view import *
+from .friendRequest_view import *
