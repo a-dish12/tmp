@@ -34,6 +34,7 @@ urlpatterns = [
     path('users/<int:user_id>/', views.user_profile, name='user_profile'),
     path('users/<int:user_id>/follow/', views.follow_user, name = 'follow_user'),
     path('users/<int:user_id>/unfollow/', views.unfollow_user, name = 'unfollow_user'),
+    path('dashboard/following', views.DashboardView.as_view(), name='following_dashboard'),
 
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
