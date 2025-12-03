@@ -16,8 +16,15 @@ urlpatterns = [
     path('recipes/create/', views.CreateRecipeView.as_view(), name='create_recipe'),
     path('recipes/my-recipes/', views.UserRecipesView.as_view(), name='user_recipes'),
     path('users/<int:user_id>/', views.user_profile, name='user_profile'),
-    path('users/<int:user_id>/follow/', views.follow_user, name='follow_user'),
-    path('users/<int:user_id>/unfollow/', views.unfollow_user, name='unfollow_user'),
+    path('users/<int:user_id>/follow/', views.follow_user, name = 'follow_user'),
+    path('users/<int:user_id>/unfollow/', views.unfollow_user, name = 'unfollow_user'),
+    path("user/<int:user_id>/followers/", views.user_followers, name="user_followers"),
+    path("user/<int:user_id>/following/", views.user_following, name="user_following"),
+    path('user/<int:user_id>/friend-request/', views.send_friend_request, name='send_friend_request'),
+    path('friend-request/<int:request_id>/accept/', views.accept_friend_request, name='accept_friend_request'),
+    path('friend-request/<int:request_id>/reject/', views.reject_friend_request, name='reject_friend_request'),
+    path("user/<int:user_id>/unfriend/", views.unfriend_user, name="unfriend_user")
+
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

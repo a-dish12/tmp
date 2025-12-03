@@ -93,6 +93,9 @@
       <h1>Welcome to your dashboard {{ user.username }}</h1>
 
       <div class="mt-4 d-flex align-items-center gap-3 flex-wrap">
+          <a href="{% url 'user_profile' user.id %}" class="btn btn-primary btn-lg me-3">
+            My profile
+          </a>
         <a href="{% url 'create_recipe' %}" class="btn btn-primary btn-lg">
           Create New Recipe
         </a>
