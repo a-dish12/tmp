@@ -3,7 +3,8 @@ from django.views.generic import ListView
 from recipes.models import Recipe, Follow
 from django.urls import reverse
 from django.db.models import Avg, Count, Q
-from recipes.models import Recipe, Follow, User
+from recipes.models import Recipe, Follow
+from django.urls import reverse
 
 
 class DashboardView(LoginRequiredMixin, ListView):
@@ -77,7 +78,6 @@ class DashboardView(LoginRequiredMixin, ListView):
         )
 
         context["selected_meal_type"] = self.request.GET.get("meal_type", "")
-        context["following_page"] = self.request.path == reverse('following_dashboard')
         context["following_page"] = self.request.path == reverse('following_dashboard')
         if self.request.path == self.request.get_full_path():
             context["add_on"] = '?'
@@ -202,7 +202,7 @@ class DashboardView(LoginRequiredMixin, ListView):
         return queryset
 
     def following_only(self, queryset):
-        following_page = self.request.GET.get('following', False)
+        following_page = self.request.path == reverse('following_dashboard')
         recipe_set = Follow.objects.exclude(follower=self.request.user)
 
         #Remove recipes from people you don't follow
