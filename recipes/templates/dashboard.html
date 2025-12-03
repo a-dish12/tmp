@@ -106,23 +106,12 @@
           <a href="{% url 'create_recipe' %}" class="btn btn-primary btn-lg me-3">
             Create New Recipe
           </a>
-          <a href="{% url 'user_recipes' %}" class="btn btn-secondary btn-lg">
-            My Recipes
-          </a>
-
-          <!-- Search Form -->
-          <form method="get" action="" class="d-flex ms-auto">
-            <input 
-            type="text"
-            name="search"
-            class="form-control me-2"
-            style="min-width: 250px;"
-            placeholder="Search recipe name..."
-            value="{{request.GET.Search}}">
-            <button type="submit" class = "btn btn-outline-primary btn-lg">
-              Search
-            </button>
-          </form>
+        <a href="{% url 'create_recipe' %}" class="btn btn-primary btn-lg">
+          Create New Recipe
+        </a>
+        <a href="{% url 'user_recipes' %}" class="btn btn-secondary btn-lg">
+          My Recipes
+        </a>
       </div>
 
       <h2 class="list-title mt-5">Explore Recipes from Others</h2>
@@ -185,6 +174,7 @@
 
       <h2 class="list-title mt-3">Explore Recipes from Others</h2>
 
+      
       <!-- Following/ For You chooser-->
       <nav class="nav nav-tabs justify-content-center">
           {% if following_page %}
@@ -196,7 +186,6 @@
           {% endif %}
       </nav>
 
-      <!-- Display recipes-->
       {% if recipes %}
         <div class="list-group mb-4">
           {% for recipe in recipes %}
@@ -248,3 +237,15 @@
   </div>
 </div>
 {% endblock %}
+
+
+      <!-- Following/ For You chooser-->
+      <nav class="nav nav-tabs justify-content-center">
+          {% if following_page %}
+            <a class="nav-link" href="{% url 'dashboard' %}">For You</a>
+            <a class="nav-link active" aria-current="page" href="{% url 'following_dashboard' %}">Following</a>
+          {% else %}
+            <a class="nav-link active" aria-current="page" href="{% url 'dashboard' %}">For You</a>
+            <a class="nav-link" href="{% url 'following_dashboard' %}">Following</a>
+          {% endif %}
+      </nav>
