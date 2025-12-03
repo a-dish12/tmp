@@ -9,4 +9,8 @@ from .create_recipe_view import *
 from .user_recipes_view import *
 from .follow_view import *
 from .user_profile_view import *
+<<<<<<< HEAD
 from .recipe_view import RecipeDetailView,RateRecipeView
+=======
+from .friendRequest_view import *
+>>>>>>> main

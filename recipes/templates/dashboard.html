@@ -2,60 +2,139 @@
 {% block content %}
 <div class="container">
   <div class="row">
-    <div class="col-12">
+
+    <!-- Sidebar Filters -->
+    <div class="col-md-3 mb-4">
+      <form method="get" class="filters-card p-3 border rounded bg-light dashboard-filters">
+        <h5 class="mb-3">Filter recipes</h5>
+
+        <!-- Search -->
+        <div class="mb-3">
+          <label for="search" class="form-label fw-bold">Search</label>
+          <input
+            type="text"
+            id="search"
+            name="search"
+            class="form-control"
+            placeholder="Search recipe name..."
+            value="{{ search_term }}"
+          >
+        </div>
+
+        <!-- Meal Type Filters -->
+        <div class="mb-3">
+          <span class="form-label fw-bold d-block">Meal type</span>
+          {% for value, label in meal_type_filters %}
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                name="meal_types"
+                id="meal_type_{{ value }}"
+                value="{{ value }}"
+                {% if value in selected_meal_types %}checked{% endif %}
+              >
+              <label class="form-check-label" for="meal_type_{{ value }}">
+                {{ label }}
+              </label>
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- Time Filters -->
+        <div class="mb-3">
+          <span class="form-label fw-bold d-block">Prep time</span>
+
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="time_filter"
+              id="time_any"
+              value=""
+              {% if not selected_time_filter %}checked{% endif %}
+            >
+            <label class="form-check-label" for="time_any">
+              Any time
+            </label>
+          </div>
+
+          {% for tf in time_filters %}
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="time_filter"
+                id="time_{{ tf.key }}"
+                value="{{ tf.key }}"
+                {% if selected_time_filter == tf.key %}checked{% endif %}
+              >
+              <label class="form-check-label" for="time_{{ tf.key }}">
+                {{ tf.label }}
+              </label>
+            </div>
+          {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 mt-2">
+          Apply filters
+        </button>
+
+        {% if has_active_filters %}
+          <a href="{% url 'dashboard' %}" class="btn btn-link w-100 mt-2 p-0">
+            Clear all filters
+          </a>
+        {% endif %}
+      </form>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-9">
       <h1>Welcome to your dashboard {{ user.username }}</h1>
 
-       <div class="mt-4 d-flex align-items-center gap-3 flex-wrap">
-          <a href="{% url 'create_recipe' %}" class="btn btn-primary btn-lg me-3">
-            Create New Recipe
+      <div class="mt-4 d-flex align-items-center gap-3 flex-wrap">
+          <a href="{% url 'user_profile' user.id %}" class="btn btn-primary btn-lg me-3">
+            My profile
           </a>
-          <a href="{% url 'user_recipes' %}" class="btn btn-secondary btn-lg">
-            My Recipes
-          </a>
-
-          <!-- Time Filter-->
-          <a class="btn btn-primary dropdown-toggle" href="#" id="time-filter-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Sort by Time
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="time-filter-dropdown">
-            <li><a class="dropdown-item" href="{% url 'dashboard' %}?max_time=20">20 mins or Less</a></li>
-            <li><a class="dropdown-item" href="{% url 'dashboard' %}?max_time=45">45 mins or Less</a></li>
-            <li><a class="dropdown-item" href="{% url 'dashboard' %}?max_time=60">60 mins or Less</a></li>
-            <li><a class="dropdown-item" href="{% url 'dashboard' %}?max_time=90">90 mins or Less</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="{% url 'dashboard' %}?min_time=90">Over 90 mins</a></li>
-            <li><a class="dropdown-item" href="{% url 'dashboard' %}">All Recipes</a></li>
-          </ul>
-
-          <!-- Search Form -->
-          <form method="get" action="" class="d-flex ms-auto">
-            <input 
-            type="text"
-            name="search"
-            class="form-control me-2"
-            style="min-width: 250px;"
-            placeholder="Search recipe name..."
-            value="{{request.GET.Search}}">
-            <button type="submit" class = "btn btn-outline-primary btn-lg">
-              Search
-            </button>
-          </form>
+        <a href="{% url 'create_recipe' %}" class="btn btn-primary btn-lg">
+          Create New Recipe
+        </a>
+        <a href="{% url 'user_recipes' %}" class="btn btn-secondary btn-lg">
+          My Recipes
+        </a>
       </div>
 
-      <h2 class="list-title mt-5">Explore Recipes from Others</h2>
+      <!-- Active filters summary -->
+      {% if has_active_filters %}
+        <p class="low-key mt-4 mb-2">
+          Showing recipes for:
+          {% if search_term %}
+            <span class="badge bg-secondary me-1">
+              “{{ search_term }}”
+            </span>
+          {% endif %}
 
-      <!-- Meal Type Filter-->
-      <form method="GET" class="mb-4">
-        <label for="meal_type">Filter by meal type:</label>
-        <select name="meal_type" id="meal_type" class="form-select" onchange="this.form.submit()">
-          <option value="">All</option>
-          <option value="breakfast" {% if selected_meal_type == "breakfast" %}selected{% endif %}>Breakfast</option>
-          <option value="lunch" {% if selected_meal_type == "lunch" %}selected{% endif %}>Lunch</option>
-          <option value="dinner" {% if selected_meal_type == "dinner" %}selected{% endif %}>Dinner</option>
-          <option value="snack" {% if selected_meal_type == "snack" %}selected{% endif %}>Snack</option>
-          <option value="dessert" {% if selected_meal_type == "dessert" %}selected{% endif %}>Dessert</option>
-        </select>
-      </form>
+          {% for value, label in meal_type_filters %}
+            {% if value in selected_meal_types %}
+              <span class="badge bg-secondary me-1">
+                {{ label }}
+              </span>
+            {% endif %}
+          {% endfor %}
+
+          {% if selected_time_filter %}
+            {% for tf in time_filters %}
+              {% if tf.key == selected_time_filter %}
+                <span class="badge bg-secondary me-1">
+                  {{ tf.label }}
+                </span>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </p>
+      {% endif %}
+
+      <h2 class="list-title mt-3">Explore Recipes from Others</h2>
 
        
       {% if recipes %}
@@ -90,18 +169,35 @@
               </div>
             </a>
 
+      {% if recipes %}
+        <div class="list-group">
+          {% for recipe in recipes %}
+            <div class="list-group-item">
+              <h5>{{ recipe.title }}</h5>
+              <p class="low-key">{{ recipe.description|truncatewords:20 }}</p>
+              <small class="text-muted">
+                By {{ recipe.author.username }} |
+                Prep time: {{ recipe.time }} minutes |
+                Created: {{ recipe.created_at|date:"M d, Y" }}
+              </small>
+            </div>
           {% endfor %}
         </div>
       {% else %}
-        {% if selected_meal_type %}
+        {% if selected_meal_types and not selected_time_filter and not search_term %}
           <p class="low-key">
             No recipes of the requested meal type are available from other users yet.
           </p>
+        {% elif has_active_filters %}
+          <p class="low-key">
+            No recipes match your selected filters yet. Try removing some filters or changing your search.
+          </p>
         {% else %}
-          <p class="low-key">No recipes available from other users yet.</p>
+          <p class="low-key">
+            No recipes available from other users yet.
+          </p>
         {% endif %}
       {% endif %}
-
     </div>
   </div>
 </div>

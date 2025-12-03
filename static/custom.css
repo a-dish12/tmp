@@ -147,3 +147,15 @@ h3.profile-title {
   background-color: #f8f9fa;
   color: inherit;
 }
+
+/*
+ * Dashboard filters
+ */
+.filters-card {
+  background-color: #f8f9fa;
+}
+
+.dashboard-filters {
+  position: sticky;
+  top: 80px; /* keep under navbar */
+}
