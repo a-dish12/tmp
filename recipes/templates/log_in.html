@@ -10,6 +10,14 @@
         {% include 'partials/bootstrap_form.html' with form=form %}
         <input type="submit" value="Log in" class="btn btn-primary">
       </form>
+
+      <!-- ⭐ ADD THIS BLOCK BELOW THE FORM ⭐ -->
+      <p class="mt-3">
+        Don't have a profile?
+        <a href="{% url 'sign_up' %}">Sign up</a>
+      </p>
+      <!-- ⭐ END OF ADDED BLOCK ⭐ -->
+
     </div>
   </div>
 </div>
