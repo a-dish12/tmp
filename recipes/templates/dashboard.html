@@ -93,9 +93,9 @@
       <h1>Welcome to your dashboard {{ user.username }}</h1>
 
       <div class="mt-4 d-flex align-items-center gap-3 flex-wrap">
-          <a href="{% url 'user_profile' user.id %}" class="btn btn-primary btn-lg me-3">
-            My profile
-          </a>
+        <a href="{% url 'user_profile' user.id %}" class="btn btn-primary btn-lg me-3">
+          My profile
+        </a>
         <a href="{% url 'create_recipe' %}" class="btn btn-primary btn-lg">
           Create New Recipe
         </a>
@@ -110,7 +110,7 @@
           Showing recipes for:
           {% if search_term %}
             <span class="badge bg-secondary me-1">
-              “{{ search_term }}”
+              "{{ search_term }}"
             </span>
           {% endif %}
 
@@ -136,8 +136,7 @@
 
       <h2 class="list-title mt-3">Explore Recipes from Others</h2>
 
-      
-      <!-- Following/ For You chooser-->
+            <!-- Following/ For You chooser-->
       <nav class="nav nav-tabs justify-content-center">
           {% if following_page %}
             <a class="nav-link" href="{% url 'dashboard' %}">For You</a>
@@ -149,17 +148,35 @@
       </nav>
 
       {% if recipes %}
-        <div class="list-group">
+        <div class="list-group mb-4">
           {% for recipe in recipes %}
-            <div class="list-group-item">
-              <h5>{{ recipe.title }}</h5>
-              <p class="low-key">{{ recipe.description|truncatewords:20 }}</p>
-              <small class="text-muted">
-                By {{ recipe.author.username }} |
-                Prep time: {{ recipe.time }} minutes |
-                Created: {{ recipe.created_at|date:"M d, Y" }}
-              </small>
-            </div>
+            <a href="{% url 'recipe_detail' pk=recipe.pk %}" class="list-group-item list-group-item-action text-decoration-none">
+              <div class="d-flex w-100 justify-content-between align-items-start">
+                <div>
+                  <h5 class="mb-1">{{ recipe.title }}</h5>
+                  <p class="low-key mb-1">{{ recipe.description|truncatewords:20 }}</p>
+                  <small class="text-muted">
+                    By {{ recipe.author.username }} | 
+                    Prep time: {{ recipe.time }} minutes | 
+                    Meal type: {{ recipe.meal_type|capfirst }}
+                  </small>
+                </div>
+                
+                <!-- Rating Display -->
+                <div class="text-end">
+                  <div class="rating-stars">
+                    {% with avg=recipe.average_rating %}
+                      {% for i in "12345" %}
+                        <span class="{% if forloop.counter <= avg %}text-warning{% else %}text-muted{% endif %}">★</span>
+                      {% endfor %}
+                    {% endwith %}
+                  </div>
+                  <small class="text-muted d-block">
+                    {{ recipe.average_rating|floatformat:1 }} ({{ recipe.rating_count }})
+                  </small>
+                </div>
+              </div>
+            </a>
           {% endfor %}
         </div>
       {% else %}
@@ -181,16 +198,3 @@
   </div>
 </div>
 {% endblock %}
-
-
-
-      <!-- Following/ For You chooser-->
-      <nav class="nav nav-tabs justify-content-center">
-          {% if following_page %}
-            <a class="nav-link" href="{% url 'dashboard' %}">For You</a>
-            <a class="nav-link active" aria-current="page" href="{% url 'following_dashboard' %}">Following</a>
-          {% else %}
-            <a class="nav-link active" aria-current="page" href="{% url 'dashboard' %}">For You</a>
-            <a class="nav-link" href="{% url 'following_dashboard' %}">Following</a>
-          {% endif %}
-      </nav>
