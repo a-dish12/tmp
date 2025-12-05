@@ -11,8 +11,6 @@ class DashboardView(LoginRequiredMixin, ListView):
     using = Follow
     template_name = 'dashboard.html'
     context_object_name = 'recipes'
-    template_name = "dashboard.html"
-    context_object_name = "recipes"
 
     MEAL_TYPE_FILTERS = (
         ("breakfast", "Breakfast"),
@@ -145,5 +143,4 @@ class DashboardView(LoginRequiredMixin, ListView):
             for r in recipe_set.values_list('following'):
                 queryset = queryset.exclude(author=r)
 
-        return queryset
         return queryset
