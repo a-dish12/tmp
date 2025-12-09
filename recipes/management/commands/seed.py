@@ -8,12 +8,12 @@ is swallowed and generation continues.
 """
 
 
-from faker_food import FoodProvider
 from faker import Faker
-from random import randint, random
+from faker_food import FoodProvider
 import random
 from django.core.management.base import BaseCommand, CommandError
 from recipes.models import User, Recipe
+from recipes import Recipe_Fixtures
 
 
 user_fixtures = [
@@ -22,14 +22,7 @@ user_fixtures = [
     {'username': '@charlie', 'email': 'charlie.johnson@example.org', 'first_name': 'Charlie', 'last_name': 'Johnson'},
 ]
 
-recipe_fixtures = [
-    {'title': 'Cereal', 'description': 'Frosted flakes in cold milk', 'ingredients': 'milk \n wheat',
-    'time': '10', 'meal_type': 'breakfast'},
-    {'title': 'Pizza', 'description': 'BBQ pizza for the family', 'ingredients': 'chicken \n dough \n cheese',
-    'time': '30', 'meal_type': 'dinner'},
-    {'title': 'Ice Cream', 'description': 'Vanilla ice cream for a hot day', 'ingredients': 'milk \n vanilla bean',
-    'time': '60', 'meal_type': 'dessert'},
-]
+recipe_fixtures = Recipe_Fixtures.get_recipe_fixtures()
 
 class Command(BaseCommand):
     """
@@ -41,6 +34,7 @@ class Command(BaseCommand):
 
     Attributes:
         USER_COUNT (int): Target total number of users in the database.
+        RECIPE_COUNT (int): Target total number of recipes in the database.
         DEFAULT_PASSWORD (str): Default password assigned to all created users.
         help (str): Short description shown in ``manage.py help``.
         faker (Faker): Locale-specific Faker instance used for random data.
@@ -61,13 +55,16 @@ class Command(BaseCommand):
         """
         Django entrypoint for the command.
 
-        Runs the full seeding workflow and stores ``self.users`` for any
+        Runs the full seeding workflow and stores ``self.users`` and ``self.recipes`` for any
         post-processing or debugging (not required for operation).
         """
         self.create_users()
         self.create_recipes()
         self.users = User.objects.all()
         self.recipes = Recipe.objects.all()
+
+
+        #USERS
 
     def create_users(self):
         """
@@ -79,25 +76,10 @@ class Command(BaseCommand):
         self.generate_user_fixtures()
         self.generate_random_users()
 
-    def create_recipes(self):
-        """
-        Create fixture users and then generate random recipes up to RECIPE_COUNT.
-
-        The process is idempotent in spirit: attempts that fail (e.g., due to
-        uniqueness constraints on username/email) are ignored and generation continues.
-        """
-        self.generate_recipe_fixtures()
-        self.generate_random_recipes()
-
     def generate_user_fixtures(self):
         """Attempt to create each predefined fixture user."""
         for data in user_fixtures:
             self.try_create_user(data)
-
-    def generate_recipe_fixtures(self):
-        """Attempt to create each predefined fixture recipe."""
-        for data in recipe_fixtures:
-            self.try_create_recipe(data)
 
     def generate_random_users(self):
         """
@@ -112,19 +94,6 @@ class Command(BaseCommand):
             user_count = User.objects.count()
         print("User seeding complete.      ")
 
-    def generate_random_recipes(self):
-        """
-        Generate random recipes until the database contains RECIPE_COUNT recipes.
-
-        Prints a simple progress indicator to stdout during generation.
-        """
-        recipe_count = Recipe.objects.count()
-        while  recipe_count < self.RECIPE_COUNT:
-            print(f"Seeding recipe {recipe_count}/{self.RECIPE_COUNT}", end='\r')
-            self.generate_recipe()
-            recipe_count = Recipe.objects.count()
-        print("Recipe seeding complete.      ")
-
     def generate_user(self):
         """
         Generate a single random user and attempt to insert it.
@@ -137,19 +106,6 @@ class Command(BaseCommand):
         username = create_username(first_name, last_name)
         self.try_create_user({'username': username, 'email': email, 'first_name': first_name, 'last_name': last_name})
 
-    def generate_recipe(self):
-        """
-        Generate a single random recipe and attempt to insert it.
-
-        Uses Faker for first/last names, then derives a simple username/email.
-        """
-        title = self.faker.dish()
-        description = self.faker.dish_description()
-        ingredients = f'{self.faker.ingredient()}\n{self.faker.ingredient()}'
-        time = self.faker.random_int(min=5, max=150)
-        meal_type = random.choice(['breakfast','lunch','dinner','snack','dessert'])
-        self.try_create_recipe({'title': title, 'description': description, 'ingredients': ingredients, 'time': time, 'meal_type': meal_type})
-
     def try_create_user(self, data):
         """
         Attempt to create a user and ignore any errors.
@@ -160,19 +116,6 @@ class Command(BaseCommand):
         """
         try:
             self.create_user(data)
-        except:
-            pass
-
-    def try_create_recipe(self, data):
-        """
-        Attempt to create a user and ignore any errors.
-
-        Args:
-            data (dict): Mapping with keys ``title``, ``description``,
-                ``ingredients``, ``time``, and ``meal_type``.
-        """
-        try:
-            self.create_recipe(data)
         except:
             pass
 
@@ -192,6 +135,96 @@ class Command(BaseCommand):
             last_name=data['last_name'],
         )
 
+    def create_username(first_name, last_name):
+        """
+        Construct a simple username from first and last names.
+
+        Args:
+            first_name (str): Given name.
+            last_name (str): Family name.
+
+        Returns:
+            str: A username in the form ``@{firstname}{lastname}`` (lowercased).
+        """
+        return '@' + first_name.lower() + last_name.lower()
+
+    def create_email(first_name, last_name):
+        """
+        Construct a simple example email address.
+
+        Args:
+            first_name (str): Given name.
+            last_name (str): Family name.
+
+        Returns:
+            str: An email in the form ``{firstname}.{lastname}@example.org``.
+        """
+        return first_name + '.' + last_name + '@example.org'
+
+
+    #RECIPES
+
+    def create_recipes(self):
+        """
+        Create fixture users and then generate random recipes up to RECIPE_COUNT.
+
+        The process is idempotent in spirit: attempts that fail (e.g., due to
+        uniqueness constraints on username/email) are ignored and generation continues.
+        """
+        self.generate_recipe_fixtures()
+        self.generate_random_recipes()
+
+    def generate_recipe_fixtures(self):
+        """Attempt to create each predefined fixture recipe."""
+        for data in recipe_fixtures:
+            self.try_create_recipe(data)
+
+    def generate_random_recipes(self):
+        """
+        Generate random recipes until the database contains RECIPE_COUNT recipes.
+
+        Prints a simple progress indicator to stdout during generation.
+        """
+        recipe_count = Recipe.objects.count()
+        while  recipe_count < self.RECIPE_COUNT:
+            print(f"Seeding recipe {recipe_count}/{self.RECIPE_COUNT}", end='\r')
+            self.generate_recipe()
+            recipe_count = Recipe.objects.count()
+        print("Recipe seeding complete.      ")
+
+    def generate_recipe(self):
+        """
+        Generate a single random recipe and attempt to insert it.
+
+        Uses Faker for everything but meal_type, which is a random choice between options.
+        """
+        title = self.faker.dish()
+        description = self.faker.dish_description()
+        ingredients = f'{self.faker.ingredient()}\n{self.faker.ingredient()}'
+        time = self.round_to_nearest_5(self.faker.random_int(min=5, max=150))
+        meal_type = random.choice(['breakfast','lunch','dinner','snack','dessert'])
+        self.try_create_recipe({'title': title, 'description': description, 'ingredients': ingredients,
+         'time': time, 'meal_type': meal_type})
+
+    def round_to_nearest_5(self, n):
+        """
+        Rounds the given integer to the nearest 5.
+        """
+        return 5 * round(n/5)
+
+    def try_create_recipe(self, data):
+        """
+        Attempt to create a recipe and ignore any errors.
+
+        Args:
+            data (dict): Mapping with keys ``title``, ``description``,
+                ``ingredients``, ``time``, and ``meal_type``.
+        """
+        try:
+            self.create_recipe(data)
+        except:
+            pass
+
     def create_recipe(self, data):
         """
         Create a recipe.
@@ -208,29 +241,3 @@ class Command(BaseCommand):
             time=data['time'],
             meal_type=data['meal_type'],
         )
-
-def create_username(first_name, last_name):
-    """
-    Construct a simple username from first and last names.
-
-    Args:
-        first_name (str): Given name.
-        last_name (str): Family name.
-
-    Returns:
-        str: A username in the form ``@{firstname}{lastname}`` (lowercased).
-    """
-    return '@' + first_name.lower() + last_name.lower()
-
-def create_email(first_name, last_name):
-    """
-    Construct a simple example email address.
-
-    Args:
-        first_name (str): Given name.
-        last_name (str): Family name.
-
-    Returns:
-        str: An email in the form ``{firstname}.{lastname}@example.org``.
-    """
-    return first_name + '.' + last_name + '@example.org'
