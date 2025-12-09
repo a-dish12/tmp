@@ -370,7 +370,161 @@ def get_recipe_fixtures():
 	        'ingredients': '2 cups Greek yogurt\n2 tbsp honey\n1 cup fresh berries (strawberries, blueberries, etc.)\n½ cup granola',
 	        'time': 15,
 	        'meal_type': 'Breakfast'
-	    }
+	    },
+		{
+			"title": "Blueberry Oatmeal Bowl",
+			"description": "A warm, comforting oatmeal bowl with blueberries and honey.",
+			"ingredients": "Rolled oats\nBlueberries\nHoney\nMilk\nCinnamon",
+			"time": 10,
+			"meal_type": "breakfast"
+		},
+		{
+			"title": "Avocado Toast with Egg",
+			"description": "Crispy toast topped with avocado and a perfectly cooked egg.",
+			"ingredients": "Bread\nAvocado\nEgg\nSalt\nPepper\nLemon juice",
+			"time": 8,
+			"meal_type": "breakfast"
+		},
+		{
+			"title": "Mediterranean Chickpea Salad",
+			"description": "A bright salad with chickpeas, tomatoes, cucumbers, and herbs.",
+			"ingredients": "Chickpeas\nCherry tomatoes\nCucumber\nRed onion\nOlive oil\nLemon\nParsley",
+			"time": 15,
+			"meal_type": "lunch"
+		},
+		{
+			"title": "Turkey and Hummus Wrap",
+			"description": "A simple wrap filled with turkey, hummus, and crisp veggies.",
+			"ingredients": "Tortilla\nTurkey slices\nHummus\nSpinach\nTomato\nCucumber",
+			"time": 10,
+			"meal_type": "lunch"
+		},
+		{
+			"title": "Grilled Lemon Herb Chicken",
+			"description": "Juicy grilled chicken marinated in lemon and fresh herbs.",
+			"ingredients": "Chicken breast\nLemon\nGarlic\nOlive oil\nThyme\nSalt\nPepper",
+			"time": 30,
+			"meal_type": "dinner"
+		},
+		{
+			"title": "Vegetable Stir Fry",
+			"description": "Colorful vegetables sautéed in a savory soy sauce mixture.",
+			"ingredients": "Broccoli\nCarrots\nBell peppers\nSoy sauce\nGarlic\nGinger\nOil",
+			"time": 20,
+			"meal_type": "dinner"
+		},
+		{
+			"title": "Chocolate Chip Mug Cake",
+			"description": "A quick, fluffy mug cake with chocolate chips.",
+			"ingredients": "Flour\nSugar\nMilk\nOil\nChocolate chips\nVanilla extract",
+			"time": 5,
+			"meal_type": "dessert"
+		},
+		{
+			"title": "Berry Yogurt Parfait",
+			"description": "Layers of yogurt, berries, and granola make a light snack.",
+			"ingredients": "Greek yogurt\nStrawberries\nBlueberries\nGranola\nHoney",
+			"time": 7,
+			"meal_type": "snack"
+		},
+		{
+			"title": "Classic Caesar Salad",
+			"description": "Crisp romaine with creamy Caesar dressing and croutons.",
+			"ingredients": "Romaine lettuce\nCroutons\nParmesan\nCaesar dressing\nLemon",
+			"time": 12,
+			"meal_type": "lunch"
+		},
+		{
+			"title": "Tomato Basil Soup",
+			"description": "A smooth tomato soup flavored with basil and garlic.",
+			"ingredients": "Tomatoes\nBasil\nGarlic\nOnion\nOlive oil\nVegetable broth",
+			"time": 40,
+			"meal_type": "dinner"
+		},
+		{
+			"title": "Peanut Butter Banana Smoothie",
+			"description": "A creamy smoothie with banana, peanut butter, and milk.",
+			"ingredients": "Banana\nPeanut butter\nMilk\nHoney\nIce",
+			"time": 5,
+			"meal_type": "snack"
+		},
+		{
+			"title": "Spaghetti Aglio e Olio",
+			"description": "A simple pasta with garlic, olive oil, and chili flakes.",
+			"ingredients": "Spaghetti\nGarlic\nOlive oil\nChili flakes\nParsley\nSalt",
+			"time": 25,
+			"meal_type": "dinner"
+		},
+		{
+			"title": "Veggie Omelette",
+			"description": "A fluffy omelette filled with colorful vegetables.",
+			"ingredients": "Eggs\nSpinach\nBell peppers\nOnion\nSalt\nPepper",
+			"time": 10,
+			"meal_type": "breakfast"
+		},
+		{
+			"title": "Chicken Burrito Bowl",
+			"description": "A hearty bowl with chicken, rice, beans, and veggies.",
+			"ingredients": "Chicken\nRice\nBlack beans\nCorn\nTomatoes\nLettuce",
+			"time": 35,
+			"meal_type": "lunch"
+		},
+		{
+			"title": "Garlic Butter Shrimp",
+			"description": "Tender shrimp cooked quickly in garlic and butter.",
+			"ingredients": "Shrimp\nGarlic\nButter\nLemon\nParsley\nSalt",
+			"time": 15,
+			"meal_type": "dinner"
+		},
+		{
+			"title": "Apple Cinnamon Overnight Oats",
+			"description": "Creamy oats mixed with apples and cinnamon, chilled overnight.",
+			"ingredients": "Oats\nMilk\nApple\nCinnamon\nHoney",
+			"time": 10,
+			"meal_type": "breakfast"
+		},
+		{
+			"title": "Caprese Sandwich",
+			"description": "Fresh mozzarella, tomato, and basil layered on crusty bread.",
+			"ingredients": "Bread\nMozzarella\nTomato\nBasil\nOlive oil\nBalsamic",
+			"time": 10,
+			"meal_type": "lunch"
+		},
+		{
+			"title": "Banana Bread Squares",
+			"description": "Soft banana bread cut into snackable squares.",
+			"ingredients": "Bananas\nFlour\nSugar\nEggs\nButter\nBaking soda",
+			"time": 45,
+			"meal_type": "snack"
+		},
+		{
+			"title": "Lemon Bars",
+			"description": "Bright, tangy lemon bars with a soft crust.",
+			"ingredients": "Lemon juice\nSugar\nFlour\nButter\nEggs",
+			"time": 50,
+			"meal_type": "dessert"
+		},
+		{
+			"title": "Cucumber Mint Salad",
+			"description": "A refreshing salad with cucumbers, mint, and lemon.",
+			"ingredients": "Cucumbers\nMint\nLemon juice\nOlive oil\nSalt",
+			"time": 8,
+			"meal_type": "snack"
+		},
+		{
+			"title": "Baked Salmon with Dill",
+			"description": "A simple baked salmon fillet seasoned with dill and lemon.",
+			"ingredients": "Salmon\nDill\nLemon\nOlive oil\nSalt\nPepper",
+			"time": 25,
+			"meal_type": "dinner"
+		},
+		{
+			"title": "Strawberry Cheesecake Cup",
+			"description": "A quick layered cheesecake-style dessert in a cup.",
+			"ingredients": "Cream cheese\nSugar\nStrawberries\nGraham crumbs\nVanilla",
+			"time": 10,
+			"meal_type": "dessert"
+		}
 	]
 
 	return recipe_fixtures

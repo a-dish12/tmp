@@ -13,7 +13,7 @@ from faker_food import FoodProvider
 import random
 from django.core.management.base import BaseCommand, CommandError
 from recipes.models import User, Recipe
-from recipes import Recipe_Fixtures
+from recipes.management import Recipe_Fixtures
 
 
 user_fixtures = [
@@ -41,7 +41,7 @@ class Command(BaseCommand):
     """
 
     USER_COUNT = 200
-    RECIPE_COUNT = 200
+    RECIPE_COUNT = 150
     DEFAULT_PASSWORD = 'Password123'
     help = 'Seeds the database with sample data'
 
@@ -64,7 +64,7 @@ class Command(BaseCommand):
         self.recipes = Recipe.objects.all()
 
 
-        #USERS
+    #USERS
 
     def create_users(self):
         """
@@ -135,32 +135,6 @@ class Command(BaseCommand):
             last_name=data['last_name'],
         )
 
-    def create_username(first_name, last_name):
-        """
-        Construct a simple username from first and last names.
-
-        Args:
-            first_name (str): Given name.
-            last_name (str): Family name.
-
-        Returns:
-            str: A username in the form ``@{firstname}{lastname}`` (lowercased).
-        """
-        return '@' + first_name.lower() + last_name.lower()
-
-    def create_email(first_name, last_name):
-        """
-        Construct a simple example email address.
-
-        Args:
-            first_name (str): Given name.
-            last_name (str): Family name.
-
-        Returns:
-            str: An email in the form ``{firstname}.{lastname}@example.org``.
-        """
-        return first_name + '.' + last_name + '@example.org'
-
 
     #RECIPES
 
@@ -199,18 +173,12 @@ class Command(BaseCommand):
         Uses Faker for everything but meal_type, which is a random choice between options.
         """
         title = self.faker.dish()
-        description = self.faker.dish_description()
+        description = shorten_string(self.faker.dish_description())
         ingredients = f'{self.faker.ingredient()}\n{self.faker.ingredient()}'
-        time = self.round_to_nearest_5(self.faker.random_int(min=5, max=150))
+        time = round_to_nearest_5(self.faker.random_int(min=5, max=150))
         meal_type = random.choice(['breakfast','lunch','dinner','snack','dessert'])
         self.try_create_recipe({'title': title, 'description': description, 'ingredients': ingredients,
          'time': time, 'meal_type': meal_type})
-
-    def round_to_nearest_5(self, n):
-        """
-        Rounds the given integer to the nearest 5.
-        """
-        return 5 * round(n/5)
 
     def try_create_recipe(self, data):
         """
@@ -234,10 +202,56 @@ class Command(BaseCommand):
                 ``ingredients``, ``time``, and ``meal_type``.
         """
         Recipe.objects.create(
-            author=User.objects.order_by('?')[0],
+            author=random.choice(User.objects.all()),
             title=data['title'],
             description=data['description'],
             ingredients=data['ingredients'],
             time=data['time'],
             meal_type=data['meal_type'],
         )
+
+def create_username(first_name, last_name):
+        """
+        Construct a simple username from first and last names.
+
+        Args:
+            first_name (str): Given name.
+            last_name (str): Family name.
+
+        Returns:
+            str: A username in the form ``@{firstname}{lastname}`` (lowercased).
+        """
+        return '@' + first_name.lower() + last_name.lower()
+
+def create_email(first_name, last_name):
+        """
+        Construct a simple example email address.
+
+        Args:
+            first_name (str): Given name.
+            last_name (str): Family name.
+
+        Returns:
+            str: An email in the form ``{firstname}.{lastname}@example.org``.
+        """
+        return first_name + '.' + last_name + '@example.org'
+
+def round_to_nearest_5(num):
+        """
+        Rounds the given integer to the nearest 5.
+        """
+        return 5 * round(num/5)
+
+def shorten_string(s):
+        """
+        Cuts the given string to a reasonable length.
+        """
+        s = s.split('.')[0]
+        if len(s) <= 110:
+            return s + '.'
+        else:
+            s = s.split(',')[0]
+            if '(' in s and ')' not in s:
+                return s +').'
+            else:
+                return s + '.'
