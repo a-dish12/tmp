@@ -136,11 +136,11 @@ class DashboardView(LoginRequiredMixin, ListView):
 
     def following_only(self, queryset):
         following_page = self.request.path == reverse('following_dashboard')
-        recipe_set = Follow.objects.exclude(follower=self.request.user)
+        not_following_set = Follow.objects.exclude(follower=self.request.user)
 
         #Remove recipes from people you don't follow
         if following_page:
-            for r in recipe_set.values_list('following'):
-                queryset = queryset.exclude(author=r)
+            for nf in not_following_set.values_list('following'):
+                queryset = queryset.exclude(author=nf)
 
         return queryset
