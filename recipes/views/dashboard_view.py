@@ -30,20 +30,27 @@ class DashboardView(LoginRequiredMixin, ListView):
     template_name = 'dashboard.html'
     context_object_name = 'recipes'
 
+    DIET_FILTERS = (
+        ("vegan", "Vegan"),
+        ("veg", "Vegetarian"),
+        ("non_veg", "Non-Vegetarian"),
+    )
+
+
     def get_queryset(self):
-        # Start with recipes excluding current user's recipes and add rating annotations
         queryset = Recipe.objects.exclude(author=self.request.user).annotate(
             avg_rating=Avg('ratings__stars'),
             rating_count=Count('ratings')
         )
         
-        # Apply all filters
         queryset = self.filter_by_meal_types(queryset)
         queryset = self.filter_by_time(queryset)
         queryset = self.search_feature(queryset)
         queryset = self.following_only(queryset)
+        queryset = self.filter_by_diet(queryset)
 
         return queryset
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -51,23 +58,26 @@ class DashboardView(LoginRequiredMixin, ListView):
         selected_meal_types = self.get_selected_meal_types()
         selected_time_filter = self.request.GET.get("time_filter", "")
         search_term = self.request.GET.get("search", "")
+        selected_diet = self.get_selected_diet()
 
         context["meal_type_filters"] = self.MEAL_TYPE_FILTERS
         context["time_filters"] = self.TIME_FILTERS
+        context["diet_filters"] = self.DIET_FILTERS
+
         context["selected_meal_types"] = selected_meal_types
         context["selected_time_filter"] = selected_time_filter
         context["search_term"] = search_term
-
-        # Backwards-compat: keep old single-value key if you ever used it elsewhere
+        context["selected_diet"] = selected_diet
         context["selected_meal_type"] = selected_meal_types[0] if selected_meal_types else ""
 
         context["has_active_filters"] = bool(
-            selected_meal_types or selected_time_filter or search_term
+            selected_meal_types or selected_time_filter or search_term or selected_diet
         )
 
         context["selected_meal_type"] = self.request.GET.get("meal_type", "")
         context["following_page"] = self.request.path == reverse('following_dashboard')
         return context
+
 
     def get_selected_meal_types(self):
         """
@@ -94,12 +104,39 @@ class DashboardView(LoginRequiredMixin, ListView):
                 seen.add(meal_type)
 
         return unique_meal_types
+    
+    def get_selected_diet(self):
+        """
+        Read ?diet= from the query string and validate it.
+        """
+        diet = self.request.GET.get("diet", "").strip().lower()
+        valid_codes = {code for code, _ in self.DIET_FILTERS}
+        if diet in valid_codes:
+            return diet
+        return ""
+
 
     def filter_by_meal_types(self, queryset):
         meal_types = self.get_selected_meal_types()
         if meal_types:
             queryset = queryset.filter(meal_type__in=meal_types)
         return queryset
+        
+    def filter_by_diet(self, queryset):
+        """
+        Filter recipes by diet type using Recipe.get_diet_type(),
+        which inspects the ingredients text.
+        """
+        selected_diet = self.get_selected_diet()
+        if not selected_diet:
+            return queryset
+
+        filtered = []
+        for recipe in queryset:
+            if recipe.get_diet_type() == selected_diet:
+                filtered.append(recipe)
+        return filtered
+
 
     def get_time_window(self):
         """

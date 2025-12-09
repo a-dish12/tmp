@@ -18,6 +18,14 @@ class Recipe(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    MEAT_KEYWORDS = ["chicken", "mutton", "fish", "lamb", "pork", "beef", "egg", "eggs", "shrimp", "prawns", "bacon"]
+    DAIRY_KEYWORDS = ["milk", "cheese", "butter", "ghee", "yogurt", "cream"]
+    HONEY_KEYWORDS = ["honey"]
+
+    DIET_NON_VEG = "non_veg"
+    DIET_VEG = "veg"
+    DIET_VEGAN = "vegan"
+
     class Meta:
         ordering = ["time"]
 
@@ -56,3 +64,14 @@ class Recipe(models.Model):
             return self.ratings.get(user=user).stars
         except:
             return None
+        
+    def get_diet_type(self):
+        ingredients = self.ingredients.lower()
+
+        if any(w in ingredients for w in self.MEAT_KEYWORDS):
+            return self.DIET_NON_VEG
+
+        if any(w in ingredients for w in self.DAIRY_KEYWORDS + self.HONEY_KEYWORDS):
+            return self.DIET_VEG
+
+        return self.DIET_VEGAN
