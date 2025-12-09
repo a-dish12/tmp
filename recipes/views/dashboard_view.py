@@ -1,14 +1,16 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
-from recipes.models import Recipe
+from recipes.models import Recipe, Follow
+from django.urls import reverse
 from django.db.models import Avg, Count
 from django.db.models import Q
 
 
 class DashboardView(LoginRequiredMixin, ListView):
     model = Recipe
-    template_name = "dashboard.html"
-    context_object_name = "recipes"
+    using = Follow
+    template_name = 'dashboard.html'
+    context_object_name = 'recipes'
 
     MEAL_TYPE_FILTERS = (
         ("breakfast", "Breakfast"),
@@ -37,11 +39,14 @@ class DashboardView(LoginRequiredMixin, ListView):
         queryset = self.filter_by_meal_types(queryset)
         queryset = self.filter_by_time(queryset)
         queryset = self.search_feature(queryset)
-        
+        queryset = self.following_only(queryset)
+
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["selected_meal_type"] = self.request.GET.get("meal_type", "")
+        context["following_page"] = self.request.path == reverse('following_dashboard')
 
         selected_meal_types = self.get_selected_meal_types()
         selected_time_filter = self.request.GET.get("time_filter", "")
@@ -126,4 +131,16 @@ class DashboardView(LoginRequiredMixin, ListView):
         #If user typed something in the search bar
         if search_term:
             queryset = queryset.filter(title__icontains=search_term)
+
+        return queryset
+
+    def following_only(self, queryset):
+        following_page = self.request.path == reverse('following_dashboard')
+        recipe_set = Follow.objects.exclude(follower=self.request.user)
+
+        #Remove recipes from people you don't follow
+        if following_page:
+            for r in recipe_set.values_list('following'):
+                queryset = queryset.exclude(author=r)
+
         return queryset

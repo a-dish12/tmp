@@ -136,6 +136,17 @@
 
       <h2 class="list-title mt-3">Explore Recipes from Others</h2>
 
+            <!-- Following/ For You chooser-->
+      <nav class="nav nav-tabs justify-content-center">
+          {% if following_page %}
+            <a class="nav-link" href="{% url 'dashboard' %}">For You</a>
+            <a class="nav-link active" aria-current="page" href="{% url 'following_dashboard' %}">Following</a>
+          {% else %}
+            <a class="nav-link active" aria-current="page" href="{% url 'dashboard' %}">For You</a>
+            <a class="nav-link" href="{% url 'following_dashboard' %}">Following</a>
+          {% endif %}
+      </nav>
+
       {% if recipes %}
         <div class="list-group mb-4">
           {% for recipe in recipes %}
