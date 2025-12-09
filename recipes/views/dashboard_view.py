@@ -39,6 +39,13 @@ class DashboardView(LoginRequiredMixin, ListView):
     )
 
 
+    DIET_FILTERS = (
+        ("vegan", "Vegan"),
+        ("veg", "Vegetarian"),
+        ("non_veg", "Non-Vegetarian"),
+    )
+
+
     def get_queryset(self):
         queryset = Recipe.objects.exclude(author=self.request.user).annotate(
             avg_rating=Avg('ratings__stars'),
@@ -49,10 +56,13 @@ class DashboardView(LoginRequiredMixin, ListView):
         queryset = self.filter_by_time(queryset)
         queryset = self.search_feature(queryset)
         queryset = self.following_only(queryset)
+        queryset = self.filter_by_diet(queryset)
+
         queryset = self.following_only(queryset)
         queryset = self.filter_by_diet(queryset)
 
         return queryset
+
 
 
     def get_context_data(self, **kwargs):
@@ -62,18 +72,23 @@ class DashboardView(LoginRequiredMixin, ListView):
         selected_time_filter = self.request.GET.get("time_filter", "")
         search_term = self.request.GET.get("search", "")
         selected_diet = self.get_selected_diet()
+        selected_diet = self.get_selected_diet()
 
         context["meal_type_filters"] = self.MEAL_TYPE_FILTERS
         context["time_filters"] = self.TIME_FILTERS
+        context["diet_filters"] = self.DIET_FILTERS
+
         context["diet_filters"] = self.DIET_FILTERS
 
         context["selected_meal_types"] = selected_meal_types
         context["selected_time_filter"] = selected_time_filter
         context["search_term"] = search_term
         context["selected_diet"] = selected_diet
+        context["selected_diet"] = selected_diet
         context["selected_meal_type"] = selected_meal_types[0] if selected_meal_types else ""
 
         context["has_active_filters"] = bool(
+            selected_meal_types or selected_time_filter or search_term or selected_diet
             selected_meal_types or selected_time_filter or search_term or selected_diet
         )
 
@@ -84,6 +99,7 @@ class DashboardView(LoginRequiredMixin, ListView):
         else:
             context["add_on"] = '&'
         return context
+
 
 
     def get_selected_meal_types(self):
@@ -122,12 +138,39 @@ class DashboardView(LoginRequiredMixin, ListView):
             return diet
         return ""
 
+    
+    def get_selected_diet(self):
+        """
+        Read ?diet= from the query string and validate it.
+        """
+        diet = self.request.GET.get("diet", "").strip().lower()
+        valid_codes = {code for code, _ in self.DIET_FILTERS}
+        if diet in valid_codes:
+            return diet
+        return ""
+
 
     def filter_by_meal_types(self, queryset):
         meal_types = self.get_selected_meal_types()
         if meal_types:
             queryset = queryset.filter(meal_type__in=meal_types)
         return queryset
+        
+    def filter_by_diet(self, queryset):
+        """
+        Filter recipes by diet type using Recipe.get_diet_type(),
+        which inspects the ingredients text.
+        """
+        selected_diet = self.get_selected_diet()
+        if not selected_diet:
+            return queryset
+
+        filtered = []
+        for recipe in queryset:
+            if recipe.get_diet_type() == selected_diet:
+                filtered.append(recipe)
+        return filtered
+
         
     def filter_by_diet(self, queryset):
         """
