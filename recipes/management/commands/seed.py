@@ -12,7 +12,7 @@ from faker import Faker
 from faker_food import FoodProvider
 import random
 from django.core.management.base import BaseCommand, CommandError
-from recipes.models import User, Recipe
+from recipes.models import User, Recipe, Follow
 from recipes.management import Recipe_Fixtures
 
 
@@ -24,6 +24,14 @@ user_fixtures = [
 
 recipe_fixtures = Recipe_Fixtures.get_recipe_fixtures()
 
+follow_fixtures = [
+    {'follower': User.objects.get(id=1), 'following': User.objects.get(id=2)},
+    {'follower': User.objects.get(id=1), 'following': User.objects.get(id=3)},
+    {'follower': User.objects.get(id=2), 'following': User.objects.get(id=3)},
+    {'follower': User.objects.get(id=3), 'following': User.objects.get(id=1)},
+    {'follower': User.objects.get(id=3), 'following': User.objects.get(id=2)}
+]
+
 class Command(BaseCommand):
     """
     Build automation command to seed the database with data.
@@ -32,16 +40,26 @@ class Command(BaseCommand):
     repeatedly generates additional random users until ``USER_COUNT`` total users
     exist in the database. Each generated user receives the same default password.
 
+    It then inserts a larger set of known recipes (``recipe_fixtures``) and then
+    repeatedly generates additional random recipes until ``RECIPE_COUNT`` total recipes
+    exist in the database.
+    The command also inserts a small set of known follow relations (``follow_fixtures``) and then
+    repeatedly generates additional random follows until ``FOLLOW_COUNT`` total follow relations
+    exist in the database.
+
     Attributes:
         USER_COUNT (int): Target total number of users in the database.
         RECIPE_COUNT (int): Target total number of recipes in the database.
+        FOLLOW_COUNT (int): Target total number of follow relations in the database.
         DEFAULT_PASSWORD (str): Default password assigned to all created users.
         help (str): Short description shown in ``manage.py help``.
         faker (Faker): Locale-specific Faker instance used for random data.
     """
-
+    
     USER_COUNT = 200
     RECIPE_COUNT = 150
+    FOLLOW_COUNT = 350
+
     DEFAULT_PASSWORD = 'Password123'
     help = 'Seeds the database with sample data'
 
@@ -55,13 +73,16 @@ class Command(BaseCommand):
         """
         Django entrypoint for the command.
 
-        Runs the full seeding workflow and stores ``self.users`` and ``self.recipes`` for any
-        post-processing or debugging (not required for operation).
+        Runs the full seeding workflow and stores ``self.users``, ``self.recipes`` and ``self.follows``
+        for any post-processing or debugging (not required for operation).
         """
         self.create_users()
-        self.create_recipes()
         self.users = User.objects.all()
+        self.create_recipes()
         self.recipes = Recipe.objects.all()
+
+        self.create_follows()
+        self.follows = Follow.objects.all()
 
 
     #USERS
@@ -202,12 +223,76 @@ class Command(BaseCommand):
                 ``ingredients``, ``time``, and ``meal_type``.
         """
         Recipe.objects.create(
-            author=random.choice(User.objects.all()),
+            author=random.choice(self.users),
             title=data['title'],
             description=data['description'],
             ingredients=data['ingredients'],
             time=data['time'],
             meal_type=data['meal_type'],
+        )
+
+
+    #FOLLOW
+
+    def create_follows(self):
+        """
+        Create fixture follow relationships and then generate random follows up to FOLLOW_COUNT.
+
+        The process is idempotent in spirit: attempts that fail (e.g., due to
+        uniqueness constraints on the follow relation) are ignored and generation continues.
+        """
+        self.generate_follow_fixtures()
+        self.generate_random_follows()
+
+    def generate_follow_fixtures(self):
+        """Attempt to create each predefined fixture follow."""
+        for data in follow_fixtures:
+            self.try_create_follow(data)
+
+    def generate_random_follows(self):
+        """
+        Generate random follows until the database contains FOLLOW_COUNT follow relations.
+
+        Prints a simple progress indicator to stdout during generation.
+        """
+        follow_count = Follow.objects.count()
+        while follow_count < self.FOLLOW_COUNT:
+            print(f"Seeding follow {follow_count}/{self.FOLLOW_COUNT}", end='\r')
+            self.generate_follow()
+            follow_count = Follow.objects.count()
+        print("Follow seeding complete.      ")
+
+    def generate_follow(self):
+        """
+        Generate a single random follow relation and attempt to insert it.
+        """
+        this_user = random.choice(self.users)
+        follower = this_user
+        following = random.choice(self.users.exclude(id=this_user.id))
+        self.try_create_follow({'follower': follower, 'following': following})
+
+    def try_create_follow(self, data):
+        """
+        Attempt to create a follow and ignore any errors.
+
+        Args:
+            data (dict): Mapping with keys ``follower`` and ``following``
+        """
+        try:
+            self.create_follow(data)
+        except:
+            pass
+
+    def create_follow(self, data):
+        """
+        Creates follow relation if it doesn't already exist.
+
+        Args:
+            data (dict): Mapping with keys ``follower`` and ``following``
+        """
+        Follow.objects.get_or_create(
+            follower=data['follower'],
+            following=data['following']
         )
 
 def create_username(first_name, last_name):
