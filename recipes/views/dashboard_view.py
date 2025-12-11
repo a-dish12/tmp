@@ -67,6 +67,8 @@ class DashboardView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["selected_meal_type"] = self.request.GET.get("meal_type", "")
+        context["following_page"] = self.request.path == reverse('following_dashboard')
 
         selected_meal_types = self.get_selected_meal_types()
         selected_time_filter = self.request.GET.get("time_filter", "")
@@ -220,6 +222,18 @@ class DashboardView(LoginRequiredMixin, ListView):
         #If user typed something in the search bar
         if search_term:
             queryset = queryset.filter(title__icontains=search_term)
+
+        return queryset
+
+    def following_only(self, queryset):
+        following_page = self.request.path == reverse('following_dashboard')
+        recipe_set = Follow.objects.exclude(follower=self.request.user)
+
+        #Remove recipes from people you don't follow
+        if following_page:
+            for r in recipe_set.values_list('following'):
+                queryset = queryset.exclude(author=r)
+
         return queryset
 
     def following_only(self, queryset):
