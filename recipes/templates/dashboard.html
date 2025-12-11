@@ -76,6 +76,40 @@
           {% endfor %}
         </div>
 
+        <div class="mb-3">
+          <span class="form-label fw-bold d-block">Diet type</span>
+
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="diet"
+              id="diet_any"
+              value=""
+              {% if not selected_diet %}checked{% endif %}
+            >
+            <label class="form-check-label" for="diet_any">
+              Any diet
+            </label>
+          </div>
+
+          {% for code, label in diet_filters %}
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="diet"
+                id="diet_{{ code }}"
+                value="{{ code }}"
+                {% if selected_diet == code %}checked{% endif %}
+              >
+              <label class="form-check-label" for="diet_{{ code }}">
+                {{ label }}
+              </label>
+            </div>
+          {% endfor %}
+        </div>
+
         <button type="submit" class="btn btn-primary w-100 mt-2">
           Apply filters
         </button>
@@ -102,8 +136,46 @@
         <a href="{% url 'user_recipes' %}" class="btn btn-secondary btn-lg">
           My Recipes
         </a>
+       <div class="mt-4 d-flex align-items-center gap-3 flex-wrap">
+          <a href="{% url 'create_recipe' %}" class="btn btn-primary btn-lg me-3">
+            Create New Recipe
+          </a>
+        <a href="{% url 'create_recipe' %}" class="btn btn-primary btn-lg">
+          Create New Recipe
+        </a>
+        <a href="{% url 'user_recipes' %}" class="btn btn-secondary btn-lg">
+          My Recipes
+        </a>
       </div>
 
+      <h2 class="list-title mt-5">Explore Recipes from Others</h2>
+
+      <!-- Meal Type Filter-->
+      <form method="GET" class="mb-4">
+        <label for="meal_type">Filter by meal type:</label>
+        <select name="meal_type" id="meal_type" class="form-select" onchange="this.form.submit()">
+          <option value="">All</option>
+          <option value="breakfast" {% if selected_meal_type == "breakfast" %}selected{% endif %}>Breakfast</option>
+          <option value="lunch" {% if selected_meal_type == "lunch" %}selected{% endif %}>Lunch</option>
+          <option value="dinner" {% if selected_meal_type == "dinner" %}selected{% endif %}>Dinner</option>
+          <option value="snack" {% if selected_meal_type == "snack" %}selected{% endif %}>Snack</option>
+          <option value="dessert" {% if selected_meal_type == "dessert" %}selected{% endif %}>Dessert</option>
+        </select>
+      </form>
+
+      <!-- Following/ For You chooser-->
+      <nav class="nav nav-tabs justify-content-center">
+        <!--Figure out the if, with, and how to apply request.path (google it)-->
+          {% if following_page %}
+            <a class="nav-link" href="{% url 'dashboard' %}">For You</a>
+            <a class="nav-link active" aria-current="page" href="{% url 'following_dashboard' %}">Following</a>
+          {% else %}
+            <a class="nav-link active" aria-current="page" href="{% url 'dashboard' %}">For You</a>
+            <a class="nav-link" href="{% url 'following_dashboard' %}">Following</a>
+          {% endif %}
+      </nav>
+
+      <!-- Display recipes-->
       <!-- Active filters summary -->
       {% if has_active_filters %}
         <p class="low-key mt-4 mb-2">
@@ -136,7 +208,8 @@
 
       <h2 class="list-title mt-3">Explore Recipes from Others</h2>
 
-            <!-- Following/ For You chooser-->
+      
+      <!-- Following/ For You chooser-->
       <nav class="nav nav-tabs justify-content-center">
           {% if following_page %}
             <a class="nav-link" href="{% url 'dashboard' %}">For You</a>
@@ -147,6 +220,18 @@
           {% endif %}
       </nav>
 
+      <!-- Following/ For You chooser-->
+      <nav class="nav nav-tabs justify-content-center">
+          {% if following_page %}
+            <a class="nav-link" href="{% url 'dashboard' %}">For You</a>
+            <a class="nav-link active" aria-current="page" href="{% url 'following_dashboard' %}">Following</a>
+          {% else %}
+            <a class="nav-link active" aria-current="page" href="{% url 'dashboard' %}">For You</a>
+            <a class="nav-link" href="{% url 'following_dashboard' %}">Following</a>
+          {% endif %}
+      </nav>
+
+      <!-- Display recipes-->
       {% if recipes %}
         <div class="list-group mb-4">
           {% for recipe in recipes %}
@@ -198,3 +283,15 @@
   </div>
 </div>
 {% endblock %}
+
+
+      <!-- Following/ For You chooser-->
+      <nav class="nav nav-tabs justify-content-center">
+          {% if following_page %}
+            <a class="nav-link" href="{% url 'dashboard' %}">For You</a>
+            <a class="nav-link active" aria-current="page" href="{% url 'following_dashboard' %}">Following</a>
+          {% else %}
+            <a class="nav-link active" aria-current="page" href="{% url 'dashboard' %}">For You</a>
+            <a class="nav-link" href="{% url 'following_dashboard' %}">Following</a>
+          {% endif %}
+      </nav>
