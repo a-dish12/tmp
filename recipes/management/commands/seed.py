@@ -12,7 +12,7 @@ from faker import Faker
 from faker_food import FoodProvider
 import random
 from django.core.management.base import BaseCommand, CommandError
-from recipes.models import User, Recipe, Follow
+from recipes.models import User, Recipe, Follow, Rating
 from recipes.management import Recipe_Fixtures
 
 
@@ -51,6 +51,7 @@ class Command(BaseCommand):
         USER_COUNT (int): Target total number of users in the database.
         RECIPE_COUNT (int): Target total number of recipes in the database.
         FOLLOW_COUNT (int): Target total number of follow relations in the database.
+        RATING_COUNT (int): Target total number of ratings in the database.
         DEFAULT_PASSWORD (str): Default password assigned to all created users.
         help (str): Short description shown in ``manage.py help``.
         faker (Faker): Locale-specific Faker instance used for random data.
@@ -59,6 +60,7 @@ class Command(BaseCommand):
     USER_COUNT = 200
     RECIPE_COUNT = 150
     FOLLOW_COUNT = 350
+    RATING_COUNT = 1000
 
     DEFAULT_PASSWORD = 'Password123'
     help = 'Seeds the database with sample data'
@@ -83,6 +85,7 @@ class Command(BaseCommand):
 
         self.create_follows()
         self.follows = Follow.objects.all()
+        self.generate_random_ratings()
 
 
     #USERS
@@ -294,6 +297,57 @@ class Command(BaseCommand):
             follower=data['follower'],
             following=data['following']
         )
+
+
+    #RATING
+
+    def generate_random_ratings(self):
+        """
+        Generate random ratings until the database contains RATING_COUNT ratings.
+
+        Prints a simple progress indicator to stdout during generation.
+        """
+        rating_count = Rating.objects.count()
+        while rating_count < self.RATING_COUNT:
+            print(f"Seeding rating {rating_count}/{self.RATING_COUNT}", end='\r')
+            self.generate_rating()
+            rating_count = Rating.objects.count()
+        print("Rating seeding complete.      ")
+
+    def generate_rating(self):
+        """
+        Generate a single random rating and attempt to insert it.
+        """
+        recipe = random.choice(self.recipes)
+        user = random.choice(self.users)
+        stars = random.choice([1, 2, 3, 4, 5])
+        self.try_create_rating({'recipe': recipe, 'user': user, 'stars': stars})
+
+    def try_create_rating(self, data):
+        """
+        Attempt to create a rating and ignore any errors.
+
+        Args:
+            data (dict): Mapping with keys ``recipe``, ``user`` and ``stars``
+        """
+        try:
+            self.create_rating(data)
+        except:
+            pass
+
+    def create_rating(self, data):
+        """
+        Creates rating if it doesn't already exist.
+
+        Args:
+            data (dict): Mapping with keys ``recipe``, ``user`` and ``stars``
+        """
+        Rating.objects.create(
+            recipe=data['recipe'],
+            user=data['user'],
+            stars=data['stars']
+        )
+
 
 def create_username(first_name, last_name):
         """
