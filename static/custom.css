@@ -6,7 +6,12 @@
   border-radius: 0px;
 }
 
-
+body {
+  overflow-y: visible !important;
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  width: 100% !important;
+}
 /*
  * Cover page
  */
@@ -159,3 +164,7 @@ h3.profile-title {
   position: sticky;
   top: 80px; /* keep under navbar */
 }
+
+
+
+

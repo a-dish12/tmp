@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
+    path('dashboard/following/', views.DashboardView.as_view(), name='following_dashboard'),
     path('log_in/', views.LogInView.as_view(), name='log_in'),
     path('log_out/', views.log_out, name='log_out'),
     path('password/', views.PasswordView.as_view(), name='password'),
@@ -26,7 +27,7 @@ urlpatterns = [
     path('friend-request/<int:request_id>/accept/', views.accept_friend_request, name='accept_friend_request'),
     path('friend-request/<int:request_id>/reject/', views.reject_friend_request, name='reject_friend_request'),
     path("user/<int:user_id>/unfriend/", views.unfriend_user, name="unfriend_user"),
-    path("dashboard/surprise/", views.surprise_recipe_view, name="dashboard-surprise")
+    path('dashboard/following', views.DashboardView.as_view(), name='following_dashboard'),
 
 ]
 

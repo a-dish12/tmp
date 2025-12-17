@@ -6,7 +6,11 @@
       <!-- Recipe Info -->
       <h1>{{ recipe.title }}</h1>
       <p class="text-muted">
-        By {{ recipe.author.full_name }} ({{ recipe.author.username }}) | 
+        By {{ recipe.author.full_name }} (
+        <a href="{% url 'user_profile' user_id=recipe.author.id %}">
+          {{ recipe.author.username }}
+        </a>
+        )
         <!-- {{ recipe.created_at|date:"F d, Y" }} -->
       </p>
       

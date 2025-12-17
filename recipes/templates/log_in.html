@@ -1,16 +1,82 @@
-{% extends 'base_content.html' %}
-{% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-sm-12 col-md-6 offset-md-3">
-      <h1>Log in</h1>
-      <form action="{% url 'log_in' %}" method="post">
-        {% csrf_token %}
-        <input type="hidden" name="next" value="{{ next }}">
-        {% include 'partials/bootstrap_form.html' with form=form %}
-        <input type="submit" value="Log in" class="btn btn-primary">
-      </form>
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'login.css' %}">
+{% endblock %}
+
+{% block body %}
+<div class="login-page">
+
+  <div class="login-container">
+
+    <!-- Left side: form area -->
+    <div class="login-form-section">
+      <div class="login-particles">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+
+        <div class="login-content glide-in-left">
+
+          <h1>Welcome back, Chef!</h1>
+
+          <p class="login-subtext">
+            Ready to cook up something delicious?
+          </p>
+
+          <form action="{% url 'log_in' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+
+            <div class="login-form">
+
+              <div class="input-group-custom">
+                <span class="input-icon">
+                  <i class="bi bi-envelope"></i>
+                </span>
+                {% render_field form.username class="login-input" placeholder="Username" %}
+              </div>
+
+              <div class="input-group-custom">
+                <span class="input-icon">
+                  <i class="bi bi-lock"></i>
+                </span>
+                {% render_field form.password class="login-input" placeholder="Password" %}
+              </div>
+
+              <button type="submit" class="login-btn">
+                Sign In
+              </button>
+
+            </div>
+          </form>
+
+          <p class="signup-text">
+            Don’t have an account?
+            <a href="{% url 'sign_up' %}">Sign up</a>
+          </p>
+
+        </div>
+
+      </div>
+
+    <!-- Right side: visual area (empty for now) -->
+    <div class="login-visual-section">
+
+      <div class="login-visual-content fade-up">
+        <h2>Your Kitchen Awaits</h2>
+        <p>
+          Thousands of recipes are waiting for you.
+          Log in to explore, cook, and share!
+        </p>
+      </div>
+
     </div>
+
   </div>
+
 </div>
 {% endblock %}
