@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from recipes.models import User
+from recipes.models import User, Recipe, Follow, Rating
 
 class Command(BaseCommand):
     """
@@ -13,7 +13,7 @@ class Command(BaseCommand):
         help (str): Short description displayed when running
             `python manage.py help unseed`.
     """
-    
+
     help = 'Seeds the database with sample data'
 
     def handle(self, *args, **options):
@@ -22,6 +22,7 @@ class Command(BaseCommand):
 
         Deletes all `User` records where `is_staff` is False, preserving
         administrative accounts. Prints a confirmation message upon completion.
+        Also deletes all `Recipe`, 'Follow' and 'Rating' records.
 
         Args:
             *args: Positional arguments passed by Django (not used here).
@@ -32,3 +33,10 @@ class Command(BaseCommand):
         """
 
         User.objects.filter(is_staff=False).delete()
+        print('Users deleted.')
+        Recipe.objects.all().delete()
+        print('Recipes deleted.')
+        Follow.objects.all().delete()
+        print('Follows deleted.')
+        Rating.objects.all().delete()
+        print('Ratings deleted.')

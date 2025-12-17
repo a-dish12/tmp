@@ -36,7 +36,7 @@ class Command(BaseCommand):
     repeatedly generates additional random recipes until ``RECIPE_COUNT`` total recipes
     exist in the database.
     The command also inserts a small set of known follow relations (``follow_fixtures``,
-    defined in the generate_follow_fixtures method) and then repeatedly generates additional 
+    defined in the generate_follow_fixtures method) and then repeatedly generates additional
     random follows until ``FOLLOW_COUNT`` total follow relations exist in the database.
 
     Attributes:
@@ -242,11 +242,11 @@ class Command(BaseCommand):
     def generate_follow_fixtures(self):
         """Attempt to create each predefined fixture follow."""
         follow_fixtures = [
-            {'follower': User.objects.get(id=1), 'following': User.objects.get(id=2)},
-            {'follower': User.objects.get(id=1), 'following': User.objects.get(id=3)},
-            {'follower': User.objects.get(id=2), 'following': User.objects.get(id=3)},
-            {'follower': User.objects.get(id=3), 'following': User.objects.get(id=1)},
-            {'follower': User.objects.get(id=3), 'following': User.objects.get(id=2)}
+            {'follower': User.objects.get(username='@johndoe'), 'following': User.objects.get(username='@janedoe')},
+            {'follower': User.objects.get(username='@johndoe'), 'following': User.objects.get(username='@charlie')},
+            {'follower': User.objects.get(username='@janedoe'), 'following': User.objects.get(username='@charlie')},
+            {'follower': User.objects.get(username='@charlie'), 'following': User.objects.get(username='@johndoe')},
+            {'follower': User.objects.get(username='@charlie'), 'following': User.objects.get(username='@janedoe')}
         ]
 
         for data in follow_fixtures:
