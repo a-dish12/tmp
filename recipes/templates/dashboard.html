@@ -1,9 +1,10 @@
 {% extends 'base_content.html' %}
+
 {% block content %}
 <div class="container">
   <div class="row">
 
-    <!-- Sidebar Filters -->
+    <!-- ================= Sidebar Filters ================= -->
     <div class="col-md-3 mb-4">
       <form method="get" class="filters-card p-3 border rounded bg-light dashboard-filters">
         <h5 class="mb-3">Filter recipes</h5>
@@ -21,7 +22,7 @@
           >
         </div>
 
-        <!-- Meal Type Filters -->
+        <!-- Meal Type -->
         <div class="mb-3">
           <span class="form-label fw-bold d-block">Meal type</span>
           {% for value, label in meal_type_filters %}
@@ -41,7 +42,7 @@
           {% endfor %}
         </div>
 
-        <!-- Time Filters -->
+        <!-- Time -->
         <div class="mb-3">
           <span class="form-label fw-bold d-block">Prep time</span>
 
@@ -76,6 +77,7 @@
           {% endfor %}
         </div>
 
+        <!-- Diet -->
         <div class="mb-3">
           <span class="form-label fw-bold d-block">Diet type</span>
 
@@ -122,12 +124,13 @@
       </form>
     </div>
 
-    <!-- Main Content -->
+    <!-- ================= Main Content ================= -->
     <div class="col-md-9">
       <h1>Welcome to your dashboard {{ user.username }}</h1>
 
+      <!-- Action buttons -->
       <div class="mt-4 d-flex align-items-center gap-3 flex-wrap">
-        <a href="{% url 'user_profile' user.id %}" class="btn btn-primary btn-lg me-3">
+        <a href="{% url 'user_profile' user.id %}" class="btn btn-primary btn-lg">
           My profile
         </a>
         <a href="{% url 'create_recipe' %}" class="btn btn-primary btn-lg">
@@ -136,22 +139,13 @@
         <a href="{% url 'user_recipes' %}" class="btn btn-secondary btn-lg">
           My Recipes
         </a>
-       <div class="mt-4 d-flex align-items-center gap-3 flex-wrap">
-          <a href="{% url 'create_recipe' %}" class="btn btn-primary btn-lg me-3">
-            Create New Recipe
-          </a>
-        <a href="{% url 'create_recipe' %}" class="btn btn-primary btn-lg">
-          Create New Recipe
-        </a>
-        <a href="{% url 'user_recipes' %}" class="btn btn-secondary btn-lg">
-          My Recipes
-        </a>
       </div>
 
+      <!-- Explore header -->
       <h2 class="list-title mt-5">Explore Recipes from Others</h2>
 
-      <!-- Meal Type Filter-->
-      <form method="GET" class="mb-4">
+      <!-- Dropdown meal filter -->
+      <form method="get" class="mb-3">
         <label for="meal_type">Filter by meal type:</label>
         <select name="meal_type" id="meal_type" class="form-select" onchange="this.form.submit()">
           <option value="">All</option>
@@ -163,135 +157,69 @@
         </select>
       </form>
 
-      <!-- Following/ For You chooser-->
-      <nav class="nav nav-tabs justify-content-center">
-        <!--Figure out the if, with, and how to apply request.path (google it)-->
-          {% if following_page %}
-            <a class="nav-link" href="{% url 'dashboard' %}">For You</a>
-            <a class="nav-link active" aria-current="page" href="{% url 'following_dashboard' %}">Following</a>
-          {% else %}
-            <a class="nav-link active" aria-current="page" href="{% url 'dashboard' %}">For You</a>
-            <a class="nav-link" href="{% url 'following_dashboard' %}">Following</a>
-          {% endif %}
+      <!-- For You / Following -->
+      <nav class="nav nav-tabs justify-content-center mb-4">
+        {% if following_page %}
+          <a class="nav-link" href="{% url 'dashboard' %}">For You</a>
+          <a class="nav-link active" aria-current="page" href="{% url 'following_dashboard' %}">Following</a>
+        {% else %}
+          <a class="nav-link active" aria-current="page" href="{% url 'dashboard' %}">For You</a>
+          <a class="nav-link" href="{% url 'following_dashboard' %}">Following</a>
+        {% endif %}
       </nav>
 
-      <!-- Display recipes-->
       <!-- Active filters summary -->
       {% if has_active_filters %}
-        <p class="low-key mt-4 mb-2">
+        <p class="low-key mb-3">
           Showing recipes for:
           {% if search_term %}
-            <span class="badge bg-secondary me-1">
-              "{{ search_term }}"
-            </span>
+            <span class="badge bg-secondary me-1">"{{ search_term }}"</span>
           {% endif %}
-
           {% for value, label in meal_type_filters %}
             {% if value in selected_meal_types %}
-              <span class="badge bg-secondary me-1">
-                {{ label }}
-              </span>
+              <span class="badge bg-secondary me-1">{{ label }}</span>
             {% endif %}
           {% endfor %}
-
-          {% if selected_time_filter %}
-            {% for tf in time_filters %}
-              {% if tf.key == selected_time_filter %}
-                <span class="badge bg-secondary me-1">
-                  {{ tf.label }}
-                </span>
-              {% endif %}
-            {% endfor %}
-          {% endif %}
         </p>
       {% endif %}
 
-      <h2 class="list-title mt-3">Explore Recipes from Others</h2>
-
-      
-      <!-- Following/ For You chooser-->
-      <nav class="nav nav-tabs justify-content-center">
-          {% if following_page %}
-            <a class="nav-link" href="{% url 'dashboard' %}">For You</a>
-            <a class="nav-link active" aria-current="page" href="{% url 'following_dashboard' %}">Following</a>
-          {% else %}
-            <a class="nav-link active" aria-current="page" href="{% url 'dashboard' %}">For You</a>
-            <a class="nav-link" href="{% url 'following_dashboard' %}">Following</a>
-          {% endif %}
-      </nav>
-
-      <!-- Following/ For You chooser-->
-      <nav class="nav nav-tabs justify-content-center">
-          {% if following_page %}
-            <a class="nav-link" href="{% url 'dashboard' %}">For You</a>
-            <a class="nav-link active" aria-current="page" href="{% url 'following_dashboard' %}">Following</a>
-          {% else %}
-            <a class="nav-link active" aria-current="page" href="{% url 'dashboard' %}">For You</a>
-            <a class="nav-link" href="{% url 'following_dashboard' %}">Following</a>
-          {% endif %}
-      </nav>
-
-      <!-- Display recipes-->
+      <!-- Recipes -->
       {% if recipes %}
         <div class="list-group mb-4">
           {% for recipe in recipes %}
-            <a href="{% url 'recipe_detail' pk=recipe.pk %}" class="list-group-item list-group-item-action text-decoration-none">
-              <div class="d-flex w-100 justify-content-between align-items-start">
+            <a href="{% url 'recipe_detail' recipe.pk %}"
+               class="list-group-item list-group-item-action text-decoration-none">
+              <div class="d-flex justify-content-between align-items-start">
                 <div>
-                  <h5 class="mb-1">{{ recipe.title }}</h5>
+                  <h5>{{ recipe.title }}</h5>
                   <p class="low-key mb-1">{{ recipe.description|truncatewords:20 }}</p>
                   <small class="text-muted">
-                    By {{ recipe.author.username }} | 
-                    Prep time: {{ recipe.time }} minutes | 
+                    By {{ recipe.author.username }} |
+                    Prep time: {{ recipe.time }} minutes |
                     Meal type: {{ recipe.meal_type|capfirst }}
                   </small>
                 </div>
-                
-                <!-- Rating Display -->
+
                 <div class="text-end">
-                  <div class="rating-stars">
-                    {% with avg=recipe.average_rating %}
-                      {% for i in "12345" %}
-                        <span class="{% if forloop.counter <= avg %}text-warning{% else %}text-muted{% endif %}">★</span>
-                      {% endfor %}
-                    {% endwith %}
-                  </div>
-                  <small class="text-muted d-block">
+                  {% with avg=recipe.average_rating %}
+                    {% for _ in "12345" %}
+                      <span class="{% if forloop.counter <= avg %}text-warning{% else %}text-muted{% endif %}">★</span>
+                    {% endfor %}
+                  {% endwith %}
+                  <div class="text-muted">
                     {{ recipe.average_rating|floatformat:1 }} ({{ recipe.rating_count }})
-                  </small>
+                  </div>
                 </div>
               </div>
             </a>
           {% endfor %}
         </div>
       {% else %}
-        {% if selected_meal_types and not selected_time_filter and not search_term %}
-          <p class="low-key">
-            No recipes of the requested meal type are available from other users yet.
-          </p>
-        {% elif has_active_filters %}
-          <p class="low-key">
-            No recipes match your selected filters yet. Try removing some filters or changing your search.
-          </p>
-        {% else %}
-          <p class="low-key">
-            No recipes available from other users yet.
-          </p>
-        {% endif %}
+        <p class="low-key">
+          No recipes available from other users yet.
+        </p>
       {% endif %}
     </div>
   </div>
 </div>
 {% endblock %}
-
-
-      <!-- Following/ For You chooser-->
-      <nav class="nav nav-tabs justify-content-center">
-          {% if following_page %}
-            <a class="nav-link" href="{% url 'dashboard' %}">For You</a>
-            <a class="nav-link active" aria-current="page" href="{% url 'following_dashboard' %}">Following</a>
-          {% else %}
-            <a class="nav-link active" aria-current="page" href="{% url 'dashboard' %}">For You</a>
-            <a class="nav-link" href="{% url 'following_dashboard' %}">Following</a>
-          {% endif %}
-      </nav>

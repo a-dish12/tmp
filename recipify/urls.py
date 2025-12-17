@@ -27,7 +27,7 @@ urlpatterns = [
     path('user/<int:user_id>/friend-request/', views.send_friend_request, name='send_friend_request'),
     path('friend-request/<int:request_id>/accept/', views.accept_friend_request, name='accept_friend_request'),
     path('friend-request/<int:request_id>/reject/', views.reject_friend_request, name='reject_friend_request'),
-    path("user/<int:user_id>/unfriend/", views.unfriend_user, name="unfriend_user")
+    path("user/<int:user_id>/unfriend/", views.unfriend_user, name="unfriend_user"),
     path('dashboard/following', views.DashboardView.as_view(), name='following_dashboard'),
 
 ]
