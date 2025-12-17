@@ -24,14 +24,6 @@ user_fixtures = [
 
 recipe_fixtures = Recipe_Fixtures.get_recipe_fixtures()
 
-follow_fixtures = [
-    {'follower': User.objects.get(id=1), 'following': User.objects.get(id=2)},
-    {'follower': User.objects.get(id=1), 'following': User.objects.get(id=3)},
-    {'follower': User.objects.get(id=2), 'following': User.objects.get(id=3)},
-    {'follower': User.objects.get(id=3), 'following': User.objects.get(id=1)},
-    {'follower': User.objects.get(id=3), 'following': User.objects.get(id=2)}
-]
-
 class Command(BaseCommand):
     """
     Build automation command to seed the database with data.
@@ -43,9 +35,9 @@ class Command(BaseCommand):
     It then inserts a larger set of known recipes (``recipe_fixtures``) and then
     repeatedly generates additional random recipes until ``RECIPE_COUNT`` total recipes
     exist in the database.
-    The command also inserts a small set of known follow relations (``follow_fixtures``) and then
-    repeatedly generates additional random follows until ``FOLLOW_COUNT`` total follow relations
-    exist in the database.
+    The command also inserts a small set of known follow relations (``follow_fixtures``,
+    defined in the generate_follow_fixtures method) and then repeatedly generates additional 
+    random follows until ``FOLLOW_COUNT`` total follow relations exist in the database.
 
     Attributes:
         USER_COUNT (int): Target total number of users in the database.
@@ -56,7 +48,7 @@ class Command(BaseCommand):
         help (str): Short description shown in ``manage.py help``.
         faker (Faker): Locale-specific Faker instance used for random data.
     """
-    
+
     USER_COUNT = 200
     RECIPE_COUNT = 150
     FOLLOW_COUNT = 350
@@ -249,6 +241,14 @@ class Command(BaseCommand):
 
     def generate_follow_fixtures(self):
         """Attempt to create each predefined fixture follow."""
+        follow_fixtures = [
+            {'follower': User.objects.get(id=1), 'following': User.objects.get(id=2)},
+            {'follower': User.objects.get(id=1), 'following': User.objects.get(id=3)},
+            {'follower': User.objects.get(id=2), 'following': User.objects.get(id=3)},
+            {'follower': User.objects.get(id=3), 'following': User.objects.get(id=1)},
+            {'follower': User.objects.get(id=3), 'following': User.objects.get(id=2)}
+        ]
+
         for data in follow_fixtures:
             self.try_create_follow(data)
 
