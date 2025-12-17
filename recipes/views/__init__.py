@@ -11,3 +11,4 @@ from .follow_view import *
 from .user_profile_view import *
 from .recipe_view import RecipeDetailView,RateRecipeView
 from .friendRequest_view import *
+from .surprise_recipe_view import surprise_recipe_view

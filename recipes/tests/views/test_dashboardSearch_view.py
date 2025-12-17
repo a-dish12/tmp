@@ -38,7 +38,7 @@ class DashboardViewTests(TestCase):
         self.salad = Recipe.objects.create(
             title="Chicken Salad",
             description="Very healthy",
-            ingredients="something more",
+            ingredients="vegetables",
             time=5,
             meal_type="breakfast",
             author=self.other_user
@@ -54,12 +54,21 @@ class DashboardViewTests(TestCase):
         self.burrito = Recipe.objects.create(
             title="Burritos",
             description="Can be healthy as long as not eaten too much",
-            ingredients="Something new",
+            ingredients="Something new, chicken, ",
             time=50,
             meal_type="Snack",
             author=self.other_user
         )
-    
+        self.meatpie = Recipe.objects.create(
+            title="Meat Pie",
+            description="Straight from Nigeria extremely lovely",
+            ingredients="Beef,lamb, onions, garlic, carrots, peas, thyme, curry powder, salt, pepper",
+            time=60,
+            meal_type="Snack",
+            author=self.other_user
+        )
+
+
 
 #for exact searches
     def test_dashboard_search_exact(self):
@@ -100,8 +109,8 @@ class DashboardViewTests(TestCase):
 
 
     #no search provided
-    def test_dashboard_search_partial(self):
-        """Search should match titles even when full name isn't typed"""
+    def test_dashboard_search_empty(self):
+        """Search should match all titles as nothing is typed"""
         response = self.client.get(
             reverse('dashboard')
         )
@@ -116,7 +125,7 @@ class DashboardViewTests(TestCase):
 
     #Search with no matches
     def test_dashboard_search_partial(self):
-        """Search should match titles even when full name isn't typed"""
+        """Search should match no titles as title doesn't exist"""
         response = self.client.get(
             reverse('dashboard'),
             {'search': 'xyz'}

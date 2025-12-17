@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from recipes.models import Recipe
+from django.db.models import Q
 
 
 class DashboardView(LoginRequiredMixin, ListView):
@@ -109,9 +110,20 @@ class DashboardView(LoginRequiredMixin, ListView):
     def filter_by_time(self, queryset):
         min_time, max_time = self.get_time_window()
         return queryset.filter(time__range=[min_time, max_time])
+    
 
     def search_feature(self, queryset):
-        search_term = self.request.GET.get("search")
+        #exclude the current user
+        queryset = Recipe.objects.exclude(author = self.request.user)
+        # Get the search term from the input URL
+        search_term = self.request.GET.get('search')
+
+        #If user typed something in the search bar
         if search_term:
-            queryset = queryset.filter(title__icontains=search_term)
+            queryset = queryset.filter(
+                Q(description__icontains=search_term) |
+                Q(ingredients__icontains=search_term) |
+                Q(title__icontains=search_term) |
+                Q(meal_type__icontains=search_term))
+
         return queryset
