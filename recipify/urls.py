@@ -8,7 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
-    path('dashboard/following', views.DashboardView.as_view(), name='following_dashboard'),
+    path('dashboard/following/', views.DashboardView.as_view(), name='following_dashboard'),
     path('log_in/', views.LogInView.as_view(), name='log_in'),
     path('log_out/', views.log_out, name='log_out'),
     path('password/', views.PasswordView.as_view(), name='password'),
