@@ -139,6 +139,8 @@
         <a href="{% url 'user_recipes' %}" class="btn btn-secondary btn-lg">
           My Recipes
         </a>
+        <a href="{% url 'dashboard-surprise' %}?{{request.GET.urlencode}}"
+        class="btn btn-warning btn-lg">Surprise me!!!</a>
       </div>
 
       <!-- Explore header -->

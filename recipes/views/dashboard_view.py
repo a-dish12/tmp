@@ -158,7 +158,12 @@ class DashboardView(LoginRequiredMixin, ListView):
     def search_feature(self, queryset):
         search_term = self.request.GET.get("search")
         if search_term:
-            queryset = queryset.filter(title__icontains=search_term)
+            queryset = queryset.filter(
+                Q(description__icontains=search_term) |
+                Q(ingredients__icontains=search_term) |
+                Q(title__icontains=search_term) |
+                Q(meal_type__icontains=search_term))
+
         return queryset
 
     def following_only(self, queryset):
