@@ -161,10 +161,39 @@ class DashboardView(LoginRequiredMixin, ListView):
             queryset = queryset.filter(title__icontains=search_term)
         return queryset
 
-    def filter_by_diet(self, queryset):
-        selected_diet = self.get_selected_diet()
-        if not selected_diet:
-            return queryset
+    def following_only(self, queryset):
+        following_page = self.request.path == reverse('following_dashboard')
+        not_following_set = Follow.objects.filter(follower=self.request.user)
+
+        #Remove recipes from people you don't follow
+        if following_page:
+            temp_set = queryset
+            for nf in not_following_set.values_list('following'):
+                temp_set = temp_set.exclude(author=nf)
+            for f in temp_set.values_list('author'):
+                queryset = queryset.exclude(author=f)
+
+        return queryset
+
+    def following_only(self, queryset):
+        following_page = self.request.path == reverse('following_dashboard')
+        recipe_set = Follow.objects.exclude(follower=self.request.user)
+
+        #Remove recipes from people you don't follow
+        if following_page:
+            for r in recipe_set.values_list('following'):
+                queryset = queryset.exclude(author=r)
+
+        return queryset
+
+    def following_only(self, queryset):
+        following_page = self.request.path == reverse('following_dashboard')
+        recipe_set = Follow.objects.exclude(follower=self.request.user)
+
+        #Remove recipes from people you don't follow
+        if following_page:
+            for r in recipe_set.values_list('following'):
+                queryset = queryset.exclude(author=r)
 
         return [
             recipe for recipe in queryset
