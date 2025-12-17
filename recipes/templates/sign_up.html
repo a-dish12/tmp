@@ -1,15 +1,95 @@
-{% extends 'base_content.html' %}
-{% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-12">
-      <h1>Sign up</h1>
-      <form action="{% url 'sign_up' %}" method="post">
-        {% csrf_token %}
-        {% include 'partials/bootstrap_form.html' with form=form %}
-        <input type="submit" value="Sign up" class="btn btn-primary">
-      </form>
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'signup.css' %}">
+{% endblock %}
+
+{% block body %}
+<div class="signup-page">
+
+  <div class="signup-container">
+
+    <!-- LEFT: IMAGE -->
+    <div class="signup-visual">
+      <div class="signup-visual-overlay signup-fade-up">
+        <h2>Cook. Share. Connect.</h2>
+        <p>
+          Join a community of food lovers and share your best recipes.
+        </p>
+      </div>
     </div>
+
+    <!-- RIGHT: FORM -->
+    <div class="signup-form-section">
+      <div class="signup-particles">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+
+      <div class="signup-content signup-glide-in">
+
+        <h1>Create your account</h1>
+
+        <p class="signup-subtext">
+          Start your culinary journey today.
+        </p>
+
+        <form action="{% url 'sign_up' %}" method="post">
+          {% csrf_token %}
+
+          {% if form.errors %}
+            <ul class="signup-errors">
+              {% for field in form %}
+                {% for error in field.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              {% endfor %}
+            </ul>
+          {% endif %}
+
+          <div class="signup-form">
+
+            <div class="signup-input-group">
+              {% render_field form.first_name placeholder="First name" %}
+            </div>
+
+            <div class="signup-input-group">
+              {% render_field form.last_name placeholder="Last name" %}
+            </div>
+
+            <div class="signup-input-group">
+              {% render_field form.username placeholder="Username" %}
+            </div>
+
+            <div class="signup-input-group">
+              {% render_field form.email placeholder="Email" %}
+            </div>
+
+            <div class="signup-input-group">
+              {% render_field form.new_password type="password" placeholder="Password" %}
+            </div>
+
+            <div class="signup-input-group">
+              {% render_field form.password_confirmation type="password" placeholder="Confirm password" %}
+            </div>
+
+            <button type="submit" class="signup-btn">
+              Create Account
+            </button>
+
+          </div>
+        </form>
+
+        <p class="signup-footer">
+          Already have an account?
+          <a href="{% url 'log_in' %}">Sign in</a>
+        </p>
+
+      </div>
+    </div>
+
   </div>
 </div>
 {% endblock %}
