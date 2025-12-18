@@ -1,6 +1,5 @@
 from django.db import models
 from django.conf import settings
-from django.contrib.auth import get_user_model
 
 class Follow(models.Model):
     
@@ -20,15 +19,14 @@ class Follow(models.Model):
 
     created_at = models.DateTimeField(auto_now_add = True)
 
-    User = get_user_model()
     
     def get_followers(user):
-        return User.objects.filter(
+        return user.objects.filter(
             id__in=Follow.objects.filter(following=user).values('follower_id')
         )
 
     def get_following(user):
-        return User.objects.filter(
+        return user.objects.filter(
             id__in=Follow.objects.filter(follower=user).values('following_id')
         )
 
