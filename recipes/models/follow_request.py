@@ -1,15 +1,15 @@
 from django.conf import settings
 from django.db import models
 
-class FriendRequest(models.Model):
+class FollowRequest(models.Model):
     from_user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name='sent_friend_requests',
+        related_name='sent_follow_requests',
         on_delete=models.CASCADE,
     )
     to_user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name='received_friend_requestsss',
+        related_name='received_follow_requests',
         on_delete=models.CASCADE,
     )
     created_at = models.DateTimeField(auto_now_add=True)

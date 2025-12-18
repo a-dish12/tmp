@@ -23,12 +23,13 @@ urlpatterns = [
     path('recipes/<int:recipe_pk>/rate/', views.RateRecipeView.as_view(), name='rate_recipe'),
     path("user/<int:user_id>/followers/", views.user_followers, name="user_followers"),
     path("user/<int:user_id>/following/", views.user_following, name="user_following"),
-    path('user/<int:user_id>/friend-request/', views.send_friend_request, name='send_friend_request'),
-    path('friend-request/<int:request_id>/accept/', views.accept_friend_request, name='accept_friend_request'),
-    path('friend-request/<int:request_id>/reject/', views.reject_friend_request, name='reject_friend_request'),
-    path("user/<int:user_id>/unfriend/", views.unfriend_user, name="unfriend_user"),
-    path("dashboard/surprise/", views.surprise_recipe_view, name="dashboard-surprise")
-
+    path("dashboard/surprise/", views.surprise_recipe_view, name="dashboard-surprise"),
+    path('users/<int:user_id>/cancel-follow-request/',views.cancel_follow_request,name='cancel_follow_request'),
+    path('follow-requests/<int:request_id>/accept/',views.accept_follow_request,name='accept_follow_request'),
+    path('follow-requests/<int:request_id>/reject/',views.reject_follow_request, name='reject_follow_request'),
+    path('planner/', views.planner_calendar, name = 'planner_calendar'),
+    path('planner/events/', views.planner_events, name = 'planner_events'),
+    path('planner/<str:date>/', views.planner_day, name='planner_day')
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

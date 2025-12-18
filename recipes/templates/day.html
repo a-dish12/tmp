@@ -1,0 +1,70 @@
+{% extends "base_content.html" %}
+{% block content %}
+
+<h1>Plan meals for {{ day_date }}</h1>
+
+<p>
+  <a href="{% url 'planner_calendar' %}">← Back to calendar</a>
+</p>
+
+{# Create new recipe and come back here #}
+<p>
+  <a href="{% url 'create_recipe' %}?next={% url 'planner_day' day_date|date:'Y-m-d' %}">
+    + Create a new recipe
+  </a>
+</p>
+
+<hr>
+
+<h2>Add a meal</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Add</button>
+</form>
+
+<hr>
+
+<h2>Planned meals</h2>
+
+{% if meals %}
+  <h3>Breakfast</h3>
+  <ul>
+    {% for m in meals %}
+      {% if m.meal_type == "breakfast" %}
+        <li><a href="{% url 'recipe_detail' m.recipe.pk %}">{{ m.recipe }}</a></li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+
+  <h3>Lunch</h3>
+  <ul>
+    {% for m in meals %}
+      {% if m.meal_type == "lunch" %}
+        <li><a href="{% url 'recipe_detail' m.recipe.pk %}">{{ m.recipe }}</a></li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+
+  <h3>Dinner</h3>
+  <ul>
+    {% for m in meals %}
+      {% if m.meal_type == "dinner" %}
+        <li><a href="{% url 'recipe_detail' m.recipe.pk %}">{{ m.recipe }}</a></li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+
+  <h3>Snack</h3>
+  <ul>
+    {% for m in meals %}
+      {% if m.meal_type == "snack" %}
+        <li><a href="{% url 'recipe_detail' m.recipe.pk %}">{{ m.recipe }}</a></li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No meals planned yet for this day.</p>
+{% endif %}
+
+{% endblock %}

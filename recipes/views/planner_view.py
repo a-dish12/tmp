@@ -1,0 +1,97 @@
+from datetime import date as date_cls
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse, Http404
+from django.shortcuts import render, redirect
+from django.utils.dateparse import parse_date
+from django.urls import reverse
+
+from recipes.helpers import visible_recipes_for
+from recipes.models.planned_day import PlannedDay
+from recipes.models.planned_meal import PlannedMeal
+from recipes.forms.planned_meal_form import PlannedMealForm
+
+
+@login_required
+def planner_calendar(request):
+    """
+    Renders the FullCalendar page (month/week/day/list all on one page).
+    """
+    return render(request, "calendar.html")
+
+@login_required
+def planner_events(request):
+    """
+    Returns planned meals as FullCalendar events (JSON).
+    FullCalendar sends start/end as query params.
+    """
+
+    start_str = request.GET.get("start")
+    end_str = request.GET.get("end")
+
+    start  = parse_date(start_str) if start_str else None
+    end  = parse_date(end_str) if end_str else None
+
+    query_set = PlannedMeal.objects.filter(planned_day__user=request.user).select_related(
+        "planned_day", "recipe"
+    )
+
+    if start:
+        query_set = query_set.filter(planned_day__date__gte = start)
+    if end:
+        query_set = query_set.filter(planned_day__date__lt=end)
+
+    events = []
+    for planned_meal in query_set:
+        day = planned_meal.planned_day.date.isoformat()
+
+        events.append({
+            "title": f"{planned_meal.meal_type.title()}: {planned_meal.recipe.title}",
+            "start": planned_meal.planned_day.date.isoformat(),
+            "allDay": True,
+            "url": reverse("planner_day", args=[day])
+        })
+
+    return JsonResponse(events, safe = False)
+
+@login_required
+def planner_day(request, date):
+    """
+    Day page: shows planned meals + allows adding a meal (breakfast/lunch/dinner/snack)
+    for the given YYYY-MM-DD date.
+    """
+    day_date = parse_date(date)
+    if not day_date:
+        raise Http404("Invalid date format. Use YYYY-MM-DD")
+    
+    planned_day, created = PlannedDay.objects.get_or_create(
+        user=request.user,
+        date=day_date
+    )
+    meals = planned_day.meals.select_related("recipe").all().order_by("meal_type")    
+    if request.method == "POST":
+        form = PlannedMealForm(request.POST, user=request.user)
+        if form.is_valid():
+            meal_type = form.cleaned_data["meal_type"]
+            recipe = form.cleaned_data["recipe"]
+        
+            if not visible_recipes_for(request.user).filter(pk=recipe.pk).exists():
+                    raise Http404("Recipe not visible.")
+            
+            PlannedMeal.objects.get_or_create(
+                planned_day=planned_day,
+                meal_type=meal_type,
+                recipe=recipe
+            )
+            return redirect("planner_day", date=day_date.isoformat())
+    else:
+        form = PlannedMealForm(user=request.user)
+
+    meals = planned_day.meals.select_related("recipe").all().order_by("meal_type")
+
+    context = {
+        "planned_day": planned_day,
+        "day_date": day_date,
+        "meals": meals,
+        "form": form,
+    }
+    return render(request, "day.html", context)
