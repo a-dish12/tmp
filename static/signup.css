@@ -1,0 +1,298 @@
+/* =========================
+   SIGN UP PAGE LAYOUT
+   ========================= */
+
+.signup-page {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  background: #0b0d12;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #f5f5f5;
+}
+
+.signup-container {
+  display: flex;
+  flex: 1;
+}
+
+/* =========================
+   LEFT: IMAGE PANEL
+   ========================= */
+
+.signup-visual {
+  flex: 1;
+  position: relative;
+  background-image: url("/static/images/signup-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+}
+
+.signup-visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  /* SAME darkness as login */
+  background: rgba(11, 13, 18, 0.7);
+
+  z-index: 1;
+}
+
+/* =========================================================
+   SIGN UP — IMAGE TEXT LIFT / SHADOW
+   ========================================================= */
+
+.signup-visual-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+  padding: 3rem;
+  color: #f5f5f5;
+}
+
+.signup-visual-overlay h2 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+
+  /* SAME lifted text effect as login */
+  text-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.6),
+    0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.signup-visual-overlay p {
+  font-size: 1.2rem;
+  max-width: 520px;
+  line-height: 1.6;
+  color: rgba(245, 245, 245, 0.75);
+
+  /* Slightly softer shadow for body text */
+  text-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.7);
+}
+
+
+/* =========================
+   RIGHT: FORM PANEL
+   ========================= */
+
+.signup-form-section {
+  flex: 1;
+  padding: 4rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(circle at 20% 20%, #3a1c2e, transparent 45%),
+    radial-gradient(circle at 80% 30%, #1f2f5f, transparent 45%),
+    radial-gradient(circle at 50% 80%, #1b3a2f, transparent 40%),
+    #0b0d12;
+
+  box-shadow: -60px 0 120px rgba(0,0,0,0.8);
+}
+
+.signup-content {
+  width: 100%;
+  max-width: 480px;
+}
+
+.signup-subtext {
+  margin-bottom: 2rem;
+  color: rgba(245,245,245,0.7);
+}
+
+/* =========================
+   INPUTS
+   ========================= */
+
+.signup-input-group {
+  margin-bottom: 1.4rem;
+}
+
+.signup-input-group input {
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border-radius: 14px;
+
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.18);
+
+  color: #f5f5f5;
+  font-size: 1rem;
+}
+
+
+.signup-input-group input::placeholder {
+  color: rgba(245,245,245,0.4);
+}
+
+.signup-input-group input:focus {
+  outline: none;
+  border-color: rgba(236,64,122,0.8);
+  box-shadow: 0 0 0 2px rgba(236,64,122,0.25);
+}
+
+/* =========================
+   BUTTON
+   ========================= */
+
+.signup-btn {
+  width: 100%;
+  margin-top: 1.8rem;
+  padding: 1rem;
+
+  border: none;
+  border-radius: 14px;
+
+  background: linear-gradient(135deg, #ff8a65, #ec407a);
+  color: #000;
+
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.signup-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 15px 40px rgba(236,64,122,0.45);
+}
+
+/* =========================
+   FOOTER
+   ========================= */
+
+.signup-footer {
+  margin-top: 2rem;
+  text-align: center;
+  color: rgba(245,245,245,0.65);
+}
+
+.signup-footer a {
+  color: #ff8a65;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* =========================
+   ERRORS
+   ========================= */
+
+.signup-errors {
+  margin-bottom: 1rem;
+  color: #ff8a65;
+  font-size: 0.85rem;
+}
+
+/* =========================================================
+   SIGN UP PAGE — DUST PARTICLES (FORM PANEL ONLY)
+   ========================================================= */
+
+.signup-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Ensure particles sit behind form content */
+.signup-form-section {
+  position: relative;
+}
+
+.signup-content {
+  position: relative;
+  z-index: 2;
+}
+
+.signup-particles span {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  box-shadow: 0 0 10px rgba(255,255,255,0.3);
+  animation: signupFloatDust 2s ease-in-out infinite;
+}
+
+/* Fixed positions (mirrors login, but independent) */
+.signup-particles span:nth-child(1)  { top: 12%; left: 18%; animation-duration: 6s; }
+.signup-particles span:nth-child(2)  { top: 28%; left: 70%; animation-duration: 8s; }
+.signup-particles span:nth-child(3)  { top: 55%; left: 40%; animation-duration: 7s; }
+.signup-particles span:nth-child(4)  { top: 75%; left: 22%; animation-duration: 9s; }
+.signup-particles span:nth-child(5)  { top: 48%; left: 82%; animation-duration: 6s; }
+.signup-particles span:nth-child(6)  { top: 20%; left: 55%; animation-duration: 8s; }
+.signup-particles span:nth-child(7)  { top: 68%; left: 65%; animation-duration: 7s; }
+.signup-particles span:nth-child(8)  { top: 35%; left: 25%; animation-duration: 9s; }
+.signup-particles span:nth-child(9)  { top: 15%; left: 78%; animation-duration: 6s; }
+.signup-particles span:nth-child(10) { top: 62%; left: 12%; animation-duration: 8s; }
+
+@keyframes signupFloatDust {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translate(28px, -42px);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(0, 0);
+    opacity: 0.25;
+  }
+}
+
+/* =========================================================
+   SIGN UP — ENTRY ANIMATIONS
+   ========================================================= */
+
+/* ---------- FORM: GLIDE IN FROM RIGHT ---------- */
+
+@keyframes signupGlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.signup-glide-in {
+  opacity: 0;
+  animation: signupGlideIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+
+/* ---------- IMAGE TEXT: FADE UP ---------- */
+
+@keyframes signupFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.signup-fade-up {
+  opacity: 0;
+  animation: signupFadeUp 1.1s ease forwards;
+  animation-delay: 0.35s;
+}
+
