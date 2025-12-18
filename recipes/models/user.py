@@ -30,6 +30,7 @@ class User(AbstractUser):
         blank=True,
     )
 
+    is_private = models.BooleanField(default=False)
 
     def follow(self, other_user):
         other_user.followers.add(self)
@@ -42,17 +43,7 @@ class User(AbstractUser):
 
     def is_followed_by(self, other_user):
         return self.followers.filter(pk=other_user.pk).exists()
-    
-    def befriend(self, other_user):
-        self.friends.add(other_user)
 
-    def unfriend(self, other_user):
-        self.friends.remove(other_user)
-
-    def is_friends_with(self, other_user):
-        return self.friends.filter(pk=other_user.pk).exists()
-
-    
 
     class Meta:
         """Model options."""

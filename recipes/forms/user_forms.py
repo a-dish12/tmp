@@ -16,7 +16,9 @@ class UserForm(forms.ModelForm):
         """Form options."""
 
         model = User
-        fields = ['first_name', 'last_name', 'username', 'email']
+        fields = ['first_name', 'last_name', 'username', 'email', 'is_private' ]
+        widgets = {'is_private': forms.CheckboxInput()}
+        labels = { 'is_private': 'Private account'}
 
 class NewPasswordMixin(forms.Form):
     """

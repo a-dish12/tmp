@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404, render
-from recipes.models import Follow, FriendRequest
+from recipes.models import Follow, FollowRequest
 
 User = get_user_model()
 
@@ -9,10 +9,8 @@ def user_profile(request, user_id):
 
     # default values
     is_following = False
-    is_friend = False
-    outgoing_request = None
-    incoming_request = None
-    incoming_friend_requests = None  # <-- initialise here
+    request_pending = False
+    incoming_follow_requests = None
 
     if request.user.is_authenticated:
         # Viewing other user's profile
@@ -23,33 +21,21 @@ def user_profile(request, user_id):
                 following=profile_user
             ).exists()
 
-            # Friends logic
-            is_friend = request.user.friends.filter(pk=profile_user.pk).exists()
-
-            # Friend requests between these two users
-            outgoing_request = FriendRequest.objects.filter(
-                from_user=request.user,
-                to_user=profile_user
-            ).first()
-
-            incoming_request = FriendRequest.objects.filter(
-                from_user=profile_user,
-                to_user=request.user
-            ).first()
+            request_pending = FollowRequest.objects.filter(
+                from_user = request.user, to_user = profile_user
+            ).exists()
 
         # Viewing own profile : list of all pending requests sent 
         else:
-            incoming_friend_requests = FriendRequest.objects.filter(
+            incoming_follow_requests = FollowRequest.objects.filter(
                 to_user=profile_user  
             )
 
     context = {
         'profile_user': profile_user,
         'is_following': is_following,
-        'is_friend': is_friend,
-        'outgoing_request': outgoing_request,
-        'incoming_request': incoming_request,
-        'incoming_friend_requests': incoming_friend_requests,
+        'request_pending': request_pending,
+        'incoming_follow_requests': incoming_follow_requests,
         'followers_count': profile_user.follower_relations.count(),
         'following_count': profile_user.following_relations.count(),
     }
