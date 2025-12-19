@@ -6,9 +6,11 @@ from .password_view import *
 from .profile_view import *
 from .sign_up_view import *
 from .create_recipe_view import *
+from .edit_recipe_view import *
 from .user_recipes_view import *
 from .follow_view import *
 from .user_profile_view import *
 from .recipe_view import RecipeDetailView,RateRecipeView
 from .surprise_recipe_view import surprise_recipe_view
 from .planner_view import *
+from .comment_view import *

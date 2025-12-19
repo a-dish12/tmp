@@ -15,3 +15,6 @@ class PlannedMeal(models.Model):
 
     class Meta:
         unique_together = ("planned_day", "meal_type", "recipe")
+
+    def __str__(self):
+        return f"{self.meal_type.title()} - {self.recipe.title}"

@@ -17,15 +17,22 @@
       {% if recipes %}
         <div class="list-group">
           {% for recipe in recipes %}
-            <div class="list-group-item">
-              <h5>{{ recipe.title }}</h5>
-              <p class="low-key">{{ recipe.description|truncatewords:20 }}</p>
-              <small class="text-muted">
-                Prep time: {{ recipe.time }} minutes | 
-                Created: {{ recipe.created_at|date:"M d, Y" }} |
-                Meal type :{{recipe.meal_type}}
-              </small>
-            </div>
+            <a href="{% url 'recipe_detail' pk=recipe.pk %}" class="list-group-item list-group-item-action">
+              <div class="d-flex w-100 justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                  <h5 class="mb-1">{{ recipe.title }}</h5>
+                  <p class="mb-1 text-muted">{{ recipe.description|truncatewords:20 }}</p>
+                  <small class="text-muted">
+                    Prep time: {{ recipe.time }} minutes | 
+                    Created: {{ recipe.created_at|date:"M d, Y" }} |
+                    Meal type: {{ recipe.meal_type|capfirst }}
+                  </small>
+                </div>
+                {% if recipe.get_image_url %}
+                <img src="{{ recipe.get_image_url }}" alt="{{ recipe.title }}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; margin-left: 15px;">
+                {% endif %}
+              </div>
+            </a>
           {% endfor %}
         </div>
       {% else %}
