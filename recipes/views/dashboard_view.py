@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from django.urls import reverse
-from django.db.models import Avg, Count
+from django.db.models import Avg, Count, Q
 from recipes.models import Recipe, Follow
 
 
@@ -170,6 +170,11 @@ class DashboardView(LoginRequiredMixin, ListView):
         selected_diet = self.get_selected_diet()
         if not selected_diet:
             return queryset
+
+        return [
+            recipe for recipe in queryset
+            if recipe.get_diet_type() == selected_diet
+        ]
 
 
     def following_only(self, queryset):

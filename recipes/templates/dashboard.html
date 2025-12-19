@@ -185,6 +185,16 @@
               <span class="badge bg-secondary me-1">{{ label }}</span>
             {% endif %}
           {% endfor %}
+          {% for tf in time_filters %}
+            {% if tf.key == selected_time_filter %}
+              <span class="badge bg-secondary me-1">{{ tf.label }}</span>
+            {% endif %}
+          {% endfor %}
+          {% for value, label in diet_filters %}
+            {% if value == selected_diet %}
+              <span class="badge bg-secondary me-1">{{ label }}</span>
+            {% endif %}
+          {% endfor %}
         </p>
       {% endif %}
 
