@@ -3,6 +3,11 @@ from django.views.generic import DetailView, CreateView
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from recipes.models import Recipe, Rating
+from recipes.models.planned_meal import PlannedMeal
+from recipes.forms.comment_form import CommentForm
+from recipes.forms.planned_meal_form import PlannedMealForm
+from recipes.forms.rating_form import RatingForm
+from datetime import date as date_cls
 
 
 class RecipeDetailView(DetailView):
@@ -18,8 +23,35 @@ class RecipeDetailView(DetailView):
         # Add user's rating if authenticated
         if self.request.user.is_authenticated:
             context['user_rating'] = self.object.get_user_rating(self.request.user)
+            
+            # Get planned meals for this recipe
+            planned_meals = PlannedMeal.objects.filter(
+                recipe=self.object,
+                planned_day__user=self.request.user
+            ).select_related('planned_day').order_by('planned_day__date')
+            context['planned_meals'] = planned_meals
+            
+            # Today's date for the date picker default
+            context['today'] = date_cls.today().isoformat()
+            
+            # Comment form
+            context['comment_form'] = CommentForm()
+            
+            # Planned meal form for calendar
+            context['planned_meal_form'] = PlannedMealForm(user=self.request.user, recipe=self.object)
+            
+            # Rating form (only if not own recipe)
+            if self.request.user != self.object.author:
+                initial_data = {'stars': context['user_rating']} if context['user_rating'] else {}
+                context['rating_form'] = RatingForm(initial=initial_data)
         else:
             context['user_rating'] = None
+            context['planned_meals'] = []
+            
+        # Get all top-level comments (no parent) with their replies
+        top_level_comments = self.object.comments.filter(parent=None).select_related('user').prefetch_related('replies__user', 'replies__replies')
+        context['comments'] = top_level_comments
+        context['comment_count'] = self.object.comments.count()
             
         return context
 
@@ -28,7 +60,7 @@ class RateRecipeView(LoginRequiredMixin, CreateView):
     """Handle recipe rating (create or update)."""
     
     model = Rating
-    fields = ['stars']
+    form_class = RatingForm
     
     def dispatch(self, request, *args, **kwargs):
         self.recipe = get_object_or_404(Recipe, pk=kwargs['recipe_pk'])

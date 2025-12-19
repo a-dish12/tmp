@@ -13,8 +13,11 @@ class Recipe(models.Model):
     title = models.CharField(max_length=100, blank=False)
     description = models.TextField(blank=False)
     ingredients = models.TextField(blank=False)
+    instructions = models.TextField(blank=True, help_text="Step-by-step cooking instructions")
     time = models.PositiveIntegerField(help_text="preparation time in minutes")
     meal_type = models.TextField(help_text="breakfast/lunch/dinner", blank=False, default="")
+    image = models.ImageField(upload_to='recipe_images/', blank=True, null=True, help_text="Upload an image from your device")
+    image_url = models.URLField(max_length=500, blank=True, null=True, help_text="Or provide an image URL")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -75,3 +78,9 @@ class Recipe(models.Model):
             return self.DIET_VEG
 
         return self.DIET_VEGAN
+    
+    def get_image_url(self):
+        """Return image URL, prioritizing uploaded image over URL field."""
+        if self.image:
+            return self.image.url
+        return self.image_url

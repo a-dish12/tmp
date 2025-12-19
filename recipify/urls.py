@@ -15,6 +15,8 @@ urlpatterns = [
     path('profile/', views.ProfileUpdateView.as_view(), name='profile'),
     path('sign_up/', views.SignUpView.as_view(), name='sign_up'),
     path('recipes/create/', views.CreateRecipeView.as_view(), name='create_recipe'),
+    path('recipes/<int:pk>/edit/', views.EditRecipeView.as_view(), name='edit_recipe'),
+    path('recipes/<int:pk>/delete/', views.DeleteRecipeView.as_view(), name='delete_recipe'),
     path('recipes/my-recipes/', views.UserRecipesView.as_view(), name='user_recipes'),
     path('users/<int:user_id>/', views.user_profile, name='user_profile'),
     path('users/<int:user_id>/follow/', views.follow_user, name = 'follow_user'),
@@ -29,8 +31,17 @@ urlpatterns = [
     path('follow-requests/<int:request_id>/reject/',views.reject_follow_request, name='reject_follow_request'),
     path('planner/', views.planner_calendar, name = 'planner_calendar'),
     path('planner/events/', views.planner_events, name = 'planner_events'),
-    path('planner/<str:date>/', views.planner_day, name='planner_day')
+    path('planner/<str:date>/', views.planner_day, name='planner_day'),
+    path('recipes/<int:recipe_pk>/add-to-calendar/', views.add_to_calendar, name='add_to_calendar'),
+    path('planned-meals/<int:meal_pk>/remove/', views.remove_from_calendar, name='remove_from_calendar'),
+    path('recipes/<int:recipe_pk>/comments/add/', views.add_comment, name='add_comment'),
+    path('comments/<int:comment_pk>/reply/', views.add_reply, name='add_reply'),
+    path('comments/<int:comment_pk>/delete/', views.delete_comment, name='delete_comment'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# Serve media files in development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
