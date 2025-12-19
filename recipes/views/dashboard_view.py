@@ -2,12 +2,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from django.urls import reverse
 from django.db.models import Avg, Count, Q
-from recipes.models import Recipe, Follow
+from recipes.models import Recipe, Follow, User
 
 
 class DashboardView(LoginRequiredMixin, ListView):
     model = Recipe
-    using = Follow
     template_name = "dashboard.html"
     context_object_name = "recipes"
 
@@ -179,14 +178,15 @@ class DashboardView(LoginRequiredMixin, ListView):
 
     def following_only(self, queryset):
         following_page = self.request.path == reverse('following_dashboard')
-        not_following_set = Follow.objects.filter(follower=self.request.user)
+        followed_users = Follow.objects.filter(follower=self.request.user).values_list('following')
+        followed_recipes = queryset.filter(author__in=followed_users)
 
-        #Remove recipes from people you don't follow
         if following_page:
-            temp_set = queryset
-            for nf in not_following_set.values_list('following'):
-                temp_set = temp_set.exclude(author=nf)
-            for f in temp_set.values_list('author'):
-                queryset = queryset.exclude(author=f)
+            queryset = followed_recipes
+        else:
+            private_users = User.objects.filter(is_private=False)
+            queryset = queryset.filter(author__in=private_users)
+
+            queryset = (queryset|followed_recipes).distinct()
 
         return queryset
