@@ -1,230 +1,231 @@
 {% extends 'base_content.html' %}
+{% load static %}
+
+{% block body_class %}dashboard-bg{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'navbar.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard.css' %}">
+{% endblock %}
 
 {% block content %}
-<div class="container">
-  <div class="row">
 
-    <!-- ================= Sidebar Filters ================= -->
-    <div class="col-md-3 mb-4">
-      <form method="get" class="filters-card p-3 border rounded bg-light dashboard-filters">
-        <h5 class="mb-3">Filter recipes</h5>
+<!-- Dust particles -->
+<div class="dashboard-particles">
+  {% for _ in "123456789012345678901234567890" %}
+    <span></span>
+  {% endfor %}
+</div>
 
-        <!-- Search -->
-        <div class="mb-3">
-          <label for="search" class="form-label fw-bold">Search</label>
-          <input
-            type="text"
-            id="search"
-            name="search"
-            class="form-control"
-            placeholder="Search recipe name..."
-            value="{{ search_term }}"
-          >
-        </div>
+<div class="dashboard-wrapper">
 
-        <!-- Meal Type -->
-        <div class="mb-3">
-          <span class="form-label fw-bold d-block">Meal type</span>
-          {% for value, label in meal_type_filters %}
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                name="meal_types"
-                id="meal_type_{{ value }}"
-                value="{{ value }}"
-                {% if value in selected_meal_types %}checked{% endif %}
-              >
-              <label class="form-check-label" for="meal_type_{{ value }}">
-                {{ label }}
-              </label>
-            </div>
-          {% endfor %}
-        </div>
+  <!-- HERO -->
+  <div class="dashboard-hero mb-5">
+    <h1 class="dashboard-title">
+      Discover <span class="accent-orange">Recipes</span>
+    </h1>
 
-        <!-- Time -->
-        <div class="mb-3">
-          <span class="form-label fw-bold d-block">Prep time</span>
+    <p class="dashboard-subtitle">
+      Find your next culinary adventure from our community of home chefs
+    </p>
 
-          <div class="form-check">
-            <input
-              class="form-check-input"
-              type="radio"
-              name="time_filter"
-              id="time_any"
-              value=""
-              {% if not selected_time_filter %}checked{% endif %}
-            >
-            <label class="form-check-label" for="time_any">
-              Any time
-            </label>
+    <form method="get" class="dashboard-search">
+      <input
+        type="text"
+        name="search"
+        class="form-control form-control-lg"
+        placeholder="Search recipes..."
+        value="{{ search_term }}"
+      >
+    </form>
+  </div>
+
+  <!-- WIDE CONTENT CONTAINER -->
+  <div class="dashboard-container">
+
+    <!-- FILTERS + CONTENT -->
+    <div class="row dashboard-row">
+
+      <!-- FILTERS (LEFT) -->
+      <div class="col-md-3 filters-col">
+        <div class="filters-pane">
+          
+          <h5>Filters</h5>
+          
+          <form method="get" class="filters-card">
+
+          <!-- Meal Type -->
+          <div class="mb-3">
+            <span class="form-label fw-bold d-block">Meal type</span>
+            {% for value, label in meal_type_filters %}
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  name="meal_types"
+                  value="{{ value }}"
+                  id="meal_{{ value }}"
+                  {% if value in selected_meal_types %}checked{% endif %}
+                >
+                <label class="form-check-label" for="meal_{{ value }}">{{ label }}</label>
+              </div>
+            {% endfor %}
           </div>
 
-          {% for tf in time_filters %}
+          <!-- Prep Time -->
+          <div class="mb-3">
+            <span class="form-label fw-bold d-block">Prep time</span>
+
             <div class="form-check">
-              <input
-                class="form-check-input"
-                type="radio"
-                name="time_filter"
-                id="time_{{ tf.key }}"
-                value="{{ tf.key }}"
-                {% if selected_time_filter == tf.key %}checked{% endif %}
-              >
-              <label class="form-check-label" for="time_{{ tf.key }}">
-                {{ tf.label }}
-              </label>
+              <input class="form-check-input" type="radio" name="time_filter" value="" id="time_any">
+              <label class="form-check-label" for="time_any">Any time</label>
             </div>
-          {% endfor %}
-        </div>
 
-        <!-- Diet -->
-        <div class="mb-3">
-          <span class="form-label fw-bold d-block">Diet type</span>
-
-          <div class="form-check">
-            <input
-              class="form-check-input"
-              type="radio"
-              name="diet"
-              id="diet_any"
-              value=""
-              {% if not selected_diet %}checked{% endif %}
-            >
-            <label class="form-check-label" for="diet_any">
-              Any diet
-            </label>
+            {% for tf in time_filters %}
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="time_filter"
+                  value="{{ tf.key }}"
+                  id="time_{{ tf.key }}"
+                  {% if selected_time_filter == tf.key %}checked{% endif %}
+                >
+                <label class="form-check-label" for="time_{{ tf.key }}">{{ tf.label }}</label>
+              </div>
+            {% endfor %}
           </div>
 
-          {% for code, label in diet_filters %}
+          <!-- Diet -->
+          <div class="mb-3">
+            <span class="form-label fw-bold d-block">Diet type</span>
+
             <div class="form-check">
-              <input
-                class="form-check-input"
-                type="radio"
-                name="diet"
-                id="diet_{{ code }}"
-                value="{{ code }}"
-                {% if selected_diet == code %}checked{% endif %}
-              >
-              <label class="form-check-label" for="diet_{{ code }}">
-                {{ label }}
-              </label>
+              <input class="form-check-input" type="radio" name="diet" value="" id="diet_any">
+              <label class="form-check-label" for="diet_any">Any diet</label>
             </div>
-          {% endfor %}
+
+            {% for code, label in diet_filters %}
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="diet"
+                  value="{{ code }}"
+                  id="diet_{{ code }}"
+                  {% if selected_diet == code %}checked{% endif %}
+                >
+                <label class="form-check-label" for="diet_{{ code }}">{{ label }}</label>
+              </div>
+            {% endfor %}
+          </div>
+
+          <button type="submit" class="filters-apply-btn w-100 mt-2">
+            Apply filters
+          </button>
+
+
+          {% if has_active_filters %}
+            <a href="{% url 'dashboard' %}" class="filters-clear-link w-100">
+              Clear all filters
+            </a>
+
+          {% endif %}
+            </form>
+          </div>
         </div>
 
-        <button type="submit" class="btn btn-primary w-100 mt-2">
-          Apply filters
-        </button>
+
+      <!-- MAIN CONTENT (RIGHT) -->
+      <div class="col-md-9 recipes-col">
+
+        <!-- Recipe count (subtitle style) -->
+        <p class="list-subtitle">
+          Showing {{ recipes|length }} recipe{% if recipes|length != 1 %}s{% endif %}
+        </p>
 
         {% if has_active_filters %}
-          <a href="{% url 'dashboard' %}" class="btn btn-link w-100 mt-2 p-0">
-            Clear all filters
-          </a>
-        {% endif %}
-      </form>
-    </div>
-
-    <!-- ================= Main Content ================= -->
-    <div class="col-md-9">
-      <h1>Welcome to your dashboard {{ user.username }}</h1>
-
-      <!-- Action buttons -->
-      <div class="mt-4 d-flex align-items-center gap-3 flex-wrap">
-        <a href="{% url 'user_profile' user.id %}" class="btn btn-primary btn-lg">
-          My profile
-        </a>
-        <a href="{% url 'planner_calendar'%}" class="btn btn-primary btn-lg me-3">
-          My Meal Planner
-        </a>
-        <a href="{% url 'create_recipe' %}" class="btn btn-primary btn-lg">
-          Create New Recipe
-        </a>
-        <a href="{% url 'user_recipes' %}" class="btn btn-secondary btn-lg">
-          My Recipes
-        </a>
-        <a href="{% url 'dashboard-surprise' %}?{{request.GET.urlencode}}"
-        class="btn btn-warning btn-lg">Surprise me!!!</a>
-      </div>
-
-      <!-- Explore header -->
-      <h2 class="list-title mt-5">Explore Recipes from Others</h2>
-
-      <!-- Dropdown meal filter -->
-      <form method="get" class="mb-3">
-        <label for="meal_type">Filter by meal type:</label>
-        <select name="meal_type" id="meal_type" class="form-select" onchange="this.form.submit()">
-          <option value="">All</option>
-          <option value="breakfast" {% if selected_meal_type == "breakfast" %}selected{% endif %}>Breakfast</option>
-          <option value="lunch" {% if selected_meal_type == "lunch" %}selected{% endif %}>Lunch</option>
-          <option value="dinner" {% if selected_meal_type == "dinner" %}selected{% endif %}>Dinner</option>
-          <option value="snack" {% if selected_meal_type == "snack" %}selected{% endif %}>Snack</option>
-          <option value="dessert" {% if selected_meal_type == "dessert" %}selected{% endif %}>Dessert</option>
-        </select>
-      </form>
-
-      <!-- For You / Following -->
-      <nav class="nav nav-tabs justify-content-center mb-4">
-        {% if following_page %}
-          <a class="nav-link" href="{% url 'dashboard' %}">For You</a>
-          <a class="nav-link active" aria-current="page" href="{% url 'following_dashboard' %}">Following</a>
-        {% else %}
-          <a class="nav-link active" aria-current="page" href="{% url 'dashboard' %}">For You</a>
-          <a class="nav-link" href="{% url 'following_dashboard' %}">Following</a>
-        {% endif %}
-      </nav>
-
-      <!-- Active filters summary -->
-      {% if has_active_filters %}
-        <p class="low-key mb-3">
-          Showing recipes for:
+        <div class="active-filters">
+          
           {% if search_term %}
-            <span class="badge bg-secondary me-1">"{{ search_term }}"</span>
+            <span class="filter-pill">
+              Search: "{{ search_term }}"
+            </span>
           {% endif %}
-          {% for value, label in meal_type_filters %}
-            {% if value in selected_meal_types %}
-              <span class="badge bg-secondary me-1">{{ label }}</span>
-            {% endif %}
-          {% endfor %}
-        </p>
-      {% endif %}
 
-      <!-- Recipes -->
-      {% if recipes %}
-        <div class="list-group mb-4">
-          {% for recipe in recipes %}
-            <a href="{% url 'recipe_detail' recipe.pk %}"
-               class="list-group-item list-group-item-action text-decoration-none">
-              <div class="d-flex justify-content-between align-items-start">
-                <div>
-                  <h5>{{ recipe.title }}</h5>
-                  <p class="low-key mb-1">{{ recipe.description|truncatewords:20 }}</p>
-                  <small class="text-muted">
-                    By {{ recipe.author.username }} |
-                    Prep time: {{ recipe.time }} minutes |
-                    Meal type: {{ recipe.meal_type|capfirst }}
-                  </small>
+          {% for value in selected_meal_types %}
+            <span class="filter-pill">
+              {{ value|capfirst }}
+            </span>
+          {% endfor %}
+
+          {% if selected_time_filter %}
+            <span class="filter-pill">
+              {% if selected_time_filter == "under_20" %}
+                &lt; 20 min
+              {% elif selected_time_filter == "under_30" %}
+                &lt; 30 min
+              {% elif selected_time_filter == "under_45" %}
+                &lt; 45 min
+              {% elif selected_time_filter == "under_60" %}
+                &lt; 60 min
+              {% elif selected_time_filter == "over_90" %}
+                &gt; 90 min
+              {% else %}
+                {{ selected_time_filter }}
+              {% endif %}
+            </span>
+          {% endif %}
+
+
+          {% if selected_diet %}
+            <span class="filter-pill">
+              {{ selected_diet|capfirst }}
+            </span>
+          {% endif %}
+
+        </div>
+        {% endif %}
+
+        {% if recipes %}
+          <div class="recipe-grid">
+            {% for recipe in recipes %}
+              <a href="{% url 'recipe_detail' recipe.pk %}" class="recipe-card">
+
+                <div class="recipe-image"></div>
+
+                <h5 class="recipe-title">{{ recipe.title }}</h5>
+
+                <p class="recipe-desc">
+                  {{ recipe.description|truncatewords:18 }}
+                </p>
+
+                <div class="recipe-meta">
+                  <span>By {{ recipe.author.username }}</span>
+                  <span>{{ recipe.time }} min · {{ recipe.meal_type|capfirst }}</span>
                 </div>
 
-                <div class="text-end">
+                <div class="recipe-rating">
                   {% with avg=recipe.average_rating %}
                     {% for _ in "12345" %}
-                      <span class="{% if forloop.counter <= avg %}text-warning{% else %}text-muted{% endif %}">★</span>
+                      <span class="{% if forloop.counter <= avg %}filled{% endif %}">★</span>
                     {% endfor %}
                   {% endwith %}
-                  <div class="text-muted">
-                    {{ recipe.average_rating|floatformat:1 }} ({{ recipe.rating_count }})
-                  </div>
+                  <span class="rating-num">
+                    {{ recipe.average_rating|floatformat:1 }}
+                  </span>
                 </div>
-              </div>
-            </a>
-          {% endfor %}
-        </div>
-      {% else %}
-        <p class="low-key">
-          No recipes available from other users yet.
-        </p>
-      {% endif %}
+
+              </a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="low-key">No recipes available.</p>
+        {% endif %}
+
+      </div>
     </div>
   </div>
 </div>
+
 {% endblock %}
