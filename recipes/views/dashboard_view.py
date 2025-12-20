@@ -3,6 +3,7 @@ from django.views.generic import ListView
 from django.urls import reverse
 from django.db.models import Avg, Count
 from recipes.models import Recipe, Follow
+from django.db.models import Q
 
 
 class DashboardView(LoginRequiredMixin, ListView):

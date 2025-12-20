@@ -123,16 +123,41 @@
 }
 
 /* Log In link */
-.lp-link {
-  color: #ddd;
+/* =========================
+   LOGIN LINK — ORANGE + GLOW
+   ========================= */
+
+/* =========================
+   LOGIN LINK — ORANGE + GLOW (FIXED)
+   ========================= */
+
+.lp-nav .lp-link {
+  color: #ff8a65;
   text-decoration: none;
-  font-weight: 600;
-  font-size: 1.05rem;             /* Slightly bigger */
-  line-height: 1;                 /* Prevent baseline drift */
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1;
+
   display: flex;
   align-items: center;
   z-index: 999;
+
+  transition:
+    color 0.18s ease,
+    transform 0.18s ease,
+    text-shadow 0.18s ease;
 }
+
+.lp-nav .lp-link:hover {
+  color: #ff8a65; /* 🔒 hard lock */
+  transform: translateY(-1px);
+
+  text-shadow:
+    0 0 12px rgba(255,138,101,0.6),
+    0 0 26px rgba(255,138,101,0.4);
+}
+
+
 
 /* Sign Up button */
 /* NAVBAR SIGN UP — MATCHES PRIMARY CTA STYLE */
@@ -771,7 +796,56 @@
 }
 
 
+/* =========================
+   LOGIN LINK — EXPLICIT CUSTOM NAV ITEM
+   ========================= */
 
+.lp-nav-link {
+  color: #ff8a65;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.05rem;
+
+  display: flex;
+  align-items: center;
+
+  transition:
+    color 0.18s ease,
+    transform 0.18s ease,
+    text-shadow 0.18s ease;
+}
+
+.lp-nav-link:hover {
+  color: #ff8a65; /* stays orange */
+  transform: translateY(-1px);
+
+  text-shadow:
+    0 0 12px rgba(255,138,101,0.6),
+    0 0 26px rgba(255,138,101,0.4);
+}
+
+/* =========================
+   LANDING NAV — LOGIN LINK (FINAL, HARD SCOPED)
+   ========================= */
+
+.lp-landing-nav a.lp-link {
+  color: #ff8a65;
+  font-weight: 700;
+  text-decoration: none;
+
+  transition:
+    transform 0.18s ease,
+    text-shadow 0.18s ease;
+}
+
+.lp-landing-nav a.lp-link:hover {
+  color: #ff8a65; /* 🔒 cannot be overridden */
+  transform: translateY(-1px);
+
+  text-shadow:
+    0 0 12px rgba(255,138,101,0.6),
+    0 0 26px rgba(255,138,101,0.4);
+}
 
 
 
