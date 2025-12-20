@@ -143,12 +143,17 @@ class Command(BaseCommand):
             data (dict): Mapping with keys ``username``, ``email``,
                 ``first_name``, and ``last_name``.
         """
+        r = random.random()
+        priv_bool = False
+        if r < 0.3:
+            priv_bool = True
         User.objects.create_user(
             username=data['username'],
             email=data['email'],
             password=Command.DEFAULT_PASSWORD,
             first_name=data['first_name'],
             last_name=data['last_name'],
+            is_private=priv_bool
         )
 
 
