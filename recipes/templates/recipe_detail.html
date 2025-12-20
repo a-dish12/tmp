@@ -11,8 +11,26 @@
           {{ recipe.author.username }}
         </a>
         )
-        <!-- {{ recipe.created_at|date:"F d, Y" }} -->
+      
       </p>
+      
+      {% if user.is_authenticated and user == recipe.author %}
+      <div class="mb-3">
+        <a href="{% url 'edit_recipe' pk=recipe.pk %}" class="btn btn-warning btn-sm">
+          <i class="bi bi-pencil"></i> Edit Recipe
+        </a>
+        <a href="{% url 'delete_recipe' pk=recipe.pk %}" class="btn btn-danger btn-sm">
+          <i class="bi bi-trash"></i> Delete Recipe
+        </a>
+      </div>
+      {% endif %}
+      
+      
+      {% if recipe.get_image_url %}
+      <div class="card mb-4">
+        <img src="{{ recipe.get_image_url }}" class="card-img-top" alt="{{ recipe.title }}" style="max-height: 400px; object-fit: cover;">
+      </div>
+      {% endif %}
       
       <div class="card mb-4">
         <div class="card-body">
@@ -27,16 +45,55 @@
           
           <h5 class="card-title mt-4">Ingredients</h5>
           <pre class="bg-light p-3 rounded">{{ recipe.ingredients }}</pre>
+          
+          {% if recipe.instructions %}
+          <h5 class="card-title mt-4">Instructions</h5>
+          <div class="bg-light p-3 rounded" style="white-space: pre-wrap;">{{ recipe.instructions }}</div>
+          {% endif %}
         </div>
       </div>
       
-      <!-- Back Button -->
+      <!-- Comments Section -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">
+            💬 Comments <span class="badge bg-secondary">{{ comment_count }}</span>
+          </h5>
+          
+          <!-- Add Comment Form -->
+          {% if user.is_authenticated %}
+            <form method="post" action="{% url 'add_comment' recipe.pk %}" class="mb-4">
+              {% csrf_token %}
+              {{ comment_form.text }}
+              <button type="submit" class="btn btn-primary mt-2">Post Comment</button>
+            </form>
+          {% else %}
+            <p class="text-muted">
+              <a href="{% url 'log_in' %}">Log in</a> to leave a comment.
+            </p>
+          {% endif %}
+          
+          <hr>
+          
+          <!-- Display Comments -->
+          {% if comments %}
+            <div class="comments-container">
+              {% for comment in comments %}
+                {% include 'partials/comment.html' with comment=comment depth=0 %}
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="text-muted text-center">No comments yet. Be the first to comment!</p>
+          {% endif %}
+        </div>
+      </div>
+      
       <a href="{% url 'dashboard' %}" class="btn btn-secondary">← Back to Dashboard</a>
     </div>
     
     <div class="col-lg-4">
       <!-- Rating Section -->
-      <div class="card sticky-top" style="top: 20px;">
+      <div class="card mb-3 sticky-top" style="top: 20px;">
         <div class="card-body">
           <h5 class="card-title">Recipe Rating</h5>
           
@@ -76,14 +133,16 @@
             
             <form method="post" action="{% url 'rate_recipe' recipe_pk=recipe.pk %}">
               {% csrf_token %}
-              <div class="d-flex justify-content-center gap-2 mb-3">
+              <div class="star-rating-container mb-3">
                 {% for i in "12345" %}
+                  {% with star_value=forloop.revcounter %}
                   <label class="star-rating-label">
-                    <input type="radio" name="stars" value="{{ forloop.counter }}" required 
-                           {% if user_rating == forloop.counter %}checked{% endif %}>
+                    <input type="radio" name="stars" value="{{ star_value }}" required 
+                           {% if user_rating == star_value %}checked{% endif %}>
                     <span class="star-rating-icon">★</span>
-                    <span class="visually-hidden">{{ forloop.counter }} star{{ forloop.counter|pluralize }}</span>
+                    <span class="visually-hidden">{{ star_value }} star{{ star_value|pluralize }}</span>
                   </label>
+                  {% endwith %}
                 {% endfor %}
               </div>
               <button type="submit" class="btn btn-primary w-100">Submit Rating</button>
@@ -91,7 +150,84 @@
           {% endif %}
         </div>
       </div>
+      
+      <!-- Add to Calendar Section -->
+      {% if user.is_authenticated %}
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Add to Meal Planner</h5>
+          
+          <!-- Show existing planned meals -->
+          {% if planned_meals %}
+            <div class="mb-3">
+              <p class="small text-muted mb-2">Currently planned for:</p>
+              <ul class="list-unstyled small">
+                {% for meal in planned_meals %}
+                <li class="mb-2 d-flex justify-content-between align-items-center">
+                  <span>
+                    <strong>{{ meal.planned_day.date|date:"M d" }}</strong> - {{ meal.meal_type|title }}
+                  </span>
+                  <form method="post" action="{% url 'remove_from_calendar' meal.pk %}?next={% url 'recipe_detail' recipe.pk %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Remove">×</button>
+                  </form>
+                </li>
+                {% endfor %}
+              </ul>
+              <hr>
+            </div>
+          {% endif %}
+          
+          <!-- Add to calendar form -->
+          <form method="post" action="{% url 'add_to_calendar' recipe.pk %}">
+            {% csrf_token %}
+            {{ planned_meal_form.recipe }}
+            <div class="mb-3">
+              <label for="{{ planned_meal_form.date.id_for_label }}" class="form-label">Date</label>
+              {{ planned_meal_form.date }}
+            </div>
+            <div class="mb-3">
+              <label for="{{ planned_meal_form.meal_type.id_for_label }}" class="form-label">Meal Type</label>
+              {{ planned_meal_form.meal_type }}
+            </div>
+            <button type="submit" class="btn btn-success w-100">📅 Add to Calendar</button>
+          </form>
+          
+          <div class="mt-2">
+            <a href="{% url 'planner_calendar' %}" class="btn btn-sm btn-outline-secondary w-100">View Calendar</a>
+          </div>
+        </div>
+      </div>
+      {% endif %}
     </div>
   </div>
 </div>
+
+<script>
+// Toggle reply forms
+document.addEventListener('DOMContentLoaded', function() {
+  // Show reply form
+  document.querySelectorAll('.reply-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const commentId = this.dataset.commentId;
+      const replyForm = document.getElementById(`reply-form-${commentId}`);
+      replyForm.style.display = 'block';
+      this.style.display = 'none';
+    });
+  });
+  
+  // Cancel reply
+  document.querySelectorAll('.cancel-reply').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const commentId = this.dataset.commentId;
+      const replyForm = document.getElementById(`reply-form-${commentId}`);
+      const replyBtn = document.querySelector(`.reply-btn[data-comment-id="${commentId}"]`);
+      replyForm.style.display = 'none';
+      if (replyBtn) replyBtn.style.display = 'inline';
+    });
+  });
+});
+</script>
 {% endblock %}

@@ -14,5 +14,10 @@ class CreateRecipeView(LoginRequiredMixin,CreateView):
         form.instance.author = self.request.user
         form.instance.meal_type = form.instance.meal_type.strip().lower()
         return super().form_valid(form)
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        # This ensures file uploads work properly
+        return kwargs
 
     

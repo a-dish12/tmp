@@ -1,5 +1,6 @@
 from django import forms
 from recipes.helpers import visible_recipes_for
+from datetime import date
 
 class PlannedMealForm(forms.Form):
     """
@@ -12,11 +13,21 @@ class PlannedMealForm(forms.Form):
         ("snack", "Snack"),
     ]
 
-    meal_type = forms.ChoiceField(choices=MEAL_TYPES)
-    recipe = forms.ModelChoiceField(queryset=None)
+    date = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        initial=date.today
+    )
+    meal_type = forms.ChoiceField(
+        choices=MEAL_TYPES,
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    recipe = forms.ModelChoiceField(queryset=None, widget=forms.HiddenInput())
     
     """
     """
-    def __init__(self, *args, user=None, **kwargs):
+    def __init__(self, *args, user=None, recipe=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["recipe"].queryset = visible_recipes_for(user)
+        if recipe:
+            self.fields["recipe"].initial = recipe
+        if user:
+            self.fields["recipe"].queryset = visible_recipes_for(user)
