@@ -168,9 +168,7 @@ class Command(BaseCommand):
         uniqueness constraints on username/email) are ignored and generation continues.
         """
         self.generate_recipe_fixtures()
-        print(Recipe.objects.count())
         self.generate_random_recipes()
-        print(Recipe.objects.count())
 
     def generate_recipe_fixtures(self):
         """Attempt to create each predefined fixture recipe."""
@@ -402,7 +400,7 @@ def shorten_string(s):
             first_two = s_list[0] + ',' + s_list[1]
 
         if len(s) <= 110:
-            return s += '.'
+            return s + '.'
         elif len(s_list) > 1 and len(first_two) <= 110:
             s = first_two
         else:
