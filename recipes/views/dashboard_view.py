@@ -183,10 +183,10 @@ class DashboardView(LoginRequiredMixin, ListView):
 
         if following_page:
             queryset = followed_recipes
-        else:
-            private_users = User.objects.filter(is_private=False)
-            queryset = queryset.filter(author__in=private_users)
+        #else:
+        #    private_users = User.objects.filter(is_private=False)
+        #    queryset = queryset.filter(author__in=private_users)
 
-            queryset = (queryset|followed_recipes).distinct()
+        #    queryset: QuerySet = (queryset|followed_recipes).distinct()
 
         return queryset
