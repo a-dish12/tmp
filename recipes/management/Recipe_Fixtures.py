@@ -476,7 +476,7 @@ def get_recipe_fixtures():
 			"title": "Chocolate Chip Mug Cake",
 			"description": "A quick, fluffy mug cake with chocolate chips.",
 			"ingredients": "Flour\nSugar\nMilk\nOil\nChocolate chips\nVanilla extract",
-			"instructions": "1. In a microwave-safe mug, combine flour, sugar, and a pinch of salt.\n2. Add milk, oil, and vanilla extract, stirring until smooth.\n3. Fold in chocolate chips.\n4. Microwave on high for 1–2 minutes, or until the cake has risen and is set in the middle.\n5. Let cool slightly before serving."
+			"instructions": "1. In a microwave-safe mug, combine flour, sugar, and a pinch of salt.\n2. Add milk, oil, and vanilla extract, stirring until smooth.\n3. Fold in chocolate chips.\n4. Microwave on high for 1–2 minutes, or until the cake has risen and is set in the middle.\n5. Let cool slightly before serving.",
 			"time": 5,
 			"meal_type": "dessert"
 		},
@@ -484,7 +484,7 @@ def get_recipe_fixtures():
 			"title": "Berry Yogurt Parfait",
 			"description": "Layers of yogurt, berries, and granola make a light snack.",
 			"ingredients": "Greek yogurt\nStrawberries\nBlueberries\nGranola\nHoney",
-			"instructions": "1. In a glass or bowl, spoon a layer of Greek yogurt.\n2. Add a layer of strawberries and blueberries.\n3. Sprinkle a layer of granola on top.\n4. Drizzle a little honey over the layers.\n5. Repeat layers if desired.\n6. Serve immediately."
+			"instructions": "1. In a glass or bowl, spoon a layer of Greek yogurt.\n2. Add a layer of strawberries and blueberries.\n3. Sprinkle a layer of granola on top.\n4. Drizzle a little honey over the layers.\n5. Repeat layers if desired.\n6. Serve immediately.",
 			"time": 7,
 			"meal_type": "snack"
 		},
@@ -492,7 +492,7 @@ def get_recipe_fixtures():
 			"title": "Classic Caesar Salad",
 			"description": "Crisp romaine with creamy Caesar dressing and croutons.",
 			"ingredients": "Romaine lettuce\nCroutons\nParsmesan\nCaesar dressing\nLemon",
-			"instructions": "1. Wash and chop the romaine lettuce and place it in a large salad bowl.\n2. Add croutons and grated Parmesan cheese.\n3. Drizzle Caesar dressing over the salad.\n4. Toss gently to combine.\n5. Squeeze a little fresh lemon juice on top if desired.\n6. Serve immediately."
+			"instructions": "1. Wash and chop the romaine lettuce and place it in a large salad bowl.\n2. Add croutons and grated Parmesan cheese.\n3. Drizzle Caesar dressing over the salad.\n4. Toss gently to combine.\n5. Squeeze a little fresh lemon juice on top if desired.\n6. Serve immediately.",
 			"time": 12,
 			"meal_type": "lunch"
 		},
@@ -500,7 +500,7 @@ def get_recipe_fixtures():
 			"title": "Tomato Basil Soup",
 			"description": "A smooth tomato soup flavored with basil and garlic.",
 			"ingredients": "Tomatoes\nBasil\nGarlic\nOnion\nOlive oil\nVegetable broth",
-			"instruction"
+			"instruction": "1. Heat olive oil in a large pot over medium heat.\n2. Sauté chopped onion and minced garlic until soft and fragrant.\n3. Add chopped tomatoes and cook for 5–7 minutes.\n4. Pour in vegetable broth and bring to a simmer for 20 minutes.\n5. Stir in fresh basil leaves.\n6. Use an immersion blender to puree the soup until smooth.\n7. Season with salt and pepper to taste.\n8. Serve hot.",
 			"time": 40,
 			"meal_type": "dinner"
 		},
@@ -508,6 +508,7 @@ def get_recipe_fixtures():
 			"title": "Peanut Butter Banana Smoothie",
 			"description": "A creamy smoothie with banana, peanut butter, and milk.",
 			"ingredients": "Banana\nPeanut butter\nMilk\nHoney\nIce",
+			"instructions": "1. In a blender, combine banana, peanut butter, milk, honey, and ice.\n2. Blend until smooth and creamy.\n3. Pour into a glass.\n4. Serve immediately.",
 			"time": 5,
 			"meal_type": "snack"
 		},
@@ -515,6 +516,7 @@ def get_recipe_fixtures():
 			"title": "Spaghetti Aglio e Olio",
 			"description": "A simple pasta with garlic, olive oil, and chili flakes.",
 			"ingredients": "Spaghetti\nGarlic\nOlive oil\nChili flakes\nParsley\nSalt",
+			"instructions": "1. Cook the spaghetti according to package instructions until al dente. Drain and set aside.\n2. In a large skillet, heat olive oil over medium heat.\n3. Add thinly sliced garlic and sauté until golden and fragrant.\n4. Stir in chili flakes.\n5. Add the cooked spaghetti to the skillet and toss to coat in the garlic oil.\n6. Season with salt and chopped parsley.\n7. Serve immediately.",
 			"time": 25,
 			"meal_type": "dinner"
 		},
@@ -522,6 +524,7 @@ def get_recipe_fixtures():
 			"title": "Veggie Omelette",
 			"description": "A fluffy omelette filled with colorful vegetables.",
 			"ingredients": "Eggs\nSpinach\nBell peppers\nOnion\nSalt\nPepper",
+			"instructions": "1. Beat the eggs in a bowl and season with salt and pepper.\n2. Heat a small amount of oil in a non-stick skillet over medium heat.\n3. Sauté chopped onion, bell peppers, and spinach until tender.\n4. Pour the beaten eggs over the vegetables in the skillet.\n5. Cook until the eggs begin to set, then gently fold the omelette.\n6. Cook for another 1–2 minutes until fully set.\n7. Slide onto a plate and serve immediately.",
 			"time": 10,
 			"meal_type": "breakfast"
 		},
@@ -529,6 +532,7 @@ def get_recipe_fixtures():
 			"title": "Chicken Burrito Bowl",
 			"description": "A hearty bowl with chicken, rice, beans, and veggies.",
 			"ingredients": "Chicken\nRice\nBlack beans\nCorn\nTomatoes\nLettuce",
+			"instructions": "1. Cook the rice according to package instructions.\n2. Season and cook the chicken until fully cooked, then dice or slice it.\n3. In a bowl, layer the cooked rice, black beans, corn, chopped tomatoes, and shredded lettuce.\n4. Top with the cooked chicken.\n5. Add any additional toppings or dressing as desired.\n6. Serve immediately.",
 			"time": 35,
 			"meal_type": "lunch"
 		},
@@ -536,6 +540,7 @@ def get_recipe_fixtures():
 			"title": "Garlic Butter Shrimp",
 			"description": "Tender shrimp cooked quickly in garlic and butter.",
 			"ingredients": "Shrimp\nGarlic\nButter\nLemon\nParsley\nSalt",
+			"instructions": "1. Heat butter in a large skillet over medium heat.\n2. Add minced garlic and sauté until fragrant.\n3. Add the shrimp and cook for 2–3 minutes per side, until pink and opaque.\n4. Squeeze fresh lemon juice over the shrimp.\n5. Season with salt and sprinkle with chopped parsley.\n6. Serve immediately.",
 			"time": 15,
 			"meal_type": "dinner"
 		},
@@ -543,6 +548,7 @@ def get_recipe_fixtures():
 			"title": "Apple Cinnamon Overnight Oats",
 			"description": "Creamy oats mixed with apples and cinnamon, chilled overnight.",
 			"ingredients": "Oats\nMilk\nApple\nCinnamon\nHoney",
+			"instructions": "1. In a jar or bowl, combine oats, milk, and a pinch of cinnamon.\n2. Dice the apple and stir it into the mixture.\n3. Add honey to taste and mix well.\n4. Cover and refrigerate overnight.\n5. In the morning, stir the oats and add extra apple or toppings if desired.\n6. Serve chilled.",
 			"time": 10,
 			"meal_type": "breakfast"
 		},
@@ -550,6 +556,7 @@ def get_recipe_fixtures():
 			"title": "Caprese Sandwich",
 			"description": "Fresh mozzarella, tomato, and basil layered on crusty bread.",
 			"ingredients": "Bread\nMozzarella\nTomato\nBasil\nOlive oil\nBalsamic",
+			"instructions": "1. Slice the bread and drizzle with a little olive oil.\n2. Layer slices of fresh mozzarella and tomato on the bread.\n3. Add fresh basil leaves on top.\n4. Drizzle with balsamic vinegar.\n5. Close the sandwich with the other slice of bread.\n6. Serve immediately.",
 			"time": 10,
 			"meal_type": "lunch"
 		},
@@ -557,6 +564,7 @@ def get_recipe_fixtures():
 			"title": "Banana Bread Squares",
 			"description": "Soft banana bread cut into snackable squares.",
 			"ingredients": "Bananas\nFlour\nSugar\nEggs\nButter\nBaking soda",
+			"instructions": "1. Preheat the oven to 350°F (175°C) and grease a baking pan.\n2. Mash the bananas in a bowl.\n3. Mix in melted butter, sugar, and eggs until smooth.\n4. Add flour and baking soda, stirring until just combined.\n5. Pour the batter into the prepared pan.\n6. Bake for 35–40 minutes, or until a toothpick inserted in the center comes out clean.\n7. Let cool before cutting into squares and serving.",
 			"time": 45,
 			"meal_type": "snack"
 		},
@@ -564,6 +572,7 @@ def get_recipe_fixtures():
 			"title": "Lemon Bars",
 			"description": "Bright, tangy lemon bars with a soft crust.",
 			"ingredients": "Lemon juice\nSugar\nFlour\nButter\nEggs",
+			"instructions": "1. Preheat the oven to 350°F (175°C) and grease a baking pan.\n2. In a bowl, mix flour, sugar, and melted butter to form the crust.\n3. Press the crust mixture into the bottom of the pan.\n4. Bake for 15–20 minutes until lightly golden.\n5. In another bowl, whisk together eggs, sugar, and lemon juice for the filling.\n6. Pour the filling over the baked crust.\n7. Bake for an additional 20–25 minutes until set.\n8. Let cool, then cut into bars and serve.",
 			"time": 50,
 			"meal_type": "dessert"
 		},
@@ -571,6 +580,7 @@ def get_recipe_fixtures():
 			"title": "Cucumber Mint Salad",
 			"description": "A refreshing salad with cucumbers, mint, and lemon.",
 			"ingredients": "Cucumbers\nMint\nLemon juice\nOlive oil\nSalt",
+			"instructions": "1. Slice the cucumbers thinly and place them in a bowl.\n2. Chop fresh mint and add to the cucumbers.\n3. Drizzle with lemon juice and olive oil.\n4. Season with a pinch of salt.\n5. Toss everything together until well combined.\n6. Serve immediately or chill for a few minutes before serving.",
 			"time": 8,
 			"meal_type": "snack"
 		},
@@ -578,6 +588,7 @@ def get_recipe_fixtures():
 			"title": "Baked Salmon with Dill",
 			"description": "A simple baked salmon fillet seasoned with dill and lemon.",
 			"ingredients": "Salmon\nDill\nLemon\nOlive oil\nSalt\nPepper",
+			"instructions": "1. Preheat the oven to 400°F (200°C) and lightly grease a baking dish.\n2. Place the salmon fillet in the dish and drizzle with olive oil.\n3. Season with salt, pepper, and chopped fresh dill.\n4. Squeeze lemon juice over the salmon.\n5. Bake for 12–15 minutes, or until the salmon is cooked through and flakes easily.\n6. Serve immediately.",
 			"time": 25,
 			"meal_type": "dinner"
 		},
@@ -585,6 +596,7 @@ def get_recipe_fixtures():
 			"title": "Strawberry Cheesecake Cup",
 			"description": "A quick layered cheesecake-style dessert in a cup.",
 			"ingredients": "Cream cheese\nSugar\nStrawberries\nGraham crumbs\nVanilla",
+			"instructions": "1. In a bowl, beat the cream cheese with sugar and a splash of vanilla until smooth.\n2. In serving cups, layer graham cracker crumbs at the bottom.\n3. Add a layer of the cream cheese mixture.\n4. Top with sliced strawberries.\n5. Repeat layers if desired.\n6. Serve immediately or chill for a few minutes before serving.",
 			"time": 10,
 			"meal_type": "dessert"
 		}

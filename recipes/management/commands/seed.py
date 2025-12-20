@@ -136,6 +136,11 @@ class Command(BaseCommand):
             pass
 
     def create_user(self, data):
+        """First creating a weighted random boolean for the is_private field"""
+        r = random.random()
+        priv_bool = False
+        if r < 0.3:
+            priv_bool = True
         """
         Create a user with the default password.
 
@@ -143,10 +148,6 @@ class Command(BaseCommand):
             data (dict): Mapping with keys ``username``, ``email``,
                 ``first_name``, and ``last_name``.
         """
-        r = random.random()
-        priv_bool = False
-        if r < 0.3:
-            priv_bool = True
         User.objects.create_user(
             username=data['username'],
             email=data['email'],
@@ -167,7 +168,9 @@ class Command(BaseCommand):
         uniqueness constraints on username/email) are ignored and generation continues.
         """
         self.generate_recipe_fixtures()
+        print(Recipe.objects.count())
         self.generate_random_recipes()
+        print(Recipe.objects.count())
 
     def generate_recipe_fixtures(self):
         """Attempt to create each predefined fixture recipe."""
@@ -196,10 +199,11 @@ class Command(BaseCommand):
         title = self.faker.dish()
         description = shorten_string(self.faker.dish_description())
         ingredients = f'{self.faker.ingredient()}\n{self.faker.ingredient()}'
+        instructions = generate_recipe_instructions(ingredients)
         time = round_to_nearest_5(self.faker.random_int(min=5, max=150))
         meal_type = random.choice(['breakfast','lunch','dinner','snack','dessert'])
         self.try_create_recipe({'title': title, 'description': description, 'ingredients': ingredients,
-         'time': time, 'meal_type': meal_type})
+         'instructions': instructions,'time': time, 'meal_type': meal_type})
 
     def try_create_recipe(self, data):
         """
@@ -227,6 +231,7 @@ class Command(BaseCommand):
             title=data['title'],
             description=data['description'],
             ingredients=data['ingredients'],
+            instructions=data['instructions'],
             time=data['time'],
             meal_type=data['meal_type'],
         )
@@ -391,11 +396,37 @@ def shorten_string(s):
         Cuts the given string to a reasonable length.
         """
         s = s.split('.')[0]
+        s_list = s.split(',')
+        first_two = s_list[0]
+        if len(s_list) > 1:
+            first_two = s_list[0] + ',' + s_list[1]
+
         if len(s) <= 110:
-            return s + '.'
+            return s += '.'
+        elif len(s_list) > 1 and len(first_two) <= 110:
+            s = first_two
         else:
-            s = s.split(',')[0]
-            if '(' in s and ')' not in s:
-                return s +').'
-            else:
-                return s + '.'
+            s = s_list[0]
+
+        if '(' in s and ')' not in s:
+            return s +').'
+        else:
+            return s + '.'
+
+def generate_recipe_instructions(ingredients):
+    temp = round_to_nearest_5(random.randint(100, 251))
+    instructions = f"1. Preheat the oven to {temp}°C"
+    count = 2
+    for ingredient in ingredients.split('\n'):
+        step = random.choice([f"Add some {ingredient}.", 
+            f"Add two cups of the {ingredient}, then stir.",
+            f"Chop the {ingredient}.",
+            f"Mix the {ingredient} with the other ingredients.",
+            f"Season the {ingredient} however you'd like.",
+            f"Shred the {ingredient}, and add it to the pan."])
+        
+        instructions += f"\n{count}. {step}"
+        count += 1
+    instructions += f"{count}. Serve and enjoy."
+
+    return instructions
