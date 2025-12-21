@@ -14,6 +14,7 @@ import random
 from django.core.management.base import BaseCommand, CommandError
 from recipes.models import User, Recipe, Follow, Rating
 from recipes.management import Recipe_Fixtures
+import urllib.request
 
 
 user_fixtures = [
@@ -189,6 +190,12 @@ class Command(BaseCommand):
         print("Recipe seeding complete.      ")
 
     def generate_recipe(self):
+        image_rep = []
+        while len(image_rep) < 2:
+            meal_response = urllib.request.urlopen('https://www.themealdb.com/api/json/v1/1/random.php')
+            image_rep = str(meal_response.read()).split('strMealThumb":')
+        #shorten_string(self.faker.dish_description())
+        #'https://picsum.photos/788/861'
         """
         Generate a single random recipe and attempt to insert it.
 
@@ -196,12 +203,14 @@ class Command(BaseCommand):
         """
         title = self.faker.dish()
         description = shorten_string(self.faker.dish_description())
+        #print(len(image_rep[1].split('"')[1]))
         ingredients = f'{self.faker.ingredient()}\n{self.faker.ingredient()}'
         instructions = generate_recipe_instructions(ingredients)
         time = round_to_nearest_5(self.faker.random_int(min=5, max=150))
         meal_type = random.choice(['breakfast','lunch','dinner','snack','dessert'])
+        image_url = f'{image_rep[1].split('"')[1].replace('\\', '')}'
         self.try_create_recipe({'title': title, 'description': description, 'ingredients': ingredients,
-         'instructions': instructions,'time': time, 'meal_type': meal_type})
+         'instructions': instructions,'time': time, 'meal_type': meal_type, 'image_url': image_url})
 
     def try_create_recipe(self, data):
         """
@@ -232,6 +241,7 @@ class Command(BaseCommand):
             instructions=data['instructions'],
             time=data['time'],
             meal_type=data['meal_type'],
+            image_url=data['image_url']
         )
 
 
@@ -425,6 +435,6 @@ def generate_recipe_instructions(ingredients):
         
         instructions += f"\n{count}. {step}"
         count += 1
-    instructions += f"{count}. Serve and enjoy."
+    instructions += f"\n{count}. Serve and enjoy."
 
     return instructions
