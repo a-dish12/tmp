@@ -32,8 +32,8 @@ class Command(BaseCommand):
             None
         """
 
-        User.objects.filter(is_staff=False).delete()
-        print('Users deleted.')
+        #User.objects.filter(is_staff=False).delete()
+        #print('Users deleted.')
         Recipe.objects.all().delete()
         print('Recipes deleted.')
         Follow.objects.all().delete()

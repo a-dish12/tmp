@@ -190,25 +190,22 @@ class Command(BaseCommand):
         print("Recipe seeding complete.      ")
 
     def generate_recipe(self):
-        image_rep = []
-        while len(image_rep) < 2:
-            meal_response = urllib.request.urlopen('https://www.themealdb.com/api/json/v1/1/random.php')
-            image_rep = str(meal_response.read()).split('strMealThumb":')
-        #shorten_string(self.faker.dish_description())
-        #'https://picsum.photos/788/861'
+        """
+        Get a random meal from themealdb.com
+        """
+        mealResponse_str = str(urllib.request.urlopen('https://www.themealdb.com/api/json/v1/1/random.php').read())
         """
         Generate a single random recipe and attempt to insert it.
 
         Uses Faker for everything but meal_type, which is a random choice between options.
         """
-        title = self.faker.dish()
+        title = mealResponse_str.split('strMeal":')[1].split('"')[1]
         description = shorten_string(self.faker.dish_description())
-        #print(len(image_rep[1].split('"')[1]))
-        ingredients = f'{self.faker.ingredient()}\n{self.faker.ingredient()}'
+        ingredients = f'{self.faker.ingredient()}\n{self.faker.ingredient()}\n{self.faker.ingredient()}'
         instructions = generate_recipe_instructions(ingredients)
         time = round_to_nearest_5(self.faker.random_int(min=5, max=150))
         meal_type = random.choice(['breakfast','lunch','dinner','snack','dessert'])
-        image_url = f'{image_rep[1].split('"')[1].replace('\\', '')}'
+        image_url = mealResponse_str.split('strMealThumb":')[1].split('"')[1].replace('\\', '')
         self.try_create_recipe({'title': title, 'description': description, 'ingredients': ingredients,
          'instructions': instructions,'time': time, 'meal_type': meal_type, 'image_url': image_url})
 
@@ -403,23 +400,7 @@ def shorten_string(s):
         """
         Cuts the given string to a reasonable length.
         """
-        s = s.split('.')[0]
-        s_list = s.split(',')
-        first_two = s_list[0]
-        if len(s_list) > 1:
-            first_two = s_list[0] + ',' + s_list[1]
-
-        if len(s) <= 110:
-            return s + '.'
-        elif len(s_list) > 1 and len(first_two) <= 110:
-            s = first_two
-        else:
-            s = s_list[0]
-
-        if '(' in s and ')' not in s:
-            return s +').'
-        else:
-            return s + '.'
+        return s.split('.')[0] + '.'
 
 def generate_recipe_instructions(ingredients):
     temp = round_to_nearest_5(random.randint(100, 251))
