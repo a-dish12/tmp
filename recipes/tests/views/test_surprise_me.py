@@ -57,17 +57,22 @@ class SurpriseMeTests(TestCase):
             author=self.other_user
         )
 
-    def test_surprise_me_recipe(self):
+    def test_surprise_quiz_loads(self):
         response = self.client.get(reverse("dashboard-surprise"))
 
-        self.assertEqual(response.status_code, 302)
-        possible_ids = [
-            str(self.salad.pk),
-            str(self.sandwich.pk),
-            str(self.burrito.pk),
-            str(self.meatpie.pk),
-            
-        ]
-        self.assertTrue(
-            any(recipe_id in response.url for recipe_id in possible_ids)
-        )
+        self.assertEqual(response.status_code, 200)
+    
+    def test_surprise_result_redirects_to_recipe(self):
+        response=self.client.get(reverse("surprise-result"))
+        self.assertEqual(response.status_code,302)
+        self.assertTrue(response.url.startswith("/recipes/"))
+
+    def test_surprise_filters_by_meal_type(self):
+        response = self.client.get(reverse("surprise-result"),
+                                   {"meal_type": ["breakfast"]})
+        self.assertIn(f"/recipes/{self.salad.pk}/", response.url)
+    
+    def test_surprise_no_results_redirects_dashboard(self):
+        response = self.client.get(reverse("surprise-result"),
+                                   {"meal_type": ["dinner"]})
+        self.assertRedirects(response,reverse("dashboard"))

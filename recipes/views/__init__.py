@@ -11,6 +11,7 @@ from .user_recipes_view import *
 from .follow_view import *
 from .user_profile_view import *
 from .recipe_view import RecipeDetailView,RateRecipeView
-from .surprise_recipe_view import surprise_recipe_view
+from .surprise_recipe_view import *
 from .planner_view import *
 from .comment_view import *
+from .surprise_quiz_view import *
