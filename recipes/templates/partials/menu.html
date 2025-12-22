@@ -40,7 +40,7 @@
     </li>
 
     <li class="nav-item">
-      <a class="nav-link nav-pill {% if 'surprise' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'dashboard-surprise' %}?{{ request.GET.urlencode }}">
+      <a class="nav-link nav-pill {% if 'surprise' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'dashboard-surprise' %}">
         <i class="bi bi-shuffle nav-icon"></i>
         Surprise Me
       </a>
