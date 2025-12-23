@@ -191,8 +191,13 @@
             {% for recipe in recipes %}
               <a href="{% url 'recipe_detail' recipe.pk %}" class="recipe-card">
 
-                <div class="recipe-image"></div>
-
+                <div class="recipe-image">
+                {% if recipe.get_image_url %}
+                  <div class="card mb-4">
+                    <img src="{{ recipe.get_image_url }}" class="card-img-top" alt="{{ recipe.title }}" style="max-height: 190px; object-fit: cover;">
+                  </div>
+                {% endif %}
+                </div>
                 <h5 class="recipe-title">{{ recipe.title }}</h5>
 
                 <p class="recipe-desc">

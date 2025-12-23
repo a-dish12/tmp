@@ -8,11 +8,11 @@ is swallowed and generation continues.
 """
 
 
-from faker import Faker
+from faker import Faker, providers
 from faker_food import FoodProvider
 import random
 from django.core.management.base import BaseCommand, CommandError
-from recipes.models import User, Recipe, Follow, Rating
+from recipes.models import User, Recipe, Follow, Rating, Comment
 from recipes.management import Recipe_Fixtures
 import urllib.request
 
@@ -54,6 +54,7 @@ class Command(BaseCommand):
     RECIPE_COUNT = 150
     FOLLOW_COUNT = 350
     RATING_COUNT = 1000
+    COMMENT_COUNT = 350
 
     DEFAULT_PASSWORD = 'Password123'
     help = 'Seeds the database with sample data'
@@ -63,6 +64,8 @@ class Command(BaseCommand):
         super().__init__(*args, **kwargs)
         self.faker = Faker('en_GB')
         self.faker.add_provider(FoodProvider)
+        self.faker.add_provider(providers.misc)
+        self.faker.add_provider(providers.lorem)
 
     def handle(self, *args, **options):
         """
@@ -79,6 +82,7 @@ class Command(BaseCommand):
         self.create_follows()
         self.follows = Follow.objects.all()
         self.generate_random_ratings()
+        self.generate_random_comments()
 
 
     #USERS
@@ -137,11 +141,6 @@ class Command(BaseCommand):
             pass
 
     def create_user(self, data):
-        """First creating a weighted random boolean for the is_private field"""
-        r = random.random()
-        priv_bool = False
-        if r < 0.3:
-            priv_bool = True
         """
         Create a user with the default password.
 
@@ -155,7 +154,7 @@ class Command(BaseCommand):
             password=Command.DEFAULT_PASSWORD,
             first_name=data['first_name'],
             last_name=data['last_name'],
-            is_private=priv_bool
+            is_private=self.faker.boolean(chance_of_getting_true=30)
         )
 
 
@@ -206,6 +205,7 @@ class Command(BaseCommand):
         time = round_to_nearest_5(self.faker.random_int(min=5, max=150))
         meal_type = random.choice(['breakfast','lunch','dinner','snack','dessert'])
         image_url = mealResponse_str.split('strMealThumb":')[1].split('"')[1].replace('\\', '')
+
         self.try_create_recipe({'title': title, 'description': description, 'ingredients': ingredients,
          'instructions': instructions,'time': time, 'meal_type': meal_type, 'image_url': image_url})
 
@@ -361,6 +361,74 @@ class Command(BaseCommand):
             recipe=data['recipe'],
             user=data['user'],
             stars=data['stars']
+        )
+
+
+        #COMMENTS
+
+        #Current problems:
+        #1. When too many comments are created, it makes copies of the recipes (only fixture recipes) and comments on that
+        #2. Sometimes it says a recipe has comments, but doesn't show them (I think max is 2 unique comments)
+    def generate_random_comments(self):
+        """
+        Generate random comments until the database contains COMMENT_COUNT comment.
+
+        Prints a simple progress indicator to stdout during generation.
+        """
+        comment_count = Comment.objects.count()
+        while comment_count < self.COMMENT_COUNT:
+            print(f"Seeding comment {comment_count}/{self.COMMENT_COUNT}", end='\r')
+            self.generate_comment()
+            comment_count = Comment.objects.count()
+        print("Comment seeding complete.      ")
+
+    def generate_comment(self):
+        """
+        Decide whether the comment should have a parent
+        """
+        parent_options = [None]
+        r = random.random()
+        if r < 0.3 and Comment.objects.count() != 0:
+            parent_options.extend(Comment.objects.all())
+        """
+        Generate a single random comment and attempt to insert it.
+        """
+        parent = random.choice(parent_options)
+        if parent != None:
+            recipe = parent.recipe
+        else:
+            recipe = random.choice(self.recipes)
+        user = random.choice(self.users.exclude(id=recipe.author.id))
+        text = self.faker.sentence().strip('.') + '!'
+
+        self.try_create_comment({'recipe': recipe, 'user': user, 'text': text, 'parent': parent})
+
+    def try_create_comment(self, data):
+        """
+        Attempt to create a comment and ignore any errors.
+
+        Args:
+            data (dict): Mapping with keys ``recipe``, ``user``,
+                ``text``, and ``parent``.
+        """
+        try:
+            self.create_comment(data)
+        except:
+            pass
+
+    def create_comment(self, data):
+        """
+        Create a comment.
+
+        Args:
+            data (dict): Mapping with keys ``recipe``, ``user``,
+                ``text``, and ``parent``.
+        """
+        Comment.objects.create(
+            recipe=data['recipe'],
+            user=data['user'],
+            text=data['text'],
+            parent=data['parent']
         )
 
 
