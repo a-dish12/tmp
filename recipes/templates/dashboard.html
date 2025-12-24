@@ -133,34 +133,20 @@
         <a href="{% url 'user_profile' user.id %}" class="btn btn-primary btn-lg">
           My profile
         </a>
-        <a href="{% url 'planner_calendar'%}" class="btn btn-primary btn-lg me-3">
+        <a href="{% url 'planner_range'%}" class="btn btn-primary btn-lg me-3">
           My Meal Planner
         </a>
         <a href="{% url 'create_recipe' %}" class="btn btn-primary btn-lg">
           Create New Recipe
         </a>
-        <a href="{% url 'user_recipes' %}" class="btn btn-secondary btn-lg">
-          My Recipes
-        </a>
         <a href="{% url 'dashboard-surprise' %}?{{request.GET.urlencode}}"
-        class="btn btn-warning btn-lg">Surprise me!!!</a>
+        class="btn btn-warning btn-lg">Surprise me!!!
+      </a>
       </div>
 
       <!-- Explore header -->
       <h2 class="list-title mt-5">Explore Recipes from Others</h2>
 
-      <!-- Dropdown meal filter -->
-      <form method="get" class="mb-3">
-        <label for="meal_type">Filter by meal type:</label>
-        <select name="meal_type" id="meal_type" class="form-select" onchange="this.form.submit()">
-          <option value="">All</option>
-          <option value="breakfast" {% if selected_meal_type == "breakfast" %}selected{% endif %}>Breakfast</option>
-          <option value="lunch" {% if selected_meal_type == "lunch" %}selected{% endif %}>Lunch</option>
-          <option value="dinner" {% if selected_meal_type == "dinner" %}selected{% endif %}>Dinner</option>
-          <option value="snack" {% if selected_meal_type == "snack" %}selected{% endif %}>Snack</option>
-          <option value="dessert" {% if selected_meal_type == "dessert" %}selected{% endif %}>Dessert</option>
-        </select>
-      </form>
 
       <!-- For You / Following -->
       <nav class="nav nav-tabs justify-content-center mb-4">
