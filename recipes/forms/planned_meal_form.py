@@ -21,13 +21,14 @@ class PlannedMealForm(forms.Form):
         choices=MEAL_TYPES,
         widget=forms.Select(attrs={'class': 'form-select'})
     )
-    recipe = forms.ModelChoiceField(queryset=None, widget=forms.HiddenInput())
-    
+    recipe = forms.ModelChoiceField(
+        queryset=None,
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )    
     """
     """
-    def __init__(self, *args, user=None, recipe=None, **kwargs):
+    def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
-        if recipe:
-            self.fields["recipe"].initial = recipe
+
         if user:
             self.fields["recipe"].queryset = visible_recipes_for(user)
