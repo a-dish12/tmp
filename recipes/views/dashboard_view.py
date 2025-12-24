@@ -83,6 +83,7 @@ class DashboardView(LoginRequiredMixin, ListView):
         selected_time_filter = self.request.GET.get("time_filter", "")
         search_term = self.request.GET.get("search", "")
         selected_diet = self.get_selected_diet()
+        selected_sort = self.request.GET.get("sort", "time")
         selected_rating_filter = self.request.GET.get("rating_filter", "")
 
         recipes = context['recipes']
@@ -96,6 +97,7 @@ class DashboardView(LoginRequiredMixin, ListView):
             "diet_filters": self.DIET_FILTERS,
             "rating_filters": self.RATING_FILTERS,
             "sort_options": self.SORT_OPTIONS,
+            "rating_filters": self.RATING_FILTERS,
 
             "selected_meal_types": selected_meal_types,
             "selected_meal_type": selected_meal_types[0] if selected_meal_types else "",
@@ -108,7 +110,7 @@ class DashboardView(LoginRequiredMixin, ListView):
             "following_page": self.request.path == reverse("following_dashboard"),
 
             "has_active_filters": bool(
-                selected_meal_types or selected_time_filter or search_term or selected_diet or (selected_sort != "time")
+                selected_meal_types or selected_time_filter or search_term or selected_diet or selected_rating_filter
             ),
 
             "add_on": "?" if self.request.path == self.request.get_full_path() else "&",
@@ -196,12 +198,12 @@ class DashboardView(LoginRequiredMixin, ListView):
         following_page = self.request.path == reverse('following_dashboard')
         
         if following_page:
-            temp_set = queryset
-            for nf in not_following_set.values_list('following'):
-                temp_set = temp_set.exclude(author=nf)
-            for f in temp_set.values_list('author'):
-                queryset = queryset.exclude(author=f)
-
+            following_ids = Follow.objects.filter(
+                follower=self.request.user
+            ).values_list('following', flat=True)
+            
+            queryset = queryset.filter(author__in=following_ids)
+        
         return queryset
     
     def apply_sorting(self, queryset):
