@@ -15,6 +15,7 @@ from django.core.management.base import BaseCommand, CommandError
 from recipes.models import User, Recipe, Follow, Rating, Comment
 from recipes.management import Recipe_Fixtures
 import urllib.request
+from unicodedata import normalize
 
 
 user_fixtures = [
@@ -45,6 +46,7 @@ class Command(BaseCommand):
         RECIPE_COUNT (int): Target total number of recipes in the database.
         FOLLOW_COUNT (int): Target total number of follow relations in the database.
         RATING_COUNT (int): Target total number of ratings in the database.
+        COMMENT_COUNT (int): Target total number of comments in the database.
         DEFAULT_PASSWORD (str): Default password assigned to all created users.
         help (str): Short description shown in ``manage.py help``.
         faker (Faker): Locale-specific Faker instance used for random data.
@@ -54,7 +56,7 @@ class Command(BaseCommand):
     RECIPE_COUNT = 150
     FOLLOW_COUNT = 350
     RATING_COUNT = 1000
-    COMMENT_COUNT = 350
+    COMMENT_COUNT = 400
 
     DEFAULT_PASSWORD = 'Password123'
     help = 'Seeds the database with sample data'
@@ -193,12 +195,19 @@ class Command(BaseCommand):
         Get a random meal from themealdb.com
         """
         mealResponse_str = str(urllib.request.urlopen('https://www.themealdb.com/api/json/v1/1/random.php').read())
+        title_str = mealResponse_str.split('strMeal":')[1].split('"')[1]
+        #Accurately represent special symbols:
+        while '\\\\' in title_str:
+            uni_index = title_str.find('\\\\')
+            uni_str = title_str[uni_index:uni_index+7]
+            title_str = title_str.replace(uni_str, chr(int(uni_str[3:], 16)))
         """
         Generate a single random recipe and attempt to insert it.
 
-        Uses Faker for everything but meal_type, which is a random choice between options.
+        Uses Faker for the description, ingredients and time, themealdb.com for the title and image,
+        and Python's random module for meal_type and the construction of the instructions.
         """
-        title = mealResponse_str.split('strMeal":')[1].split('"')[1]
+        title = title_str.replace('\\', '')
         description = shorten_string(self.faker.dish_description())
         ingredients = f'{self.faker.ingredient()}\n{self.faker.ingredient()}\n{self.faker.ingredient()}'
         instructions = generate_recipe_instructions(ingredients)
@@ -364,11 +373,8 @@ class Command(BaseCommand):
         )
 
 
-        #COMMENTS
+    #COMMENTS
 
-        #Current problems:
-        #1. When too many comments are created, it makes copies of the recipes (only fixture recipes) and comments on that
-        #2. Sometimes it says a recipe has comments, but doesn't show them (I think max is 2 unique comments)
     def generate_random_comments(self):
         """
         Generate random comments until the database contains COMMENT_COUNT comment.
@@ -388,8 +394,10 @@ class Command(BaseCommand):
         """
         parent_options = [None]
         r = random.random()
-        if r < 0.3 and Comment.objects.count() != 0:
+        if r < 0.2 and Comment.objects.count() != 0:
             parent_options.extend(Comment.objects.all())
+        elif r < 0.5 and Comment.objects.count() != 0:
+            parent_options.extend(Comment.objects.filter(parent=None))
         """
         Generate a single random comment and attempt to insert it.
         """

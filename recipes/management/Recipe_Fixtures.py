@@ -556,7 +556,7 @@ def get_recipe_fixtures():
 			"instructions": "1. Wash and chop the romaine lettuce and place it in a large salad bowl.\n2. Add croutons and grated Parmesan cheese.\n3. Drizzle Caesar dressing over the salad.\n4. Toss gently to combine.\n5. Squeeze a little fresh lemon juice on top if desired.\n6. Serve immediately.",
 			"time": 12,
 			"meal_type": "lunch",
-			"image_url": "https://www.thespruceeats.com/thmb/DRaBINVopeoHOpjJn66Yh7pMBSc=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/classic-caesar-salad-recipe-996054-Hero_01-33c94cc8b8e841ee8f2a815816a0af95.jpg"
+			"image_url": "https://assets.bonappetit.com/photos/624215f8a76f02a99b29518f/1:1/w_2560%2Cc_limit/0328-ceasar-salad-lede.jpg"
 		},
 		{
 			"title": "Tomato Basil Soup",
