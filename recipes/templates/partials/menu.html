@@ -12,6 +12,13 @@
     </li>
 
     <li class="nav-item">
+      <a class="nav-link nav-pill {% if request.resolver_match.url_name == 'search_users' %}active{% endif %}" href="{% url 'search_users' %}">
+        <i class="bi bi-search nav-icon"></i>
+        Find Users
+      </a>
+    </li>
+
+    <li class="nav-item">
       <a class="nav-link nav-pill {% if 'user_profile' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'user_profile' user.id %}">
         <i class="bi bi-person nav-icon"></i>
         My Profile
