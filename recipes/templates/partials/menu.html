@@ -1,15 +1,108 @@
+<!-- NAVBAR COLLAPSE -->
 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-  <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-    <li class="nav-item dropdown">
-      <a class="nav-link" href="#" id="user-account-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <span class="bi-person-circle"></span>
+
+  <!-- CENTER NAV ITEMS -->
+  <ul class="navbar-nav align-items-center dashboard-nav-items">
+
+    <li class="nav-item">
+      <a class="nav-link nav-pill {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+        <i class="bi bi-house nav-icon"></i>
+        Home
       </a>
-      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="user-account-dropdown">
-        <li><a class="dropdown-item" href="{% url 'profile' %}">Update profile</a></li>
-        <li><a class="dropdown-item" href="{% url 'password' %}">Change password</a></li>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link nav-pill {% if request.resolver_match.url_name == 'search_users' %}active{% endif %}" href="{% url 'search_users' %}">
+        <i class="bi bi-search nav-icon"></i>
+        Find Users
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link nav-pill {% if 'user_profile' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'user_profile' user.id %}">
+        <i class="bi bi-person nav-icon"></i>
+        My Profile
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link nav-pill {% if request.resolver_match.url_name == 'planner_calendar' or request.resolver_match.url_name == 'planner_events' or request.resolver_match.url_name == 'planner_day' %}active{% endif %}" href="{% url 'planner_calendar' %}">
+        <i class="bi bi-calendar3 nav-icon"></i>
+        Meal Plan
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link nav-pill {% if request.resolver_match.url_name == 'create_recipe' %}active{% endif %}" href="{% url 'create_recipe' %}">
+        <i class="bi bi-plus-circle nav-icon"></i>
+        Create
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link nav-pill {% if 'user_recipes' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'user_recipes' %}">
+        <i class="bi bi-journal-text nav-icon"></i>
+        My Recipes
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link nav-pill {% if 'surprise' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'dashboard-surprise' %}">
+        <i class="bi bi-shuffle nav-icon"></i>
+        Surprise Me
+      </a>
+    </li>
+
+  </ul>
+
+  <!-- RIGHT-ALIGNED LOGOUT -->
+  <ul class="navbar-nav align-items-center dashboard-nav-logout">
+
+    <!-- Notifications Bell -->
+    <li class="nav-item dropdown">
+      <a class="nav-link nav-pill position-relative" href="#" id="notificationsDropdown" role="button" 
+         data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
+        <i class="bi bi-bell nav-icon"></i>
+        {% if user.unread_notifications_count > 0 %}
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notification-badge">
+          {{ user.unread_notifications_count }}
+          <span class="visually-hidden">unread notifications</span>
+        </span>
+        {% endif %}
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
+        <li><h6 class="dropdown-header">Notifications</h6></li>
         <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="{% url 'log_out' %}">Log out</a></li>
+        {% if user.notifications.all %}
+          {% for notification in user.notifications.all|slice:":5" %}
+            <li>
+              <a class="dropdown-item {% if not notification.is_read %}bg-light{% endif %}" 
+                 href="{% url 'mark_notification_read' notification.id %}">
+                <small class="text-muted d-block">{{ notification.created_at|timesince }} ago</small>
+                <strong>{{ notification.title }}</strong>
+                <p class="mb-0 small">{{ notification.message|truncatewords:15 }}</p>
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+          {% endfor %}
+          <li>
+            <a class="dropdown-item text-center text-primary" href="{% url 'notifications_list' %}">
+              View All Notifications
+            </a>
+          </li>
+        {% else %}
+          <li><span class="dropdown-item text-muted">No notifications</span></li>
+        {% endif %}
       </ul>
     </li>
+
+    <li class="nav-item">
+      <a class="nav-link nav-pill logout-pill" href="{% url 'log_out' %}">
+        <i class="bi bi-box-arrow-right nav-icon"></i>
+        Logout
+      </a>
+    </li>
+
   </ul>
+
 </div>

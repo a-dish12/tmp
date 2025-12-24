@@ -17,16 +17,19 @@ class RecipeFormExtensionsTestCase(TestCase):
         self.form_input = {
             'title': 'Test Recipe',
             'description': 'A test recipe',
-            'ingredients': 'Test ingredients',
-            'instructions': '1. Step one\n2. Step two',
+            'ingredient_count': 1,
+            'ingredient_0': 'Test ingredients',
+            'instruction_count': 2,
+            'instruction_0': 'Step one',
+            'instruction_1': 'Step two',
             'time': 30,
-            'meal_type': 'lunch',
+            'meal_types': ['lunch'],
             'image_url': 'https://example.com/image.jpg'
         }
 
-    def test_form_has_instructions_field(self):
+    def test_form_has_instruction_count_field(self):
         form = RecipeForm()
-        self.assertIn('instructions', form.fields)
+        self.assertIn('instruction_count', form.fields)
 
     def test_form_has_image_field(self):
         form = RecipeForm()
@@ -40,13 +43,14 @@ class RecipeFormExtensionsTestCase(TestCase):
         form = RecipeForm(data=self.form_input)
         self.assertTrue(form.is_valid())
 
-    def test_form_accepts_empty_instructions(self):
-        self.form_input['instructions'] = ''
+    def test_form_accepts_empty_instruction_fields(self):
+        self.form_input['instruction_0'] = ''
+        self.form_input['instruction_1'] = ''
         form = RecipeForm(data=self.form_input)
-        self.assertTrue(form.is_valid())
+        self.assertFalse(form.is_valid())  # Should reject all empty instructions
 
     def test_form_accepts_long_instructions(self):
-        self.form_input['instructions'] = 'Step ' * 200
+        self.form_input['instruction_0'] = 'Step ' * 200
         form = RecipeForm(data=self.form_input)
         self.assertTrue(form.is_valid())
 
@@ -71,7 +75,9 @@ class RecipeFormExtensionsTestCase(TestCase):
         recipe = form.save(commit=False)
         recipe.author = self.user
         recipe.save()
-        self.assertEqual(recipe.instructions, self.form_input['instructions'])
+        instructions = recipe.get_instructions_list()
+        self.assertIn('Step one', instructions)
+        self.assertIn('Step two', instructions)
 
     def test_form_saves_image_url(self):
         form = RecipeForm(data=self.form_input)
