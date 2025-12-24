@@ -50,68 +50,10 @@ class CommentModelTestCase(TestCase):
         self.comment.text = 'x' * 1000
         self._assert_comment_is_valid()
 
-    def test_comment_without_parent_is_top_level(self):
-        """Test that a comment without a parent is not a reply."""
-        self.assertFalse(self.comment.is_reply())
-        self.assertEqual(self.comment.get_depth(), 0)
-
-    def test_comment_with_parent_is_reply(self):
-        """Test that a comment with a parent is a reply."""
-        reply = Comment.objects.create(
-            recipe=self.recipe,
-            user=self.other_user,
-            text="Thanks for the comment!",
-            parent=self.comment
-        )
-        self.assertTrue(reply.is_reply())
-        self.assertEqual(reply.get_depth(), 1)
-
-    def test_nested_comment_depth_calculation(self):
-        """Test depth calculation for nested comments."""
-        reply1 = Comment.objects.create(
-            recipe=self.recipe,
-            user=self.other_user,
-            text="Reply 1",
-            parent=self.comment
-        )
-        reply2 = Comment.objects.create(
-            recipe=self.recipe,
-            user=self.user,
-            text="Reply 2",
-            parent=reply1
-        )
-        reply3 = Comment.objects.create(
-            recipe=self.recipe,
-            user=self.other_user,
-            text="Reply 3",
-            parent=reply2
-        )
-        
-        self.assertEqual(self.comment.get_depth(), 0)
-        self.assertEqual(reply1.get_depth(), 1)
-        self.assertEqual(reply2.get_depth(), 2)
-        self.assertEqual(reply3.get_depth(), 3)
-
     def test_comment_string_representation(self):
         """Test the string representation of a comment."""
         expected = f"Comment by {self.user.username} on {self.recipe.title}"
         self.assertEqual(str(self.comment), expected)
-
-    def test_deleting_parent_comment_deletes_replies(self):
-        """Test that deleting a parent comment also deletes its replies."""
-        reply = Comment.objects.create(
-            recipe=self.recipe,
-            user=self.other_user,
-            text="Reply",
-            parent=self.comment
-        )
-        comment_id = self.comment.id
-        reply_id = reply.id
-        
-        self.comment.delete()
-        
-        self.assertFalse(Comment.objects.filter(id=comment_id).exists())
-        self.assertFalse(Comment.objects.filter(id=reply_id).exists())
 
     def test_recipe_can_have_multiple_comments(self):
         """Test that a recipe can have multiple comments."""

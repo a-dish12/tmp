@@ -121,6 +121,7 @@
             {% endfor %}
           </div>
 
+<<<<<<< HEAD
           <!-- Rating -->
           <div class="mb-3">
             <span class="form-label fw-bold d-block">Rating</span>
@@ -131,16 +132,32 @@
             </div>
 
             {% for rf in rating_filters %}
+=======
+          <!-- Sort By -->
+          <div class="mb-3">
+            <span class="form-label fw-bold d-block">Sort by</span>
+
+            {% for value, label in sort_options %}
+>>>>>>> 01ab971 (added user search, split ingredients and instructions list, added admin to report comments or recipes)
               <div class="form-check">
                 <input
                   class="form-check-input"
                   type="radio"
+<<<<<<< HEAD
                   name="rating_filter"
                   value="{{ rf.key }}"
                   id="rating_{{ rf.key }}"
                   {% if selected_rating_filter == rf.key %}checked{% endif %}
                 >
                 <label class="form-check-label" for="rating_{{ rf.key }}">{{ rf.label }}</label>
+=======
+                  name="sort"
+                  value="{{ value }}"
+                  id="sort_{{ value }}"
+                  {% if selected_sort == value %}checked{% endif %}
+                >
+                <label class="form-check-label" for="sort_{{ value }}">{{ label }}</label>
+>>>>>>> 01ab971 (added user search, split ingredients and instructions list, added admin to report comments or recipes)
               </div>
             {% endfor %}
           </div>
@@ -164,7 +181,7 @@
       <!-- MAIN CONTENT (RIGHT) -->
       <div class="col-md-9 recipes-col">
 
-        <!-- Recipe count (subtitle style) -->
+        <!-- Recipe count -->
         <p class="list-subtitle">
           Showing {{ recipes|length }} recipe{% if recipes|length != 1 %}s{% endif %}
         </p>
@@ -219,7 +236,12 @@
 
                 <div class="recipe-image"></div>
 
-                <h5 class="recipe-title">{{ recipe.title }}</h5>
+                <h5 class="recipe-title">
+                  {{ recipe.title }}
+                  {% if recipe.get_active_viewers >= 3 %}
+                    <span class="badge bg-danger ms-1" title="Trending - {{ recipe.get_active_viewers }} viewing now">🔥 Trending</span>
+                  {% endif %}
+                </h5>
 
                 <p class="recipe-desc">
                   {{ recipe.description|truncatewords:18 }}
@@ -238,6 +260,9 @@
                   {% endwith %}
                   <span class="rating-num">
                     {{ recipe.average_rating|floatformat:1 }}
+                  </span>
+                  <span class="text-muted ms-2" style="font-size: 0.85rem;">
+                    👁️ {{ recipe.total_views }} view{% if recipe.total_views != 1 %}s{% endif %}
                   </span>
                 </div>
 

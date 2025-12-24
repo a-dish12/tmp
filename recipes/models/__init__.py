@@ -6,3 +6,5 @@ from recipes.models.rating import Rating
 from recipes.models.planned_day import PlannedDay
 from recipes.models.planned_meal import PlannedMeal
 from recipes.models.comment import Comment
+from recipes.models.report import Report
+from recipes.models.notification import Notification

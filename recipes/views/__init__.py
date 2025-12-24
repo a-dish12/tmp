@@ -16,3 +16,5 @@ from .planner_view import *
 from .comment_view import *
 from .surprise_quiz_view import *
 from .search_users_view import *
+from .report_view import *
+from .notification_view import *
