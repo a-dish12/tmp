@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from django.urls import reverse
-from django.db.models import Avg, Count
+from django.db.models import Avg, Count, F
 from recipes.models import Recipe, Follow
 from django.db.models import Q
 
@@ -34,6 +34,14 @@ class DashboardView(LoginRequiredMixin, ListView):
         ("non_veg", "Non-Vegetarian"),
     )
 
+    SORT_OPTIONS = (
+        ("time", "Prep Time (Low to High)"),
+        ("popular", "Most Popular"),
+        ("trending", "Trending Now"),
+        ("most_viewed", "Most Viewed"),
+        ("newest", "Newest First"),
+    )
+
     # ------------------------
     # Queryset logic
     # ------------------------
@@ -42,6 +50,7 @@ class DashboardView(LoginRequiredMixin, ListView):
         queryset = (
             Recipe.objects
             .exclude(author=self.request.user)
+            .exclude(is_hidden=True)  # Hide reported/moderated recipes
             .annotate(
                 avg_rating=Avg("ratings__stars"),
                 rating_count=Count("ratings"),
@@ -53,6 +62,7 @@ class DashboardView(LoginRequiredMixin, ListView):
         queryset = self.search_feature(queryset)
         queryset = self.following_only(queryset)
         queryset = self.filter_by_diet(queryset)
+        queryset = self.apply_sorting(queryset)
 
         return queryset
 
@@ -67,22 +77,25 @@ class DashboardView(LoginRequiredMixin, ListView):
         selected_time_filter = self.request.GET.get("time_filter", "")
         search_term = self.request.GET.get("search", "")
         selected_diet = self.get_selected_diet()
+        selected_sort = self.request.GET.get("sort", "time")
 
         context.update({
             "meal_type_filters": self.MEAL_TYPE_FILTERS,
             "time_filters": self.TIME_FILTERS,
             "diet_filters": self.DIET_FILTERS,
+            "sort_options": self.SORT_OPTIONS,
 
             "selected_meal_types": selected_meal_types,
             "selected_meal_type": selected_meal_types[0] if selected_meal_types else "",
             "selected_time_filter": selected_time_filter,
             "search_term": search_term,
             "selected_diet": selected_diet,
+            "selected_sort": selected_sort,
 
             "following_page": self.request.path == reverse("following_dashboard"),
 
             "has_active_filters": bool(
-                selected_meal_types or selected_time_filter or search_term or selected_diet
+                selected_meal_types or selected_time_filter or search_term or selected_diet or (selected_sort != "time")
             ),
 
             "add_on": "?" if self.request.path == self.request.get_full_path() else "&",
@@ -185,4 +198,31 @@ class DashboardView(LoginRequiredMixin, ListView):
             for f in temp_set.values_list('author'):
                 queryset = queryset.exclude(author=f)
 
+        return queryset
+    
+    def apply_sorting(self, queryset):
+        """Apply sorting based on user selection."""
+        sort_by = self.request.GET.get("sort", "time")
+        
+        if sort_by == "popular":
+            # Sort by rating score (avg_rating * rating_count) descending
+            queryset = queryset.annotate(
+                popularity_score=F('avg_rating') * F('rating_count')
+            ).order_by('-popularity_score', '-avg_rating')
+        elif sort_by == "trending":
+            # Sort by recipes with most active viewers
+            recipes_list = list(queryset)
+            recipes_list.sort(key=lambda r: r.get_active_viewers(), reverse=True)
+            # Return as list (already evaluated)
+            return recipes_list
+        elif sort_by == "most_viewed":
+            # Sort by total views descending
+            queryset = queryset.order_by('-total_views')
+        elif sort_by == "newest":
+            # Sort by creation date descending
+            queryset = queryset.order_by('-created_at')
+        else:  # Default: "time"
+            # Sort by preparation time ascending
+            queryset = queryset.order_by('time')
+        
         return queryset

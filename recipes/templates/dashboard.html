@@ -120,6 +120,25 @@
             {% endfor %}
           </div>
 
+          <!-- Sort By -->
+          <div class="mb-3">
+            <span class="form-label fw-bold d-block">Sort by</span>
+
+            {% for value, label in sort_options %}
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="sort"
+                  value="{{ value }}"
+                  id="sort_{{ value }}"
+                  {% if selected_sort == value %}checked{% endif %}
+                >
+                <label class="form-check-label" for="sort_{{ value }}">{{ label }}</label>
+              </div>
+            {% endfor %}
+          </div>
+
           <button type="submit" class="filters-apply-btn w-100 mt-2">
             Apply filters
           </button>
@@ -139,7 +158,7 @@
       <!-- MAIN CONTENT (RIGHT) -->
       <div class="col-md-9 recipes-col">
 
-        <!-- Recipe count (subtitle style) -->
+        <!-- Recipe count -->
         <p class="list-subtitle">
           Showing {{ recipes|length }} recipe{% if recipes|length != 1 %}s{% endif %}
         </p>
@@ -194,7 +213,12 @@
 
                 <div class="recipe-image"></div>
 
-                <h5 class="recipe-title">{{ recipe.title }}</h5>
+                <h5 class="recipe-title">
+                  {{ recipe.title }}
+                  {% if recipe.get_active_viewers >= 3 %}
+                    <span class="badge bg-danger ms-1" title="Trending - {{ recipe.get_active_viewers }} viewing now">🔥 Trending</span>
+                  {% endif %}
+                </h5>
 
                 <p class="recipe-desc">
                   {{ recipe.description|truncatewords:18 }}
@@ -213,6 +237,9 @@
                   {% endwith %}
                   <span class="rating-num">
                     {{ recipe.average_rating|floatformat:1 }}
+                  </span>
+                  <span class="text-muted ms-2" style="font-size: 0.85rem;">
+                    👁️ {{ recipe.total_views }} view{% if recipe.total_views != 1 %}s{% endif %}
                   </span>
                 </div>
 

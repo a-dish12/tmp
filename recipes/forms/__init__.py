@@ -4,3 +4,4 @@ from .recipe_form import *
 from .planned_meal_form import *
 from .comment_form import *
 from .rating_form import *
+from .report_form import *

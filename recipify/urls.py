@@ -38,8 +38,13 @@ urlpatterns = [
     path('recipes/<int:recipe_pk>/add-to-calendar/', views.add_to_calendar, name='add_to_calendar'),
     path('planned-meals/<int:meal_pk>/remove/', views.remove_from_calendar, name='remove_from_calendar'),
     path('recipes/<int:recipe_pk>/comments/add/', views.add_comment, name='add_comment'),
-    path('comments/<int:comment_pk>/reply/', views.add_reply, name='add_reply'),
     path('comments/<int:comment_pk>/delete/', views.delete_comment, name='delete_comment'),
+    path('recipes/<int:recipe_pk>/report/', views.report_recipe, name='report_recipe'),
+    path('comments/<int:comment_pk>/report/', views.report_comment, name='report_comment'),
+    path('notifications/', views.notifications_list, name='notifications_list'),
+    path('notifications/dropdown/', views.notifications_dropdown, name='notifications_dropdown'),
+    path('notifications/<int:notification_id>/read/', views.mark_notification_read, name='mark_notification_read'),
+    path('notifications/mark-all-read/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

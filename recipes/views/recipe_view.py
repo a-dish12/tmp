@@ -2,6 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, CreateView
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
+from django.urls import reverse
 from recipes.models import Recipe, Rating
 from recipes.models.planned_meal import PlannedMeal
 from recipes.forms.comment_form import CommentForm
@@ -17,8 +18,23 @@ class RecipeDetailView(DetailView):
     template_name = 'recipe_detail.html'
     context_object_name = 'recipe'
     
+    def get_object(self, queryset=None):
+        """Get recipe and track view."""
+        obj = super().get_object(queryset)
+        
+        # Track view for authenticated or anonymous users (exclude staff/superusers)
+        if not (self.request.user.is_authenticated and (self.request.user.is_staff or self.request.user.is_superuser)):
+            user_id = self.request.user.id if self.request.user.is_authenticated else f"anon_{self.request.session.session_key}"
+            obj.add_viewer(user_id)
+        
+        return obj
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        # Add view metrics
+        context['active_viewers'] = self.object.get_active_viewers()
+        context['total_views'] = self.object.total_views
         
         # Add user's rating if authenticated
         if self.request.user.is_authenticated:
@@ -48,10 +64,10 @@ class RecipeDetailView(DetailView):
             context['user_rating'] = None
             context['planned_meals'] = []
             
-        # Get all top-level comments (no parent) with their replies
-        top_level_comments = self.object.comments.filter(parent=None).select_related('user').prefetch_related('replies__user', 'replies__replies')
-        context['comments'] = top_level_comments
-        context['comment_count'] = self.object.comments.count()
+        # Get all comments for this recipe, excluding hidden comments
+        all_comments = self.object.comments.filter(is_hidden=False).select_related('user').order_by('-created_at')
+        context['comments'] = all_comments
+        context['comment_count'] = all_comments.count()
             
         return context
 

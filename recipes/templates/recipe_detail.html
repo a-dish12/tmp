@@ -4,14 +4,24 @@
   <div class="row">
     <div class="col-lg-8">
       <!-- Recipe Info -->
-      <h1>{{ recipe.title }}</h1>
+      <h1>
+        {{ recipe.title }}
+        {% if active_viewers >= 3 %}
+          <span class="badge bg-danger ms-2" title="{{ active_viewers }} people viewing now">🔥 Trending</span>
+        {% endif %}
+      </h1>
       <p class="text-muted">
         By {{ recipe.author.full_name }} (
         <a href="{% url 'user_profile' user_id=recipe.author.id %}">
           {{ recipe.author.username }}
         </a>
         )
-      
+        <span class="ms-3">
+          👁️ {{ total_views }} view{% if total_views != 1 %}s{% endif %}
+          {% if active_viewers > 0 %}
+            <span class="badge bg-info text-dark ms-1">{{ active_viewers }} viewing now</span>
+          {% endif %}
+        </span>
       </p>
       
       {% if user.is_authenticated and user == recipe.author %}
@@ -21,6 +31,12 @@
         </a>
         <a href="{% url 'delete_recipe' pk=recipe.pk %}" class="btn btn-danger btn-sm">
           <i class="bi bi-trash"></i> Delete Recipe
+        </a>
+      </div>
+      {% elif user.is_authenticated and not user.is_staff and not user.is_superuser %}
+      <div class="mb-3">
+        <a href="{% url 'report_recipe' recipe_pk=recipe.pk %}" class="btn btn-outline-danger btn-sm">
+          <i class="bi bi-flag"></i> Report Recipe
         </a>
       </div>
       {% endif %}
@@ -88,7 +104,7 @@
           {% if comments %}
             <div class="comments-container">
               {% for comment in comments %}
-                {% include 'partials/comment.html' with comment=comment depth=0 %}
+                {% include 'partials/comment.html' with comment=comment %}
               {% endfor %}
             </div>
           {% else %}
@@ -212,31 +228,4 @@
   </div>
 </div>
 
-<script>
-// Toggle reply forms
-document.addEventListener('DOMContentLoaded', function() {
-  // Show reply form
-  document.querySelectorAll('.reply-btn').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      const commentId = this.dataset.commentId;
-      const replyForm = document.getElementById(`reply-form-${commentId}`);
-      replyForm.style.display = 'block';
-      this.style.display = 'none';
-    });
-  });
-  
-  // Cancel reply
-  document.querySelectorAll('.cancel-reply').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      const commentId = this.dataset.commentId;
-      const replyForm = document.getElementById(`reply-form-${commentId}`);
-      const replyBtn = document.querySelector(`.reply-btn[data-comment-id="${commentId}"]`);
-      replyForm.style.display = 'none';
-      if (replyBtn) replyBtn.style.display = 'inline';
-    });
-  });
-});
-</script>
 {% endblock %}

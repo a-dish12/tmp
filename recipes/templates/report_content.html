@@ -1,0 +1,63 @@
+{% extends 'base_content.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header bg-danger text-white">
+          <h4 class="mb-0">🚩 Report {{ content_type|title }}</h4>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info">
+            <strong>Before you report:</strong>
+            <ul class="mb-0 mt-2">
+              <li>Make sure the content violates our community guidelines</li>
+              <li>Provide specific details to help our moderation team</li>
+              <li>False reports may result in account restrictions</li>
+            </ul>
+          </div>
+
+          {% if content_preview %}
+          <div class="mb-4">
+            <h6>Content being reported:</h6>
+            <div class="bg-light p-3 rounded border">
+              {{ content_preview|truncatewords:50 }}
+            </div>
+          </div>
+          {% endif %}
+
+          <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+              <label for="{{ form.reason.id_for_label }}" class="form-label">{{ form.reason.label }} <span class="text-danger">*</span></label>
+              {{ form.reason }}
+              {% if form.reason.errors %}
+                <div class="text-danger small mt-1">{{ form.reason.errors }}</div>
+              {% endif %}
+            </div>
+            
+            <div class="mb-3">
+              <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }} <span class="text-danger">*</span></label>
+              {{ form.description }}
+              {% if form.description.help_text %}
+                <div class="form-text">{{ form.description.help_text }}</div>
+              {% endif %}
+              {% if form.description.errors %}
+                <div class="text-danger small mt-1">{{ form.description.errors }}</div>
+              {% endif %}
+            </div>
+            
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-danger">Submit Report</button>
+              <a href="{{ cancel_url }}" class="btn btn-secondary">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
