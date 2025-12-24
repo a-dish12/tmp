@@ -195,21 +195,15 @@ class Command(BaseCommand):
         Get a random meal from themealdb.com
         """
         mealResponse_str = str(urllib.request.urlopen('https://www.themealdb.com/api/json/v1/1/random.php').read())
-        title_str = mealResponse_str.split('strMeal":')[1].split('"')[1]
-        #Accurately represent special symbols:
-        while '\\\\' in title_str:
-            uni_index = title_str.find('\\\\')
-            uni_str = title_str[uni_index:uni_index+7]
-            title_str = title_str.replace(uni_str, chr(int(uni_str[3:], 16)))
         """
         Generate a single random recipe and attempt to insert it.
 
         Uses Faker for the description, ingredients and time, themealdb.com for the title and image,
         and Python's random module for meal_type and the construction of the instructions.
         """
-        title = title_str.replace('\\', '')
+        title = create_title_string(mealResponse_str)
         description = shorten_string(self.faker.dish_description())
-        ingredients = f'{self.faker.ingredient()}\n{self.faker.ingredient()}\n{self.faker.ingredient()}'
+        ingredients = create_ingredients_list(mealResponse_str)
         instructions = generate_recipe_instructions(ingredients)
         time = round_to_nearest_5(self.faker.random_int(min=5, max=150))
         meal_type = random.choice(['breakfast','lunch','dinner','snack','dessert'])
@@ -495,3 +489,33 @@ def generate_recipe_instructions(ingredients):
     instructions += f"\n{count}. Serve and enjoy."
 
     return instructions
+
+def represent_symbols(string_toConvert):
+    """
+    Accurately represent special symbols.
+    """
+    while '\\\\' in string_toConvert:
+        uni_index = string_toConvert.find('\\\\')
+        uni_str = string_toConvert[uni_index:uni_index+7]
+        string_toConvert = string_toConvert.replace(uni_str, chr(int(uni_str[3:], 16)))
+
+    return string_toConvert
+
+def create_title_string(mealResponse_str):
+    title_str = mealResponse_str.split('strMeal":')[1].split('"')[1]
+    title_str = represent_symbols(title_str)
+
+    return title_str.replace('\\', '')
+
+def create_ingredients_list(mealResponse_str):
+    count = 1
+    ingredients = ''
+    ingredient_sections = mealResponse_str.split('strIngredient')
+    while count < len(ingredient_sections) and len(ingredient_sections[count].split('"')) > 2:
+        ingredient = ingredient_sections[count].split('"')[2]
+        if len(ingredient) == 0:
+            break
+        ingredients += f'\n{ingredient}'
+        count += 1
+
+    return ingredients[1:]
