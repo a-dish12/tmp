@@ -204,7 +204,7 @@ class Command(BaseCommand):
         title = create_title_string(mealResponse_str)
         description = shorten_string(self.faker.dish_description())
         ingredients = create_ingredients_list(mealResponse_str)
-        instructions = generate_recipe_instructions(ingredients)
+        instructions = create_instructions(mealResponse_str)
         time = round_to_nearest_5(self.faker.random_int(min=5, max=150))
         meal_type = random.choice(['breakfast','lunch','dinner','snack','dessert'])
         image_url = mealResponse_str.split('strMealThumb":')[1].split('"')[1].replace('\\', '')
@@ -494,8 +494,8 @@ def represent_symbols(string_toConvert):
     """
     Accurately represent special symbols.
     """
-    while '\\\\' in string_toConvert:
-        uni_index = string_toConvert.find('\\\\')
+    while '\\\\u' in string_toConvert:
+        uni_index = string_toConvert.find('\\\\u')
         uni_str = string_toConvert[uni_index:uni_index+7]
         string_toConvert = string_toConvert.replace(uni_str, chr(int(uni_str[3:], 16)))
 
@@ -519,3 +519,21 @@ def create_ingredients_list(mealResponse_str):
         count += 1
 
     return ingredients[1:]
+
+def create_instructions(mealResponse_str):
+    instructions = mealResponse_str.split('strInstructions":')[1].split('"')[1]
+    instructions_list = instructions.replace('\\\\r', '').replace('\\\\n', '').split('.')
+
+    for index in range(len(instructions_list)):
+        instructions_list[index] = represent_symbols(instructions_list[index]).strip(' ').strip('\\\\u25a2')
+
+    while 'step' in instructions_list:
+        instructions_list.remove(instructions_list.find('step'))
+
+    count = 0
+    final_instructions = ''
+    for instr in instructions_list:
+        count += 1
+        final_instructions += f'\n{count}. {instr}.'
+
+    return final_instructions.replace('\\', '')
