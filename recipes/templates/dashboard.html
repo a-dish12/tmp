@@ -124,6 +124,40 @@
           <div class="mb-3">
             <span class="form-label fw-bold d-block">Sort by</span>
 
+    <!-- ================= Main Content ================= -->
+    <div class="col-md-9">
+      <h1>Welcome to your dashboard {{ user.username }}</h1>
+
+      <!-- Action buttons -->
+      <div class="mt-4 d-flex align-items-center gap-3 flex-wrap">
+        <a href="{% url 'user_profile' user.id %}" class="btn btn-primary btn-lg">
+          My profile
+        </a>
+        <a href="{% url 'planner_range'%}" class="btn btn-primary btn-lg me-3">
+          My Meal Planner
+        </a>
+        <a href="{% url 'create_recipe' %}" class="btn btn-primary btn-lg">
+          Create New Recipe
+        </a>
+        <a href="{% url 'dashboard-surprise' %}?{{request.GET.urlencode}}"
+        class="btn btn-warning btn-lg">Surprise me!!!
+      </a>
+      </div>
+
+      <!-- Explore header -->
+      <h2 class="list-title mt-5">Explore Recipes from Others</h2>
+
+
+      <!-- For You / Following -->
+      <nav class="nav nav-tabs justify-content-center mb-4">
+        {% if following_page %}
+          <a class="nav-link" href="{% url 'dashboard' %}">For You</a>
+          <a class="nav-link active" aria-current="page" href="{% url 'following_dashboard' %}">Following</a>
+        {% else %}
+          <a class="nav-link active" aria-current="page" href="{% url 'dashboard' %}">For You</a>
+          <a class="nav-link" href="{% url 'following_dashboard' %}">Following</a>
+        {% endif %}
+      </nav>
             {% for value, label in sort_options %}
               <div class="form-check">
                 <input
