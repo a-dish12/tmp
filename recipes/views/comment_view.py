@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from recipes.models import Recipe, Comment
-from recipes.forms.comment_form import CommentForm, ReplyForm
+from recipes.forms.comment_form import CommentForm
 
 
 @login_required
@@ -25,29 +25,19 @@ def add_comment(request, recipe_pk):
 
 
 @login_required
-def add_reply(request, comment_pk):
-    """Add a reply to an existing comment."""
-    parent_comment = get_object_or_404(Comment, pk=comment_pk)
-    
-    if request.method == 'POST':
-        form = ReplyForm(request.POST)
-        if form.is_valid():
-            reply = form.save(commit=False)
-            reply.recipe = parent_comment.recipe
-            reply.user = request.user
-            reply.parent = parent_comment
-            reply.save()
-            messages.success(request, "Reply added successfully!")
-        else:
-            messages.error(request, "Failed to add reply. Please try again.")
-    
-    return redirect('recipe_detail', pk=parent_comment.recipe.pk)
-
-
-@login_required
 def delete_comment(request, comment_pk):
-    """Delete a comment (only by the comment author)."""
+    """Delete a comment (only by the comment author or staff)."""
     comment = get_object_or_404(Comment, pk=comment_pk)
+    recipe_pk = comment.recipe.pk
+    
+    if comment.user == request.user or request.user.is_staff:
+        comment.delete()
+        messages.success(request, "Comment deleted successfully!")
+    else:
+        messages.error(request, "You don't have permission to delete this comment.")
+    
+    return redirect('recipe_detail', pk=recipe_pk)
+
     
     # Check if user is the comment author
     if comment.user != request.user:

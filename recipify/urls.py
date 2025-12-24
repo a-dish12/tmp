@@ -21,6 +21,8 @@ urlpatterns = [
     path('users/<int:user_id>/', views.user_profile, name='user_profile'),
     path('users/<int:user_id>/follow/', views.follow_user, name = 'follow_user'),
     path('users/<int:user_id>/unfollow/', views.unfollow_user, name = 'unfollow_user'),
+    path('search-users/', views.search_users, name='search_users'),
+    path('search-users-ajax/', views.search_users_ajax, name='search_users_ajax'),
     path('recipes/<int:pk>/', views.RecipeDetailView.as_view(), name='recipe_detail'),
     path('recipes/<int:recipe_pk>/rate/', views.RateRecipeView.as_view(), name='rate_recipe'),
     path("user/<int:user_id>/followers/", views.user_followers, name="user_followers"),
@@ -36,8 +38,13 @@ urlpatterns = [
     path('recipes/<int:recipe_pk>/add-to-calendar/', views.add_to_calendar, name='add_to_calendar'),
     path('planned-meals/<int:meal_pk>/remove/', views.remove_from_calendar, name='remove_from_calendar'),
     path('recipes/<int:recipe_pk>/comments/add/', views.add_comment, name='add_comment'),
-    path('comments/<int:comment_pk>/reply/', views.add_reply, name='add_reply'),
     path('comments/<int:comment_pk>/delete/', views.delete_comment, name='delete_comment'),
+    path('recipes/<int:recipe_pk>/report/', views.report_recipe, name='report_recipe'),
+    path('comments/<int:comment_pk>/report/', views.report_comment, name='report_comment'),
+    path('notifications/', views.notifications_list, name='notifications_list'),
+    path('notifications/dropdown/', views.notifications_dropdown, name='notifications_dropdown'),
+    path('notifications/<int:notification_id>/read/', views.mark_notification_read, name='mark_notification_read'),
+    path('notifications/mark-all-read/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

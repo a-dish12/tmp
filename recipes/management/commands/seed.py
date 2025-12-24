@@ -70,6 +70,7 @@ class Command(BaseCommand):
         Runs the full seeding workflow and stores ``self.users``, ``self.recipes`` and ``self.follows``
         for any post-processing or debugging (not required for operation).
         """
+        self.create_admin_user()
         self.create_users()
         self.users = User.objects.all()
         self.create_recipes()
@@ -79,6 +80,29 @@ class Command(BaseCommand):
         self.follows = Follow.objects.all()
         self.generate_random_ratings()
 
+    #ADMIN
+
+    def create_admin_user(self):
+        """Create superuser for admin panel access."""
+        try:
+            admin_user, created = User.objects.get_or_create(
+                username='admin',
+                defaults={
+                    'email': 'admin@recipify.com',
+                    'first_name': 'Admin',
+                    'last_name': 'User',
+                    'is_staff': True,
+                    'is_superuser': True,
+                }
+            )
+            if created:
+                admin_user.set_password('admin123')
+                admin_user.save()
+                print('✓ Superuser created: admin / admin123')
+            else:
+                print('✓ Superuser already exists: admin')
+        except Exception as e:
+            print(f'! Failed to create superuser: {e}')
 
     #USERS
 
