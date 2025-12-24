@@ -41,6 +41,15 @@
           <ul class="list-unstyled">
             <li><strong>Prep Time:</strong> {{ recipe.time }} minutes</li>
             <li><strong>Meal Type:</strong> {{ recipe.meal_type|capfirst }}</li>
+            <li><strong>Diet Type:</strong> 
+              {% if recipe.get_diet_type == 'vegan' %}
+                <span class="badge bg-success">🌱 Vegan</span>
+              {% elif recipe.get_diet_type == 'veg' %}
+                <span class="badge bg-info">🥛 Vegetarian</span>
+              {% else %}
+                <span class="badge bg-warning">🍖 Non-Vegetarian</span>
+              {% endif %}
+            </li>
           </ul>
           
           <h5 class="card-title mt-4">Ingredients</h5>
