@@ -84,11 +84,6 @@ class DashboardView(LoginRequiredMixin, ListView):
         selected_sort = self.request.GET.get("sort", "time")
         selected_rating_filter = self.request.GET.get("rating_filter", "")
 
-        recipes = context['recipes']
-        if selected_diet:
-            recipes = [r for r in recipes if r.get_diet_type() == selected_diet]
-            context['recipes'] = recipes
-
         context.update({
             "meal_type_filters": self.MEAL_TYPE_FILTERS,
             "time_filters": self.TIME_FILTERS,
@@ -166,6 +161,16 @@ class DashboardView(LoginRequiredMixin, ListView):
     def filter_by_time(self, queryset):
         min_time, max_time = self.get_time_window()
         return queryset.filter(time__range=(min_time, max_time))
+    
+    def filter_by_diet(self, queryset):
+        selected_diet = self.get_selected_diet()
+
+        if not selected_diet:
+            return queryset
+
+        # Assuming Recipe has a field like: diet_type
+        return queryset.filter(diet_type=selected_diet)
+
 
     def filter_by_rating(self, queryset):
         rating_filter_key = self.request.GET.get("rating_filter")
