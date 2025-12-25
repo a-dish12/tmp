@@ -18,7 +18,7 @@ def planner_calendar(request):
     """
     Renders the FullCalendar page (month/week/day/list all on one page).
     """
-    return render(request, "calendar.html")
+    return render(request, "planner_range.html")
 
 @login_required
 def planner_events(request):
