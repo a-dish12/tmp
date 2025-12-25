@@ -1,9 +1,8 @@
-{% extends 'base_content.html' %}
-{% block content %}
+
 <div class="container">
   <div class="row">
     <div class="col-12">
-      <h1 class="list-title">My Recipes</h1>
+      <h3 class="list-title">My Recipes</h3>
       
       <a href="{% url 'create_recipe' %}" class="btn btn-primary mb-3">
         Create New Recipe
@@ -12,8 +11,6 @@
       <a href="{% url 'dashboard' %}" class="btn btn-secondary mb-3">
         Go To Dashboard
       </a>
-
-      
       {% if recipes %}
         <div class="list-group">
           {% for recipe in recipes %}
@@ -86,4 +83,3 @@
     </div>
   </div>
 </div>
-{% endblock %}

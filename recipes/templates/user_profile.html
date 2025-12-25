@@ -91,8 +91,13 @@
             <p>No pending friend requests.</p>
         {% endif %}
     {% endif %}
+    <hr>
+    </div>
+    <p>
+        {% include 'user_recipes.html' %}
+    </p>
+    </div>
 
-        <p> user content </p>
     
         <a href="{% url 'dashboard' %}" class="btn btn-secondary mt-3">← Back to Dashboard</a>
     </div>
