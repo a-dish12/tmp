@@ -547,17 +547,35 @@ def create_ingredients_list(mealResponse_str):
 def create_instructions(mealResponse_str):
     instructions = mealResponse_str.split('strInstructions":')[1].split('"')[1]
     instructions_list = instructions.replace('\\\\r', '').replace('\\\\n', '').split('.')
+    #Remove any steps that just say 'step _' or are empty
+    remove_list = [instr for instr in instructions_list if 'step' in instr or len(instr) < 5]
+    for instr in remove_list:
+        instructions_list.remove(instr)
 
+    #Merge instructions if too many steps
+    length = len(instructions_list)
+    if length > 20 and length % 2 == 0:
+        instructions_list = merge_list(instructions_list)
+    elif length > 20 and length % 2 == 1:
+        last_step = instructions_list.pop()
+        instructions_list = merge_list(instructions_list)
+        instructions_list.append(last_step)
+    
+    return format_instructions(instructions_list)
+
+def merge_list(instr_list):
+    return [instr_list[i] + '.' + instr_list[i+1] for i in range(len(instr_list)) if i%2 == 0]
+
+def format_instructions(instructions_list):
+    #Represent all special symbols correctly
     for index in range(len(instructions_list)):
         instructions_list[index] = represent_symbols(instructions_list[index]).strip(' ').strip('\\\\u25a2')
-
-    while 'step' in instructions_list:
-        instructions_list.remove(instructions_list.find('step'))
-
+    
+    #Combine into a single string
     count = 0
     final_instructions = ''
     for instr in instructions_list:
         count += 1
         final_instructions += f'\n{count}. {instr}.'
 
-    return final_instructions.replace('\\', '')
+    return final_instructions.replace('\\', '')[1:]
