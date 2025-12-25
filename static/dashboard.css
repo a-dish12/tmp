@@ -177,6 +177,55 @@ body.dashboard-bg::after {
 }
 
 /* =========================
+   DASHBOARD TABS
+   ========================= */
+
+.dashboard-tabs {
+  display: flex;
+  gap: 0;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  border: 1px solid rgba(255, 138, 101, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+  background: transparent;
+}
+
+.dashboard-tab {
+  flex: 1;
+  padding: 0.75rem 1.8rem;
+  border-radius: 0;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  text-align: center;
+  color: rgba(255,255,255,0.6);
+  background: transparent;
+  border: none;
+  border-right: 1px solid rgba(255, 138, 101, 0.2);
+  transition: all 0.2s ease;
+}
+
+.dashboard-tab:last-child {
+  border-right: none;
+}
+
+.dashboard-tab:hover {
+  color: #ff8a65;
+  background: rgba(255,255,255,0.03);
+}
+
+.dashboard-tab.active {
+  color: #ff8a65;
+  background: linear-gradient(135deg, rgba(255, 138, 101, 0.08), rgba(236, 64, 122, 0.08));
+  text-shadow: 0 0 20px rgba(255, 138, 101, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+
+/* =========================
    FILTER PANE - PREMIUM DESIGN
    ========================= */
 
