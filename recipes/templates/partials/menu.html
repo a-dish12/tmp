@@ -5,7 +5,7 @@
   <ul class="navbar-nav align-items-center dashboard-nav-items">
 
     <li class="nav-item">
-      <a class="nav-link nav-pill {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+      <a class="nav-link nav-pill {% if request.resolver_match.url_name == 'dashboard' or request.resolver_match.url_name == 'following_dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
         <i class="bi bi-house nav-icon"></i>
         Home
       </a>
@@ -26,7 +26,7 @@
     </li>
 
     <li class="nav-item">
-      <a class="nav-link nav-pill {% if request.resolver_match.url_name == 'planner_calendar' or request.resolver_match.url_name == 'planner_events' or request.resolver_match.url_name == 'planner_day' %}active{% endif %}" href="{% url 'planner_calendar' %}">
+      <a class="nav-link nav-pill {% if request.resolver_match.url_name == 'planner_calendar' or request.resolver_match.url_name == 'planner_events' or request.resolver_match.url_name == 'planner_day' %}active{% endif %}" href="{% url 'planner_range'%}">
         <i class="bi bi-calendar3 nav-icon"></i>
         Meal Plan
       </a>

@@ -75,6 +75,13 @@
               {% render_field form.password_confirmation type="password" placeholder="Confirm password" %}
             </div>
 
+            <div class="signup-input-group">
+              <label>
+                {% render_field form.is_private %}
+                Private account?
+              </label>
+            </div>
+
             <button type="submit" class="signup-btn">
               Create Account
             </button>

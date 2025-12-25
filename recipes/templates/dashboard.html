@@ -46,6 +46,17 @@
     <!-- FILTERS + CONTENT -->
     <div class="row dashboard-row">
 
+      <!-- For You / Following -->
+      <div class="nav nav-tabs justify-content-center mb-4">
+        {% if following_page %}
+          <a class="nav-link" href="{% url 'dashboard' %}">For You</a>
+          <a class="nav-link active" aria-current="page" href="{% url 'following_dashboard' %}">Following</a>
+        {% else %}
+          <a class="nav-link active" aria-current="page" href="{% url 'dashboard' %}">For You</a>
+          <a class="nav-link" href="{% url 'following_dashboard' %}">Following</a>
+        {% endif %}
+      </div>
+
       <!-- FILTERS (LEFT) -->
       <div class="col-md-3 filters-col">
         <div class="filters-pane">

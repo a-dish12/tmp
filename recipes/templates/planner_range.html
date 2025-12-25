@@ -1,0 +1,59 @@
+{% extends "base_content.html" %}
+{% block content %}
+
+<h1>Meal Planner</h1>
+
+<form method="get">
+  <label>
+    Start:
+    <input type="date" name="start" value="{{ start|date:'Y-m-d' }}">
+  </label>
+
+  <label>
+    End:
+    <input type="date" name="end" value="{{ end|date:'Y-m-d' }}">
+  </label>
+
+  <button type="submit">View</button>
+</form>
+
+<hr>
+
+{% for day in days %}
+  <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+    <h3>{{ day.date }}</h3>
+
+    {% for slot in day.slots %}
+      <strong>{{ slot.name|title }}</strong>
+
+      {% if slot.meals %}
+        <ul>
+          {% for meal in slot.meals %}
+            <li>
+              {{ meal.recipe.title }}
+              <form method="post"
+                action="{% url 'remove_from_calendar' meal.pk %}?next={{ request.get_full_path|urlencode }}"
+                style="display:inline;">
+
+                {% csrf_token %}
+                <button type="submit">Remove</button>
+              </form>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p style="color:#888;">No meals</p>
+      {% endif %}
+      
+    {% endfor %}
+    <a href="{% url 'planner_day' day.date|date:'Y-m-d' %}?next={{ request.get_full_path|urlencode }}">
+    + Add
+    </a>
+
+  </div>
+{% endfor %}
+    <div>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary mt-3">← Back to Dashboard</a>
+    </div>
+
+{% endblock %}

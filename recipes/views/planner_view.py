@@ -65,11 +65,6 @@ def planner_day(request, date):
     if not day_date:
         raise Http404("Invalid date format. Use YYYY-MM-DD")
     
-    planned_day, created = PlannedDay.objects.get_or_create(
-        user=request.user,
-        date=day_date
-    )
-    meals = planned_day.meals.select_related("recipe").all().order_by("meal_type")    
     if request.method == "POST":
         form = PlannedMealForm(request.POST, user=request.user)
         if form.is_valid():
@@ -77,21 +72,36 @@ def planner_day(request, date):
             recipe = form.cleaned_data["recipe"]
         
             if not visible_recipes_for(request.user).filter(pk=recipe.pk).exists():
-                    raise Http404("Recipe not visible.")
+                raise Http404("Recipe not visible.")
+
+            planned_day, _ = PlannedDay.objects.get_or_create(
+                user=request.user,
+                date=day_date
+            )
             
             PlannedMeal.objects.get_or_create(
                 planned_day=planned_day,
                 meal_type=meal_type,
                 recipe=recipe
             )
+
+            next_url = request.GET.get("next")
+            if next_url:
+                return redirect(next_url)
+            
             return redirect("planner_day", date=day_date.isoformat())
+
     else:
         form = PlannedMealForm(user=request.user)
 
-    meals = planned_day.meals.select_related("recipe").all().order_by("meal_type")
+    planned_day = PlannedDay.objects.filter(user=request.user, date=day_date).first()
+
+    meals = []
+    if planned_day:
+        meals = planned_day.meals.select_related("recipe").all().order_by("meal_type")
 
     context = {
-        "planned_day": planned_day,
+        "planned_day": planned_day,  # can be None now
         "day_date": day_date,
         "meals": meals,
         "form": form,
@@ -99,9 +109,9 @@ def planner_day(request, date):
     return render(request, "day.html", context)
 
 @login_required
-def add_to_calendar(request, recipe_pk):
+def add_to_planner(request, recipe_pk):
     """
-    Add a recipe to the calendar from the recipe detail page.
+    Add a recipe to the planner from the recipe detail page.
     """
     recipe = get_object_or_404(Recipe, pk=recipe_pk)
     
@@ -145,9 +155,9 @@ def add_to_calendar(request, recipe_pk):
     return redirect("recipe_detail", pk=recipe_pk)
 
 @login_required
-def remove_from_calendar(request, meal_pk):
+def remove_from_planner(request, meal_pk):
     """
-    Remove a planned meal from the calendar.
+    Remove a planned meal from the planner.
     """
     meal = get_object_or_404(PlannedMeal, pk=meal_pk)
     
@@ -168,5 +178,84 @@ def remove_from_calendar(request, meal_pk):
     if next_url:
         return redirect(next_url)
     
-    # Default to calendar day view
+    # Default to planner day view
     return redirect("planner_day", date=date_str)
+
+from datetime import timedelta
+from django.utils import timezone
+
+MEAL_SLOTS = ["breakfast", "lunch", "dinner", "snack"]
+
+def daterange(start, end):
+    """Inclusive date range generator."""
+    cur = start
+    while cur <= end:
+        yield cur
+        cur += timedelta(days=1)
+
+@login_required
+def planner_range(request):
+    """
+    Range-based planner view (day blocks).
+    Default: today -> today+6
+    Accepts: ?start=YYYY-MM-DD&end=YYYY-MM-DD
+    """
+    start_str = request.GET.get("start")
+    end_str = request.GET.get("end")
+
+    today = timezone.localdate()
+
+    start = parse_date(start_str) if start_str else today
+    end = parse_date(end_str) if end_str else (today + timedelta(days=6))
+
+    if not start or not end:
+        raise Http404("Invalid date format. Use YYYY-MM-DD")
+
+    if start > end:
+        start, end = end, start
+
+    meals_qs = (
+        PlannedMeal.objects
+        .filter(
+            planned_day__user=request.user,
+            planned_day__date__gte=start,
+            planned_day__date__lte=end,
+        )
+        .select_related("planned_day", "recipe")
+        .order_by("planned_day__date", "meal_type")
+    )
+
+    grouped = {}  # {date: {slot: [PlannedMeal,...]}}
+    for m in meals_qs:
+        d = m.planned_day.date
+        slot = (m.meal_type or "").lower().strip()
+
+        if d not in grouped:
+            grouped[d] = {s: [] for s in MEAL_SLOTS}
+
+        if slot in grouped[d]:
+            grouped[d][slot].append(m)
+
+    days = []
+    for d in daterange(start, end):
+        meals_by_slot = grouped.get(d, {s: [] for s in MEAL_SLOTS})
+
+        slots = []
+        for slot in MEAL_SLOTS:
+            slots.append({
+                "name": slot,
+                "meals": meals_by_slot.get(slot, []),
+            })
+
+        days.append({
+            "date": d,
+            "slots": slots,
+        })
+
+    context = {
+        "start": start,
+        "end": end,
+        "days": days,
+    }
+
+    return render(request, "planner_range.html", context)

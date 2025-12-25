@@ -170,7 +170,10 @@ class SignUpForm(NewPasswordMixin, forms.ModelForm):
         """Form options."""
 
         model = User
-        fields = ['first_name', 'last_name', 'username', 'email']
+        fields = ['first_name', 'last_name', 'username', 'email','is_private']
+        widgets = {'is_private': forms.CheckboxInput()}
+        labels = { 'is_private': 'Private account'}
+
 
     def save(self):
         """
@@ -191,5 +194,6 @@ class SignUpForm(NewPasswordMixin, forms.ModelForm):
             last_name=self.cleaned_data.get('last_name'),
             email=self.cleaned_data.get('email'),
             password=self.cleaned_data.get('new_password'),
+            is_private=self.cleaned_data.get('is_private'),
         )
         return user

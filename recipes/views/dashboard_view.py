@@ -2,13 +2,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from django.urls import reverse
 from django.db.models import Avg, Count, F
-from recipes.models import Recipe, Follow
+from recipes.models import Recipe, Follow, User
 from django.db.models import Q
 
 
 class DashboardView(LoginRequiredMixin, ListView):
     model = Recipe
-    using = Follow
     template_name = "dashboard.html"
     context_object_name = "recipes"
 
@@ -61,8 +60,9 @@ class DashboardView(LoginRequiredMixin, ListView):
         queryset = self.filter_by_time(queryset)
         queryset = self.search_feature(queryset)
         queryset = self.following_only(queryset)
-        queryset = self.filter_by_diet(queryset)
         queryset = self.apply_sorting(queryset)
+        #Must be last, as it returns a list:
+        queryset = self.filter_by_diet(queryset)
 
         return queryset
 
@@ -185,18 +185,23 @@ class DashboardView(LoginRequiredMixin, ListView):
         if not selected_diet:
             return queryset
 
+        return [
+            recipe for recipe in queryset
+            if recipe.get_diet_type() == selected_diet
+        ]
 
     def following_only(self, queryset):
         following_page = self.request.path == reverse('following_dashboard')
-        not_following_set = Follow.objects.filter(follower=self.request.user)
+        followed_users = Follow.objects.filter(follower=self.request.user).values_list('following')
+        followed_recipes = queryset.filter(author__in=followed_users)
 
-        #Remove recipes from people you don't follow
         if following_page:
-            temp_set = queryset
-            for nf in not_following_set.values_list('following'):
-                temp_set = temp_set.exclude(author=nf)
-            for f in temp_set.values_list('author'):
-                queryset = queryset.exclude(author=f)
+            queryset = followed_recipes
+        else:
+            private_users = User.objects.filter(is_private=False)
+            queryset = queryset.filter(author__in=private_users)
+
+            queryset: QuerySet = (queryset|followed_recipes).distinct()
 
         return queryset
     
