@@ -231,8 +231,6 @@
               Search: "{{ search_term }}"
             </span>
           {% endif %}
-        </p>
-      {% endif %}
 
           {% for value in selected_meal_types %}
             <span class="filter-pill">
@@ -264,6 +262,9 @@
               {{ selected_diet|capfirst }}
             </span>
           {% endif %}
+
+        </div>
+        {% endif %}
 
         {% if recipes %}
           <div class="recipe-grid">
