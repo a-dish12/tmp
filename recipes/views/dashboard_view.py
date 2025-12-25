@@ -42,20 +42,16 @@ class DashboardView(LoginRequiredMixin, ListView):
         ("newest", "Newest First"),
     )
 
-    SORT_OPTIONS = (
-        ("time", "Prep Time (Low to High)"),
-        ("popular", "Most Popular"),
-        ("trending", "Trending Now"),
-        ("most_viewed", "Most Viewed"),
-        ("newest", "Newest First"),
-    )
-
     RATING_FILTERS = (
         {"key": "4_plus", "label": "4+ stars", "min": 4.0},
         {"key": "3_plus", "label": "3+ stars", "min": 3.0},
         {"key": "2_plus", "label": "2+ stars", "min": 2.0},
         {"key": "1_plus", "label": "1+ stars", "min": 1.0},
     )
+
+    # ------------------------
+    # Queryset logic
+    # ------------------------
 
     def get_queryset(self):
         queryset = (
@@ -73,6 +69,8 @@ class DashboardView(LoginRequiredMixin, ListView):
         queryset = self.filter_by_rating(queryset)
         queryset = self.search_feature(queryset)
         queryset = self.following_only(queryset)
+        queryset = self.filter_by_diet(queryset)
+        queryset = self.apply_sorting(queryset)
 
         return queryset
 
@@ -97,7 +95,6 @@ class DashboardView(LoginRequiredMixin, ListView):
             "diet_filters": self.DIET_FILTERS,
             "rating_filters": self.RATING_FILTERS,
             "sort_options": self.SORT_OPTIONS,
-            "rating_filters": self.RATING_FILTERS,
 
             "selected_meal_types": selected_meal_types,
             "selected_meal_type": selected_meal_types[0] if selected_meal_types else "",

@@ -121,75 +121,21 @@
             {% endfor %}
           </div>
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-          <!-- Rating -->
-          <div class="mb-3">
-            <span class="form-label fw-bold d-block">Rating</span>
-
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="rating_filter" value="" id="rating_any">
-              <label class="form-check-label" for="rating_any">Any rating</label>
-            </div>
-
-            {% for rf in rating_filters %}
-=======
-=======
->>>>>>> 95358da (rating filter)
           <!-- Sort By -->
           <div class="mb-3">
             <span class="form-label fw-bold d-block">Sort by</span>
 
             {% for value, label in sort_options %}
-<<<<<<< HEAD
->>>>>>> 01ab971 (added user search, split ingredients and instructions list, added admin to report comments or recipes)
-=======
-=======
-          <!-- Rating -->
-          <div class="mb-3">
-            <span class="form-label fw-bold d-block">Rating</span>
-
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="rating_filter" value="" id="rating_any">
-              <label class="form-check-label" for="rating_any">Any rating</label>
-            </div>
-
-            {% for rf in rating_filters %}
->>>>>>> aa10714 (rating filter)
->>>>>>> 95358da (rating filter)
               <div class="form-check">
                 <input
                   class="form-check-input"
                   type="radio"
-<<<<<<< HEAD
-<<<<<<< HEAD
-                  name="rating_filter"
-                  value="{{ rf.key }}"
-                  id="rating_{{ rf.key }}"
-                  {% if selected_rating_filter == rf.key %}checked{% endif %}
-                >
-                <label class="form-check-label" for="rating_{{ rf.key }}">{{ rf.label }}</label>
-=======
-=======
->>>>>>> 95358da (rating filter)
                   name="sort"
                   value="{{ value }}"
                   id="sort_{{ value }}"
                   {% if selected_sort == value %}checked{% endif %}
                 >
                 <label class="form-check-label" for="sort_{{ value }}">{{ label }}</label>
-<<<<<<< HEAD
->>>>>>> 01ab971 (added user search, split ingredients and instructions list, added admin to report comments or recipes)
-=======
-=======
-                  name="rating_filter"
-                  value="{{ rf.key }}"
-                  id="rating_{{ rf.key }}"
-                  {% if selected_rating_filter == rf.key %}checked{% endif %}
-                >
-                <label class="form-check-label" for="rating_{{ rf.key }}">{{ rf.label }}</label>
->>>>>>> aa10714 (rating filter)
->>>>>>> 95358da (rating filter)
               </div>
             {% endfor %}
           </div>
@@ -213,6 +159,7 @@
       <!-- MAIN CONTENT (RIGHT) -->
       <div class="col-md-9 recipes-col">
 
+        <!-- Recipe count -->
         <!-- Recipe count -->
         <p class="list-subtitle">
           Showing {{ recipes|length }} recipe{% if recipes|length != 1 %}s{% endif %}
@@ -274,6 +221,12 @@
                     <span class="badge bg-danger ms-1" title="Trending - {{ recipe.get_active_viewers }} viewing now">🔥 Trending</span>
                   {% endif %}
                 </h5>
+                <h5 class="recipe-title">
+                  {{ recipe.title }}
+                  {% if recipe.get_active_viewers >= 3 %}
+                    <span class="badge bg-danger ms-1" title="Trending - {{ recipe.get_active_viewers }} viewing now">🔥 Trending</span>
+                  {% endif %}
+                </h5>
 
                 <p class="recipe-desc">
                   {{ recipe.description|truncatewords:18 }}
@@ -292,6 +245,9 @@
                   {% endwith %}
                   <span class="rating-num">
                     {{ recipe.average_rating|floatformat:1 }}
+                  </span>
+                  <span class="text-muted ms-2" style="font-size: 0.85rem;">
+                    👁️ {{ recipe.total_views }} view{% if recipe.total_views != 1 %}s{% endif %}
                   </span>
                   <span class="text-muted ms-2" style="font-size: 0.85rem;">
                     👁️ {{ recipe.total_views }} view{% if recipe.total_views != 1 %}s{% endif %}
