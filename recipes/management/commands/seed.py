@@ -15,7 +15,6 @@ from django.core.management.base import BaseCommand, CommandError
 from recipes.models import User, Recipe, Follow, Rating, Comment
 from recipes.management import Recipe_Fixtures
 import urllib.request
-from unicodedata import normalize
 
 
 user_fixtures = [
@@ -222,7 +221,7 @@ class Command(BaseCommand):
         """
         Generate a single random recipe and attempt to insert it.
 
-        Uses Faker for the description, ingredients and time, themealdb.com for the title and image,
+        Uses Faker for the description and time, themealdb.com for the title and image,
         and Python's random module for meal_type and the construction of the instructions.
         """
         title = create_title_string(mealResponse_str)
@@ -408,7 +407,7 @@ class Command(BaseCommand):
 
     def generate_comment(self):
         """
-        Decide whether the comment should have a parent
+        Decide whether the comment should have a parent.
         """
         parent_options = [None]
         r = random.random()
