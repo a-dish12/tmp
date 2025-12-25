@@ -97,6 +97,20 @@
     </li>
 
     <li class="nav-item">
+      <a class="nav-link nav-pill {% if request.resolver_match.url_name == 'password' %}active{% endif %}" href="{% url 'password' %}">
+        <i class="bi bi-key nav-icon"></i>
+        Password
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link nav-pill {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" href="{% url 'profile' %}">
+        <i class="bi bi-person-circle nav-icon"></i>
+        Profile
+      </a>
+    </li>
+
+    <li class="nav-item">
       <a class="nav-link nav-pill logout-pill" href="{% url 'log_out' %}">
         <i class="bi bi-box-arrow-right nav-icon"></i>
         Logout

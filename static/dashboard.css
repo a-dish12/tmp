@@ -470,8 +470,21 @@ body.dashboard-bg::after {
 
 .recipe-image {
   width: 100%;
-  height: 180px;
+  height: 200px; /* final image strip height */
   background: #000000;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recipe-image img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain; /* fit inside without cropping */
+  display: block;
 }
 
 .recipe-card > :not(.recipe-image) {
@@ -516,6 +529,53 @@ body.dashboard-bg::after {
 
 .recipe-rating .filled {
   color: #ffc107;
+}
+
+/* =========================
+  DASHBOARD PAGINATION
+  ========================= */
+
+body.dashboard-bg .pagination .page-item {
+  margin: 0 0.15rem;
+}
+
+body.dashboard-bg .pagination .page-link {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.25);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 0.4rem 0.9rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.15s ease, border-color 0.18s ease;
+}
+
+body.dashboard-bg .pagination .page-link:hover {
+  background: rgba(92, 214, 214, 0.9);
+  color: #000;
+  border-color: rgba(92, 214, 214, 0.9);
+  box-shadow: 0 6px 18px rgba(92, 214, 214, 0.45);
+  transform: translateY(-1px);
+}
+
+body.dashboard-bg .pagination .page-item.active .page-link {
+  background: linear-gradient(135deg, #ff8a65, #ec407a);
+  color: #000;
+  border-color: transparent;
+  box-shadow: 0 6px 18px rgba(236, 64, 122, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+body.dashboard-bg .pagination .page-item.disabled .page-link {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: none;
+}
+
+body.dashboard-bg .pagination .page-link:focus,
+body.dashboard-bg .pagination .page-link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 138, 101, 0.3);
 }
 
 .rating-num {

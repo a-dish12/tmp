@@ -15,7 +15,8 @@ class PlannedMealForm(forms.Form):
 
     date = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-        initial=date.today
+        initial=date.today,
+        required=False
     )
     meal_type = forms.ChoiceField(
         choices=MEAL_TYPES,

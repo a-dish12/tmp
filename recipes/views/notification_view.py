@@ -2,17 +2,30 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from recipes.models import Notification
 
 
 @login_required
 def notifications_list(request):
     """Display all notifications for the current user."""
-    notifications = request.user.notifications.all()[:50]  # Last 50
+    notifications_qs = request.user.notifications.all()
     unread_count = request.user.notifications.filter(is_read=False).count()
+
+    paginator = Paginator(notifications_qs, 20)
+    page = request.GET.get('page')
+
+    try:
+        notifications = paginator.page(page)
+    except PageNotAnInteger:
+        notifications = paginator.page(1)
+    except EmptyPage:
+        notifications = paginator.page(paginator.num_pages)
     
     context = {
         'notifications': notifications,
+        'page_obj': notifications,
+        'is_paginated': notifications.has_other_pages(),
         'unread_count': unread_count,
     }
     return render(request, 'notifications.html', context)

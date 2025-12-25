@@ -11,6 +11,7 @@ class DashboardView(LoginRequiredMixin, ListView):
     using = Follow
     template_name = "dashboard.html"
     context_object_name = "recipes"
+    paginate_by = 9
 
     MEAL_TYPE_FILTERS = (
         ("breakfast", "Breakfast"),
@@ -184,6 +185,8 @@ class DashboardView(LoginRequiredMixin, ListView):
         selected_diet = self.get_selected_diet()
         if not selected_diet:
             return queryset
+
+        return queryset.filter(diet_type=selected_diet)
 
 
     def following_only(self, queryset):

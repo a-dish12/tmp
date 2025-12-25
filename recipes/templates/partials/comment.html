@@ -20,8 +20,7 @@
         {% if user == comment.user or user.is_staff %}
         <form method="post" action="{% url 'delete_comment' comment.pk %}" style="display: inline;">
           {% csrf_token %}
-          <button type="submit" class="btn btn-sm btn-link p-0 text-danger text-decoration-none" 
-                  onclick="return confirm('Delete this comment?')">
+          <button type="submit" class="btn btn-sm btn-link p-0 text-danger text-decoration-none">
             🗑️ Delete
           </button>
         </form>

@@ -90,6 +90,16 @@ class Recipe(models.Model):
 
         return self.DIET_VEGAN
     
+    def get_diet_type_display(self):
+        """Return formatted diet type for display."""
+        diet_type = self.get_diet_type()
+        if diet_type == self.DIET_NON_VEG:
+            return "Non-Vegetarian"
+        elif diet_type == self.DIET_VEG:
+            return "Vegetarian"
+        else:
+            return "Vegan"
+    
     def get_image_url(self):
         """Return image URL, prioritizing uploaded image over URL field."""
         if self.image:
