@@ -107,6 +107,48 @@
                 {% include 'partials/comment.html' with comment=comment %}
               {% endfor %}
             </div>
+
+            {% if comments_is_paginated %}
+              <nav aria-label="Comments pagination" class="mt-3">
+                <ul class="pagination justify-content-center">
+                  {% if comments_page_obj.has_previous %}
+                    <li class="page-item">
+                      <a class="page-link" href="?comments_page={{ comments_page_obj.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                      </a>
+                    </li>
+                  {% else %}
+                    <li class="page-item disabled">
+                      <span class="page-link" aria-hidden="true">&laquo;</span>
+                    </li>
+                  {% endif %}
+
+                  {% for num in comments_page_obj.paginator.page_range %}
+                    {% if num == comments_page_obj.number %}
+                      <li class="page-item active" aria-current="page">
+                        <span class="page-link">{{ num }}</span>
+                      </li>
+                    {% else %}
+                      <li class="page-item">
+                        <a class="page-link" href="?comments_page={{ num }}">{{ num }}</a>
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+
+                  {% if comments_page_obj.has_next %}
+                    <li class="page-item">
+                      <a class="page-link" href="?comments_page={{ comments_page_obj.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                      </a>
+                    </li>
+                  {% else %}
+                    <li class="page-item disabled">
+                      <span class="page-link" aria-hidden="true">&raquo;</span>
+                    </li>
+                  {% endif %}
+                </ul>
+              </nav>
+            {% endif %}
           {% else %}
             <p class="text-muted text-center">No comments yet. Be the first to comment!</p>
           {% endif %}

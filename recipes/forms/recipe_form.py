@@ -116,9 +116,9 @@ class RecipeForm(forms.ModelForm):
                 ingredients.append(ingredient)
         
         if not ingredients:
-            raise forms.ValidationError('Please add at least one ingredient.')
-        
-        cleaned_data['ingredients'] = '\n'.join(ingredients)
+            self.add_error('ingredient_0', 'Please add at least one ingredient.')
+        else:
+            cleaned_data['ingredients'] = '\n'.join(ingredients)
         
         # Collect instructions
         instruction_count = int(self.data.get('instruction_count', 1))
@@ -129,9 +129,9 @@ class RecipeForm(forms.ModelForm):
                 instructions.append(instruction)
         
         if not instructions:
-            raise forms.ValidationError('Please add at least one instruction.')
-        
-        cleaned_data['instructions'] = '\n'.join(instructions)
+            self.add_error('instruction_0', 'Please add at least one instruction.')
+        else:
+            cleaned_data['instructions'] = '\n'.join(instructions)
         
         return cleaned_data
     

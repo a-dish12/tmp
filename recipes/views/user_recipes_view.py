@@ -7,6 +7,7 @@ class UserRecipesView(LoginRequiredMixin, ListView):
     model = Recipe
     template_name = 'user_recipes.html'
     context_object_name = 'recipes'
+    paginate_by = 10
     
     def get_queryset(self):
         return Recipe.objects.filter(author=self.request.user)

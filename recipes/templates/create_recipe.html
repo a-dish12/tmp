@@ -33,7 +33,7 @@
 
   <!-- FORM CONTAINER -->
   <div class="recipe-form-container">
-    <form action="{% url 'create_recipe' %}" method="post" enctype="multipart/form-data" class="recipe-form">
+    <form action="{% url 'create_recipe' %}" method="post" enctype="multipart/form-data" class="recipe-form" novalidate>
       {% csrf_token %}
       
       {# Show non-field errors #}

@@ -5,7 +5,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'navbar.css' %}">
-<link rel="stylesheet" href="{% static 'dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard.css' %}?v=2">
 {% endblock %}
 
 {% block content %}
@@ -222,7 +222,7 @@
         <!-- Recipe count -->
         <!-- Recipe count -->
         <p class="list-subtitle">
-          Showing {{ recipes|length }} recipe{% if recipes|length != 1 %}s{% endif %}
+          Showing {{ page_obj.paginator.count }} recipe{% if page_obj.paginator.count != 1 %}s{% endif %}
         </p>
 
         {% if has_active_filters %}
@@ -273,7 +273,11 @@
             {% for recipe in recipes %}
               <a href="{% url 'recipe_detail' recipe.pk %}" class="recipe-card">
 
-                <div class="recipe-image"></div>
+                <div class="recipe-image">
+                  {% if recipe.get_image_url %}
+                    <img src="{{ recipe.get_image_url }}" alt="{{ recipe.title }}">
+                  {% endif %}
+                </div>
 
                 <h5 class="recipe-title">
                   {{ recipe.title }}
@@ -288,7 +292,7 @@
 
                 <div class="recipe-meta">
                   <span>By {{ recipe.author.username }}</span>
-                  <span>{{ recipe.time }} min · {{ recipe.meal_type|capfirst }}</span>
+                  <span>Prep time: {{ recipe.time }} minutes · {{ recipe.meal_type|capfirst }}</span>
                 </div>
 
                 <div class="recipe-rating">
@@ -309,7 +313,53 @@
             {% endfor %}
           </div>
         {% else %}
-          <p class="low-key">No recipes available.</p>
+          {% if selected_meal_types %}
+            <p class="low-key">No recipes of the requested meal type are available from other users yet.</p>
+          {% else %}
+            <p class="low-key">No recipes available from other users yet.</p>
+          {% endif %}
+        {% endif %}
+
+        {% if is_paginated %}
+          <nav aria-label="Recipe pagination" class="mt-4">
+            <ul class="pagination justify-content-center dashboard-pagination">
+              {% if page_obj.has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+              {% else %}
+                <li class="page-item disabled">
+                  <span class="page-link" aria-hidden="true">&laquo;</span>
+                </li>
+              {% endif %}
+
+              {% for num in page_obj.paginator.page_range %}
+                {% if num == page_obj.number %}
+                  <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ num }}</span>
+                  </li>
+                {% else %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+
+              {% if page_obj.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              {% else %}
+                <li class="page-item disabled">
+                  <span class="page-link" aria-hidden="true">&raquo;</span>
+                </li>
+              {% endif %}
+            </ul>
+          </nav>
         {% endif %}
 
       </div>
