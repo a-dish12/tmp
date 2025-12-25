@@ -4,14 +4,24 @@
   <div class="row">
     <div class="col-lg-8">
       <!-- Recipe Info -->
-      <h1>{{ recipe.title }}</h1>
+      <h1>
+        {{ recipe.title }}
+        {% if active_viewers >= 3 %}
+          <span class="badge bg-danger ms-2" title="{{ active_viewers }} people viewing now">🔥 Trending</span>
+        {% endif %}
+      </h1>
       <p class="text-muted">
         By {{ recipe.author.full_name }} (
         <a href="{% url 'user_profile' user_id=recipe.author.id %}">
           {{ recipe.author.username }}
         </a>
         )
-      
+        <span class="ms-3">
+          👁️ {{ total_views }} view{% if total_views != 1 %}s{% endif %}
+          {% if active_viewers > 0 %}
+            <span class="badge bg-info text-dark ms-1">{{ active_viewers }} viewing now</span>
+          {% endif %}
+        </span>
       </p>
       
       {% if user.is_authenticated and user == recipe.author %}
@@ -21,6 +31,12 @@
         </a>
         <a href="{% url 'delete_recipe' pk=recipe.pk %}" class="btn btn-danger btn-sm">
           <i class="bi bi-trash"></i> Delete Recipe
+        </a>
+      </div>
+      {% elif user.is_authenticated and not user.is_staff and not user.is_superuser %}
+      <div class="mb-3">
+        <a href="{% url 'report_recipe' recipe_pk=recipe.pk %}" class="btn btn-outline-danger btn-sm">
+          <i class="bi bi-flag"></i> Report Recipe
         </a>
       </div>
       {% endif %}
@@ -41,6 +57,15 @@
           <ul class="list-unstyled">
             <li><strong>Prep Time:</strong> {{ recipe.time }} minutes</li>
             <li><strong>Meal Type:</strong> {{ recipe.meal_type|capfirst }}</li>
+            <li><strong>Diet Type:</strong> 
+              {% if recipe.get_diet_type == 'vegan' %}
+                <span class="badge bg-success">🌱 Vegan</span>
+              {% elif recipe.get_diet_type == 'veg' %}
+                <span class="badge bg-info">🥛 Vegetarian</span>
+              {% else %}
+                <span class="badge bg-warning">🍖 Non-Vegetarian</span>
+              {% endif %}
+            </li>
           </ul>
           
           <h5 class="card-title mt-4">Ingredients</h5>
@@ -79,7 +104,7 @@
           {% if comments %}
             <div class="comments-container">
               {% for comment in comments %}
-                {% include 'partials/comment.html' with comment=comment depth=0 %}
+                {% include 'partials/comment.html' with comment=comment %}
               {% endfor %}
             </div>
           {% else %}
@@ -151,7 +176,7 @@
         </div>
       </div>
       
-      <!-- Add to Calendar Section -->
+      <!-- Add to planner Section -->
       {% if user.is_authenticated %}
       <div class="card">
         <div class="card-body">
@@ -167,7 +192,7 @@
                   <span>
                     <strong>{{ meal.planned_day.date|date:"M d" }}</strong> - {{ meal.meal_type|title }}
                   </span>
-                  <form method="post" action="{% url 'remove_from_calendar' meal.pk %}?next={% url 'recipe_detail' recipe.pk %}" style="display: inline;">
+                  <form method="post" action="{% url 'remove_from_planner' meal.pk %}?next={% url 'recipe_detail' recipe.pk %}" style="display: inline;">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-sm btn-outline-danger" title="Remove">×</button>
                   </form>
@@ -178,8 +203,8 @@
             </div>
           {% endif %}
           
-          <!-- Add to calendar form -->
-          <form method="post" action="{% url 'add_to_calendar' recipe.pk %}">
+          <!-- Add to planner form -->
+          <form method="post" action="{% url 'add_to_planner' recipe.pk %}">
             {% csrf_token %}
             {{ planned_meal_form.recipe }}
             <div class="mb-3">
@@ -190,11 +215,11 @@
               <label for="{{ planned_meal_form.meal_type.id_for_label }}" class="form-label">Meal Type</label>
               {{ planned_meal_form.meal_type }}
             </div>
-            <button type="submit" class="btn btn-success w-100">📅 Add to Calendar</button>
+            <button type="submit" class="btn btn-success w-100">📅 Add to planner</button>
           </form>
           
           <div class="mt-2">
-            <a href="{% url 'planner_calendar' %}" class="btn btn-sm btn-outline-secondary w-100">View Calendar</a>
+            <a href="{% url 'planner_range' %}" class="btn btn-sm btn-outline-secondary w-100">View planner</a>
           </div>
         </div>
       </div>
@@ -203,31 +228,4 @@
   </div>
 </div>
 
-<script>
-// Toggle reply forms
-document.addEventListener('DOMContentLoaded', function() {
-  // Show reply form
-  document.querySelectorAll('.reply-btn').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      const commentId = this.dataset.commentId;
-      const replyForm = document.getElementById(`reply-form-${commentId}`);
-      replyForm.style.display = 'block';
-      this.style.display = 'none';
-    });
-  });
-  
-  // Cancel reply
-  document.querySelectorAll('.cancel-reply').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      const commentId = this.dataset.commentId;
-      const replyForm = document.getElementById(`reply-form-${commentId}`);
-      const replyBtn = document.querySelector(`.reply-btn[data-comment-id="${commentId}"]`);
-      replyForm.style.display = 'none';
-      if (replyBtn) replyBtn.style.display = 'inline';
-    });
-  });
-});
-</script>
 {% endblock %}

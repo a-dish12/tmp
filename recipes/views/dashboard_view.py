@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from django.urls import reverse
-from django.db.models import Avg, Count, Q
+from django.db.models import Avg, Count, F, Q
 from recipes.models import Recipe, Follow, User
 
 
@@ -32,6 +32,21 @@ class DashboardView(LoginRequiredMixin, ListView):
         ("non_veg", "Non-Vegetarian"),
     )
 
+    SORT_OPTIONS = (
+        ("time", "Prep Time (Low to High)"),
+        ("popular", "Most Popular"),
+        ("trending", "Trending Now"),
+        ("most_viewed", "Most Viewed"),
+        ("newest", "Newest First"),
+    )
+
+    RATING_FILTERS = (
+        {"key": "4_plus", "label": "4+ stars", "min": 4.0},
+        {"key": "3_plus", "label": "3+ stars", "min": 3.0},
+        {"key": "2_plus", "label": "2+ stars", "min": 2.0},
+        {"key": "1_plus", "label": "1+ stars", "min": 1.0},
+    )
+
     # ------------------------
     # Queryset logic
     # ------------------------
@@ -40,6 +55,7 @@ class DashboardView(LoginRequiredMixin, ListView):
         queryset = (
             Recipe.objects
             .exclude(author=self.request.user)
+            .exclude(is_hidden=True)  # Hide reported/moderated recipes
             .annotate(
                 avg_rating=Avg("ratings__stars"),
                 rating_count=Count("ratings"),
@@ -48,15 +64,14 @@ class DashboardView(LoginRequiredMixin, ListView):
 
         queryset = self.filter_by_meal_types(queryset)
         queryset = self.filter_by_time(queryset)
+        queryset = self.filter_by_rating(queryset)
         queryset = self.search_feature(queryset)
         queryset = self.following_only(queryset)
+        queryset = self.apply_sorting(queryset)
+        #Must be last, as it returns a list:
         queryset = self.filter_by_diet(queryset)
 
         return queryset
-
-    # ------------------------
-    # Context
-    # ------------------------
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -65,22 +80,28 @@ class DashboardView(LoginRequiredMixin, ListView):
         selected_time_filter = self.request.GET.get("time_filter", "")
         search_term = self.request.GET.get("search", "")
         selected_diet = self.get_selected_diet()
+        selected_sort = self.request.GET.get("sort", "time")
+        selected_rating_filter = self.request.GET.get("rating_filter", "")
 
         context.update({
             "meal_type_filters": self.MEAL_TYPE_FILTERS,
             "time_filters": self.TIME_FILTERS,
             "diet_filters": self.DIET_FILTERS,
+            "rating_filters": self.RATING_FILTERS,
+            "sort_options": self.SORT_OPTIONS,
 
             "selected_meal_types": selected_meal_types,
             "selected_meal_type": selected_meal_types[0] if selected_meal_types else "",
             "selected_time_filter": selected_time_filter,
             "search_term": search_term,
             "selected_diet": selected_diet,
+            "selected_rating_filter": selected_rating_filter,
+            "selected_sort": selected_sort,
 
             "following_page": self.request.path == reverse("following_dashboard"),
 
             "has_active_filters": bool(
-                selected_meal_types or selected_time_filter or search_term or selected_diet
+                selected_meal_types or selected_time_filter or search_term or selected_diet or selected_rating_filter
             ),
 
             "add_on": "?" if self.request.path == self.request.get_full_path() else "&",
@@ -88,16 +109,7 @@ class DashboardView(LoginRequiredMixin, ListView):
 
         return context
 
-    # ------------------------
-    # Helpers
-    # ------------------------
-
     def get_selected_meal_types(self):
-        """
-        Supports:
-        - ?meal_types=breakfast&meal_types=lunch
-        - ?meal_type=breakfast (legacy)
-        """
         meal_types = [
             m.strip().lower()
             for m in self.request.GET.getlist("meal_types")
@@ -108,7 +120,6 @@ class DashboardView(LoginRequiredMixin, ListView):
         if single_meal_type:
             meal_types.append(single_meal_type.strip().lower())
 
-        # Deduplicate while preserving order
         seen = set()
         unique = []
         for m in meal_types:
@@ -140,10 +151,6 @@ class DashboardView(LoginRequiredMixin, ListView):
         except (TypeError, ValueError):
             return default
 
-    # ------------------------
-    # Filters
-    # ------------------------
-
     def filter_by_meal_types(self, queryset):
         meal_types = self.get_selected_meal_types()
         if meal_types:
@@ -153,6 +160,30 @@ class DashboardView(LoginRequiredMixin, ListView):
     def filter_by_time(self, queryset):
         min_time, max_time = self.get_time_window()
         return queryset.filter(time__range=(min_time, max_time))
+    
+    def filter_by_diet(self, queryset):
+        selected_diet = self.get_selected_diet()
+        if not selected_diet:
+            return queryset
+
+        return [
+            recipe for recipe in queryset
+            if recipe.get_diet_type() == selected_diet
+        ]
+
+
+    def filter_by_rating(self, queryset):
+        rating_filter_key = self.request.GET.get("rating_filter")
+        
+        if not rating_filter_key:
+            return queryset
+        
+        for rf in self.RATING_FILTERS:
+            if rf["key"] == rating_filter_key:
+                min_rating = rf["min"]
+                return queryset.filter(avg_rating__gte=min_rating)
+        
+        return queryset
 
     def search_feature(self, queryset):
         search_term = self.request.GET.get("search")
@@ -165,17 +196,6 @@ class DashboardView(LoginRequiredMixin, ListView):
 
         return queryset
 
-    def filter_by_diet(self, queryset):
-        selected_diet = self.get_selected_diet()
-        if not selected_diet:
-            return queryset
-
-        return [
-            recipe for recipe in queryset
-            if recipe.get_diet_type() == selected_diet
-        ]
-
-
     def following_only(self, queryset):
         following_page = self.request.path == reverse('following_dashboard')
         followed_users = Follow.objects.filter(follower=self.request.user).values_list('following')
@@ -184,9 +204,37 @@ class DashboardView(LoginRequiredMixin, ListView):
         if following_page:
             queryset = followed_recipes
         else:
-            private_users = User.objects.filter(is_private=False)
-            queryset = queryset.filter(author__in=private_users)
+            #Include only public and followed recipes
+            public_users = User.objects.filter(is_private=False)
+            queryset = queryset.filter(author__in=public_users)
 
             queryset: QuerySet = (queryset|followed_recipes).distinct()
 
+        return queryset
+    
+    def apply_sorting(self, queryset):
+        """Apply sorting based on user selection."""
+        sort_by = self.request.GET.get("sort", "time")
+        
+        if sort_by == "popular":
+            # Sort by rating score (avg_rating * rating_count) descending
+            queryset = queryset.annotate(
+                popularity_score=F('avg_rating') * F('rating_count')
+            ).order_by('-popularity_score', '-avg_rating')
+        elif sort_by == "trending":
+            # Sort by recipes with most active viewers
+            recipes_list = list(queryset)
+            recipes_list.sort(key=lambda r: r.get_active_viewers(), reverse=True)
+            # Return as list (already evaluated)
+            return recipes_list
+        elif sort_by == "most_viewed":
+            # Sort by total views descending
+            queryset = queryset.order_by('-total_views')
+        elif sort_by == "newest":
+            # Sort by creation date descending
+            queryset = queryset.order_by('-created_at')
+        else:  # Default: "time"
+            # Sort by preparation time ascending
+            queryset = queryset.order_by('time')
+        
         return queryset

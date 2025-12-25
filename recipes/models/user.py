@@ -66,3 +66,7 @@ class User(AbstractUser):
         """Return a URL to a miniature version of the user's gravatar."""
         
         return self.gravatar(size=60)
+    
+    def unread_notifications_count(self):
+        """Return the count of unread notifications."""
+        return self.notifications.filter(is_read=False).count()
