@@ -9,6 +9,7 @@ from recipes.forms.comment_form import CommentForm
 from recipes.forms.planned_meal_form import PlannedMealForm
 from recipes.forms.rating_form import RatingForm
 from datetime import date as date_cls
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 class RecipeDetailView(DetailView):
@@ -66,8 +67,22 @@ class RecipeDetailView(DetailView):
             
         # Get all comments for this recipe, excluding hidden comments
         all_comments = self.object.comments.filter(is_hidden=False).select_related('user').order_by('-created_at')
-        context['comments'] = all_comments
-        context['comment_count'] = all_comments.count()
+        comment_count = all_comments.count()
+
+        paginator = Paginator(all_comments, 10)
+        page = self.request.GET.get('comments_page')
+
+        try:
+            comments_page = paginator.page(page)
+        except PageNotAnInteger:
+            comments_page = paginator.page(1)
+        except EmptyPage:
+            comments_page = paginator.page(paginator.num_pages)
+
+        context['comments'] = comments_page.object_list
+        context['comments_page_obj'] = comments_page
+        context['comments_is_paginated'] = comments_page.has_other_pages()
+        context['comment_count'] = comment_count
             
         return context
 

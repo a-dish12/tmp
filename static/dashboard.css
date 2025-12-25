@@ -230,8 +230,6 @@ body.dashboard-bg::after {
    ========================= */
 
 .filters-pane {
-  position: sticky;
-  top: 8rem;
   margin-top: 1.5rem;
   padding: 0 0 1rem 0;
   background: transparent;
@@ -305,6 +303,88 @@ body.dashboard-bg::after {
   align-items: center;
 }
 
+/* Rating Dial Styles */
+.rating-dial {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  padding: 2rem 0.25rem 1.25rem 0.25rem;
+  margin: 0;
+}
+
+.rating-dial::before {
+  content: "";
+  position: absolute;
+  top: 2.75rem;
+  left: 8%;
+  right: 8%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.15);
+  z-index: 0;
+}
+
+.rating-dial input[type="radio"] {
+  display: none;
+}
+
+.rating-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+}
+
+.rating-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  position: relative;
+  margin-bottom: 0.6rem;
+  z-index: 2;
+}
+
+.rating-label {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 600;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.rating-option:hover .rating-circle {
+  border-color: rgba(255, 138, 101, 0.6);
+  background-color: rgba(255, 138, 101, 0.08);
+  transform: scale(1.15);
+}
+
+.rating-option:hover .rating-label {
+  color: #ff8a65;
+}
+
+.rating-dial input[type="radio"]:checked + .rating-option .rating-circle {
+  background: #ff8a65;
+  border-color: #ff8a65;
+  box-shadow: 0 0 0 3px rgba(255, 138, 101, 0.15);
+  transform: scale(1.2);
+}
+
+.rating-dial input[type="radio"]:checked + .rating-option .rating-label {
+  color: #ff8a65;
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(255, 138, 101, 0.4);
+}
+
+/* Regular form check styles continue below */
 .filters-card .form-check-input {
   width: 16px;
   height: 16px;
@@ -519,8 +599,21 @@ body.dashboard-bg::after {
 
 .recipe-image {
   width: 100%;
-  height: 180px;
+  height: 200px; /* final image strip height */
   background: #000000;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recipe-image img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain; /* fit inside without cropping */
+  display: block;
 }
 
 .recipe-card > :not(.recipe-image) {
@@ -565,6 +658,53 @@ body.dashboard-bg::after {
 
 .recipe-rating .filled {
   color: #ffc107;
+}
+
+/* =========================
+  DASHBOARD PAGINATION
+  ========================= */
+
+body.dashboard-bg .pagination .page-item {
+  margin: 0 0.15rem;
+}
+
+body.dashboard-bg .pagination .page-link {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.25);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 0.4rem 0.9rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.15s ease, border-color 0.18s ease;
+}
+
+body.dashboard-bg .pagination .page-link:hover {
+  background: rgba(92, 214, 214, 0.9);
+  color: #000;
+  border-color: rgba(92, 214, 214, 0.9);
+  box-shadow: 0 6px 18px rgba(92, 214, 214, 0.45);
+  transform: translateY(-1px);
+}
+
+body.dashboard-bg .pagination .page-item.active .page-link {
+  background: linear-gradient(135deg, #ff8a65, #ec407a);
+  color: #000;
+  border-color: transparent;
+  box-shadow: 0 6px 18px rgba(236, 64, 122, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+body.dashboard-bg .pagination .page-item.disabled .page-link {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: none;
+}
+
+body.dashboard-bg .pagination .page-link:focus,
+body.dashboard-bg .pagination .page-link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 138, 101, 0.3);
 }
 
 .rating-num {

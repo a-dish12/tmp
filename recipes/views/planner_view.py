@@ -18,7 +18,7 @@ def planner_calendar(request):
     """
     Renders the FullCalendar page (month/week/day/list all on one page).
     """
-    return render(request, "calendar.html")
+    return render(request, "planner_range.html")
 
 @login_required
 def planner_events(request):
@@ -64,13 +64,12 @@ def planner_day(request, date):
     day_date = parse_date(date)
     if not day_date:
         raise Http404("Invalid date format. Use YYYY-MM-DD")
-    
     if request.method == "POST":
         form = PlannedMealForm(request.POST, user=request.user)
         if form.is_valid():
             meal_type = form.cleaned_data["meal_type"]
             recipe = form.cleaned_data["recipe"]
-        
+
             if not visible_recipes_for(request.user).filter(pk=recipe.pk).exists():
                 raise Http404("Recipe not visible.")
 
@@ -78,13 +77,11 @@ def planner_day(request, date):
                 user=request.user,
                 date=day_date
             )
-            
             PlannedMeal.objects.get_or_create(
                 planned_day=planned_day,
                 meal_type=meal_type,
                 recipe=recipe
             )
-
             next_url = request.GET.get("next")
             if next_url:
                 return redirect(next_url)
@@ -101,7 +98,7 @@ def planner_day(request, date):
         meals = planned_day.meals.select_related("recipe").all().order_by("meal_type")
 
     context = {
-        "planned_day": planned_day,  # can be None now
+        "planned_day": planned_day,   # can be None now
         "day_date": day_date,
         "meals": meals,
         "form": form,

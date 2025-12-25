@@ -9,6 +9,7 @@ class DashboardView(LoginRequiredMixin, ListView):
     model = Recipe
     template_name = "dashboard.html"
     context_object_name = "recipes"
+    paginate_by = 9
 
     MEAL_TYPE_FILTERS = (
         ("breakfast", "Breakfast"),

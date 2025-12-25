@@ -39,13 +39,17 @@ class EditRecipeView(LoginRequiredMixin, UserPassesTestMixin, View):
             data = request.POST.copy()
             data['ingredient_count'] = int(data.get('ingredient_count', 1)) + 1
             form = RecipeForm(data=data, files=request.FILES, instance=recipe)
-            return render(request, self.template_name, {'form': form, 'recipe': recipe})
+            # Mark as not validated to prevent error display
+            form._errors = None
+            return render(request, self.template_name, {'form': form, 'recipe': recipe, 'skip_validation': True})
         
         if 'add_instruction' in request.POST:
             data = request.POST.copy()
             data['instruction_count'] = int(data.get('instruction_count', 1)) + 1
             form = RecipeForm(data=data, files=request.FILES, instance=recipe)
-            return render(request, self.template_name, {'form': form, 'recipe': recipe})
+            # Mark as not validated to prevent error display
+            form._errors = None
+            return render(request, self.template_name, {'form': form, 'recipe': recipe, 'skip_validation': True})
         
         # Check if user wants to remove fields (but keep at least 1)
         if 'remove_ingredient' in request.POST:
@@ -54,7 +58,9 @@ class EditRecipeView(LoginRequiredMixin, UserPassesTestMixin, View):
             if current_count > 1:
                 data['ingredient_count'] = current_count - 1
             form = RecipeForm(data=data, files=request.FILES, instance=recipe)
-            return render(request, self.template_name, {'form': form, 'recipe': recipe})
+            # Mark as not validated to prevent error display
+            form._errors = None
+            return render(request, self.template_name, {'form': form, 'recipe': recipe, 'skip_validation': True})
         
         if 'remove_instruction' in request.POST:
             data = request.POST.copy()
@@ -62,15 +68,18 @@ class EditRecipeView(LoginRequiredMixin, UserPassesTestMixin, View):
             if current_count > 1:
                 data['instruction_count'] = current_count - 1
             form = RecipeForm(data=data, files=request.FILES, instance=recipe)
-            return render(request, self.template_name, {'form': form, 'recipe': recipe})
+            # Mark as not validated to prevent error display
+            form._errors = None
+            return render(request, self.template_name, {'form': form, 'recipe': recipe, 'skip_validation': True})
 
-        # Normal form submission
+        # Normal form submission - validate properly
         form = RecipeForm(request.POST, request.FILES, instance=recipe)
 
         if form.is_valid():
             form.save()
             return redirect('recipe_detail', pk=recipe.pk)
 
+        # Invalid form - show validation errors
         return render(request, self.template_name, {'form': form, 'recipe': recipe})
 
 

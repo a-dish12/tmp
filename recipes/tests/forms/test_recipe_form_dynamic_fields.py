@@ -90,6 +90,8 @@ class RecipeFormDynamicFieldsTestCase(TestCase):
         self.form_input['ingredient_2'] = ''
         form = RecipeForm(data=self.form_input)
         self.assertFalse(form.is_valid())
+        self.assertIn('ingredient_0', form.errors)
+        self.assertIn('Please add at least one ingredient.', form.errors['ingredient_0'])
     
     def test_form_rejects_all_empty_instructions(self):
         """Test form rejects when all instructions are empty."""
@@ -98,6 +100,8 @@ class RecipeFormDynamicFieldsTestCase(TestCase):
         self.form_input['instruction_2'] = ''
         form = RecipeForm(data=self.form_input)
         self.assertFalse(form.is_valid())
+        self.assertIn('instruction_0', form.errors)
+        self.assertIn('Please add at least one instruction.', form.errors['instruction_0'])
     
     def test_form_creates_dynamic_ingredient_fields(self):
         """Test form dynamically creates ingredient fields based on count."""
