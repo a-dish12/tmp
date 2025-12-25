@@ -24,6 +24,7 @@ class Comment(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    is_hidden = models.BooleanField(default=False, help_text="Hidden by moderator or auto-hidden due to reports")
 
     class Meta:
         ordering = ['created_at']

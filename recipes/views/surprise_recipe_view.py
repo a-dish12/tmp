@@ -12,4 +12,9 @@ def surprise_recipe_view(request):
     if recipe is None:
         return redirect("dashboard")
     
+    if not queryset.exists():
+        return redirect("dashboard")
+    
+    recipe = queryset.order_by("?").first()
+    
     return redirect("recipe_detail", pk=recipe.pk)

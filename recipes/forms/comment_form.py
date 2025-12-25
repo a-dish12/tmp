@@ -18,21 +18,3 @@ class CommentForm(forms.ModelForm):
         labels = {
             'text': '',
         }
-
-
-class ReplyForm(forms.ModelForm):
-    class Meta:
-        model = Comment
-        fields = ['text']
-        
-        widgets = {
-            'text': forms.Textarea(attrs={
-                'rows': 2,
-                'placeholder': 'Write your reply...',
-                'class': 'form-control'
-            }),
-        }
-        
-        labels = {
-            'text': '',
-        }

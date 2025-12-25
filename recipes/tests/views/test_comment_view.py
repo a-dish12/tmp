@@ -75,85 +75,6 @@ class AddCommentViewTestCase(TestCase, LogInTester):
         self.assertEqual(Comment.objects.filter(recipe=self.recipe).count(), 2)
 
 
-class AddReplyViewTestCase(TestCase, LogInTester):
-    """Tests for the add reply view."""
-
-    fixtures = [
-        'recipes/tests/fixtures/default_user.json',
-        'recipes/tests/fixtures/other_users.json'
-    ]
-
-    def setUp(self):
-        self.user = User.objects.get(username='@johndoe')
-        self.other_user = User.objects.get(username='@janedoe')
-        
-        self.recipe = Recipe.objects.create(
-            author=self.other_user,
-            title="Test Recipe",
-            description="A test recipe",
-            ingredients="Test ingredients",
-            time=30,
-            meal_type="lunch"
-        )
-        
-        self.comment = Comment.objects.create(
-            recipe=self.recipe,
-            user=self.user,
-            text='Original comment'
-        )
-        
-        self.url = reverse('add_reply', kwargs={'comment_pk': self.comment.pk})
-        self.redirect_url = reverse('recipe_detail', kwargs={'pk': self.recipe.pk})
-
-    def test_add_reply_url(self):
-        self.assertEqual(self.url, f'/comments/{self.comment.pk}/reply/')
-
-    def test_add_reply_redirects_when_not_logged_in(self):
-        """Test that non-authenticated users are redirected to login."""
-        response = self.client.post(self.url, {'text': 'Reply'}, follow=True)
-        redirect_url = f"{reverse('log_in')}?next={self.url}"
-        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-
-    def test_successful_reply_creation(self):
-        """Test that a user can successfully add a reply."""
-        self.client.login(username=self.other_user.username, password='Password123')
-        reply_text = 'Thanks for the comment!'
-        
-        response = self.client.post(self.url, {'text': reply_text}, follow=True)
-        
-        self.assertTrue(Comment.objects.filter(
-            recipe=self.recipe,
-            user=self.other_user,
-            text=reply_text,
-            parent=self.comment
-        ).exists())
-        self.assertRedirects(response, self.redirect_url, status_code=302, target_status_code=200)
-
-    def test_reply_has_correct_parent(self):
-        """Test that reply is correctly linked to parent comment."""
-        self.client.login(username=self.other_user.username, password='Password123')
-        
-        self.client.post(self.url, {'text': 'Reply'})
-        
-        reply = Comment.objects.get(text='Reply')
-        self.assertEqual(reply.parent, self.comment)
-        self.assertTrue(reply.is_reply())
-
-    def test_nested_replies(self):
-        """Test that replies can be nested."""
-        self.client.login(username=self.other_user.username, password='Password123')
-        
-        # First level reply
-        self.client.post(self.url, {'text': 'First reply'})
-        first_reply = Comment.objects.get(text='First reply')
-        
-        # Second level reply
-        reply_to_reply_url = reverse('add_reply', kwargs={'comment_pk': first_reply.pk})
-        self.client.post(reply_to_reply_url, {'text': 'Reply to reply'})
-        
-        second_reply = Comment.objects.get(text='Reply to reply')
-        self.assertEqual(second_reply.parent, first_reply)
-        self.assertEqual(second_reply.get_depth(), 2)
 
 
 class DeleteCommentViewTestCase(TestCase, LogInTester):
@@ -214,21 +135,6 @@ class DeleteCommentViewTestCase(TestCase, LogInTester):
         
         self.assertTrue(Comment.objects.filter(pk=comment_id).exists())
 
-    def test_deleting_comment_deletes_replies(self):
-        """Test that deleting a comment also deletes its replies."""
-        reply = Comment.objects.create(
-            recipe=self.recipe,
-            user=self.other_user,
-            text='Reply',
-            parent=self.comment
-        )
-        
-        self.client.login(username=self.user.username, password='Password123')
-        self.client.post(self.url)
-        
-        self.assertFalse(Comment.objects.filter(pk=self.comment.pk).exists())
-        self.assertFalse(Comment.objects.filter(pk=reply.pk).exists())
-
 
 class RecipeDetailViewCommentsDisplayTestCase(TestCase):
     """Tests for comment display in recipe detail view."""
@@ -270,16 +176,6 @@ class RecipeDetailViewCommentsDisplayTestCase(TestCase):
         
         self.assertContains(response, 'Great recipe!')
         self.assertContains(response, self.user.username)
-
-    def test_recipe_detail_shows_nested_replies(self):
-        """Test that recipe detail page displays nested replies."""
-        parent = Comment.objects.create(recipe=self.recipe, user=self.user, text='Parent comment')
-        reply = Comment.objects.create(recipe=self.recipe, user=self.other_user, text='Reply', parent=parent)
-        
-        response = self.client.get(self.url)
-        
-        self.assertContains(response, 'Parent comment')
-        self.assertContains(response, 'Reply')
 
     def test_recipe_detail_shows_comment_form_when_logged_in(self):
         """Test that comment form is shown to logged-in users."""

@@ -42,9 +42,33 @@ Seed the development database with:
 $ python3 manage.py seed
 ```
 
+This will create sample data and a superuser account for admin access.
+
 Run all tests with:
 ```
 $ python3 manage.py test
+```
+
+## Admin Access
+
+For testing the admin panel and moderation features, a superuser account is automatically created when running the `seed` command:
+
+**Admin Credentials:**
+- Username: `admin`
+- Password: `admin123`
+
+Access the admin panel at: `http://localhost:8000/admin/`
+
+**Admin Features:**
+- View and manage all users, recipes, and comments
+- Review and handle user-submitted reports
+- Moderate content (hide/delete recipes and comments)
+- Send warnings to users
+- View notifications and system activity
+
+**Note:** These credentials are for development and testing only. In production, create a secure admin account using:
+```
+$ python3 manage.py createsuperuser
 ```
 
 *The above instructions should work in your version of the application.  If there are deviations, declare those here in bold.  Otherwise, remove this line.*

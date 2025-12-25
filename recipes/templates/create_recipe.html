@@ -1,4 +1,5 @@
 {% extends 'base_content.html' %}
+{% load widget_tweaks %}
 {% block content %}
 <div class="container">
   <div class="row">
@@ -6,8 +7,86 @@
       <h1>Create New Recipe</h1>
       <form action="{% url 'create_recipe' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {% include 'partials/bootstrap_form.html' with form=form %}
-        <input type="submit" value="Create Recipe" class="btn btn-primary">
+        
+        {# Show non-field errors #}
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+        
+        {# Standard form fields #}
+        {% for field in form %}
+          {% if field.name not in 'ingredient_count,instruction_count' and 'ingredient_' not in field.name and 'instruction_' not in field.name %}
+            <div class="mb-3">
+              <label for="{{ field.id_for_label }}" class="form-label">
+                {{ field.label }}{% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+              </label>
+              {% if field.name == 'meal_types' %}
+                {{ field }}
+              {% else %}
+                {% render_field field class="form-control" %}
+              {% endif %}
+              {% if field.errors %}
+                <div class="text-danger">{{ field.errors }}</div>
+              {% endif %}
+              {% if field.help_text %}
+                <small class="form-text text-muted">{{ field.help_text }}</small>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+        
+        {# Hidden count fields #}
+        {{ form.ingredient_count }}
+        {{ form.instruction_count }}
+        
+        {# Dynamic Ingredients Section #}
+        <div class="mb-3">
+          <label class="form-label">Ingredients <span class="text-danger">*</span></label>
+          {% for field in form %}
+            {% if 'ingredient_' in field.name %}
+              <div class="input-group mb-2">
+                {{ field }}
+                {% if field.errors %}
+                  <div class="text-danger">{{ field.errors }}</div>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+          <div class="mt-2">
+            <button type="submit" name="add_ingredient" value="1" class="btn btn-sm btn-success" formnovalidate>+ Add Ingredient</button>
+            {% if form.ingredient_count.value|add:"0" > 1 %}
+              <button type="submit" name="remove_ingredient" value="1" class="btn btn-sm btn-danger" formnovalidate>- Remove Last Ingredient</button>
+            {% endif %}
+          </div>
+        </div>
+        
+        {# Dynamic Instructions Section #}
+        <div class="mb-3">
+          <label class="form-label">Instructions <span class="text-danger">*</span></label>
+          {% for field in form %}
+            {% if 'instruction_' in field.name %}
+              <div class="input-group mb-2">
+                {% with step_num=field.name|slice:"12:"|add:"0"|add:1 %}
+                  <span class="input-group-text">Step {{ step_num }}</span>
+                {% endwith %}
+                {{ field }}
+                {% if field.errors %}
+                  <div class="text-danger">{{ field.errors }}</div>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+          <div class="mt-2">
+            <button type="submit" name="add_instruction" value="1" class="btn btn-sm btn-success" formnovalidate>+ Add Instruction</button>
+            {% if form.instruction_count.value|add:"0" > 1 %}
+              <button type="submit" name="remove_instruction" value="1" class="btn btn-sm btn-danger" formnovalidate>- Remove Last Instruction</button>
+            {% endif %}
+          </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Create Recipe</button>
         <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
       </form>
     </div>
