@@ -1,14 +1,12 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from django.urls import reverse
-from django.db.models import Avg, Count, F
-from recipes.models import Recipe, Follow
-from django.db.models import Q
+from django.db.models import Avg, Count, F, Q
+from recipes.models import Recipe, Follow, User
 
 
 class DashboardView(LoginRequiredMixin, ListView):
     model = Recipe
-    using = Follow
     template_name = "dashboard.html"
     context_object_name = "recipes"
     paginate_by = 9
@@ -70,8 +68,9 @@ class DashboardView(LoginRequiredMixin, ListView):
         queryset = self.filter_by_rating(queryset)
         queryset = self.search_feature(queryset)
         queryset = self.following_only(queryset)
-        queryset = self.filter_by_diet(queryset)
         queryset = self.apply_sorting(queryset)
+        #Must be last, as it returns a list:
+        queryset = self.filter_by_diet(queryset)
 
         return queryset
 
@@ -165,12 +164,13 @@ class DashboardView(LoginRequiredMixin, ListView):
     
     def filter_by_diet(self, queryset):
         selected_diet = self.get_selected_diet()
-
         if not selected_diet:
             return queryset
 
-        # Assuming Recipe has a field like: diet_type
-        return queryset.filter(diet_type=selected_diet)
+        return [
+            recipe for recipe in queryset
+            if recipe.get_diet_type() == selected_diet
+        ]
 
 
     def filter_by_rating(self, queryset):
@@ -197,23 +197,20 @@ class DashboardView(LoginRequiredMixin, ListView):
 
         return queryset
 
-    def filter_by_diet(self, queryset):
-        selected_diet = self.get_selected_diet()
-        if not selected_diet:
-            return queryset
-
-        return queryset.filter(diet_type=selected_diet)
-
     def following_only(self, queryset):
         following_page = self.request.path == reverse('following_dashboard')
-        
+        followed_users = Follow.objects.filter(follower=self.request.user).values_list('following')
+        followed_recipes = queryset.filter(author__in=followed_users)
+
         if following_page:
-            following_ids = Follow.objects.filter(
-                follower=self.request.user
-            ).values_list('following', flat=True)
-            
-            queryset = queryset.filter(author__in=following_ids)
-        
+            queryset = followed_recipes
+        else:
+            #Include only public and followed recipes
+            public_users = User.objects.filter(is_private=False)
+            queryset = queryset.filter(author__in=public_users)
+
+            queryset: QuerySet = (queryset|followed_recipes).distinct()
+
         return queryset
     
     def apply_sorting(self, queryset):

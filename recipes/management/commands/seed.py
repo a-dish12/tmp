@@ -8,12 +8,14 @@ is swallowed and generation continues.
 """
 
 
-from faker import Faker
+from faker import Faker, providers
 from faker_food import FoodProvider
 import random
 from django.core.management.base import BaseCommand, CommandError
-from recipes.models import User, Recipe, Follow, Rating
+from recipes.models import User, Recipe, Follow, Rating, Comment
 from recipes.management import Recipe_Fixtures
+import urllib.request
+from unicodedata import normalize
 
 
 user_fixtures = [
@@ -44,6 +46,7 @@ class Command(BaseCommand):
         RECIPE_COUNT (int): Target total number of recipes in the database.
         FOLLOW_COUNT (int): Target total number of follow relations in the database.
         RATING_COUNT (int): Target total number of ratings in the database.
+        COMMENT_COUNT (int): Target total number of comments in the database.
         DEFAULT_PASSWORD (str): Default password assigned to all created users.
         help (str): Short description shown in ``manage.py help``.
         faker (Faker): Locale-specific Faker instance used for random data.
@@ -53,6 +56,7 @@ class Command(BaseCommand):
     RECIPE_COUNT = 150
     FOLLOW_COUNT = 350
     RATING_COUNT = 1000
+    COMMENT_COUNT = 400
 
     DEFAULT_PASSWORD = 'Password123'
     help = 'Seeds the database with sample data'
@@ -62,6 +66,8 @@ class Command(BaseCommand):
         super().__init__(*args, **kwargs)
         self.faker = Faker('en_GB')
         self.faker.add_provider(FoodProvider)
+        self.faker.add_provider(providers.misc)
+        self.faker.add_provider(providers.lorem)
 
     def handle(self, *args, **options):
         """
@@ -79,6 +85,7 @@ class Command(BaseCommand):
         self.create_follows()
         self.follows = Follow.objects.all()
         self.generate_random_ratings()
+        self.generate_random_comments()
 
     #ADMIN
 
@@ -173,6 +180,7 @@ class Command(BaseCommand):
             password=Command.DEFAULT_PASSWORD,
             first_name=data['first_name'],
             last_name=data['last_name'],
+            is_private=self.faker.boolean(chance_of_getting_true=30)
         )
 
 
@@ -208,17 +216,25 @@ class Command(BaseCommand):
 
     def generate_recipe(self):
         """
+        Get a random meal from themealdb.com
+        """
+        mealResponse_str = str(urllib.request.urlopen('https://www.themealdb.com/api/json/v1/1/random.php').read())
+        """
         Generate a single random recipe and attempt to insert it.
 
-        Uses Faker for everything but meal_type, which is a random choice between options.
+        Uses Faker for the description, ingredients and time, themealdb.com for the title and image,
+        and Python's random module for meal_type and the construction of the instructions.
         """
-        title = self.faker.dish()
+        title = create_title_string(mealResponse_str)
         description = shorten_string(self.faker.dish_description())
-        ingredients = f'{self.faker.ingredient()}\n{self.faker.ingredient()}'
+        ingredients = create_ingredients_list(mealResponse_str)
+        instructions = create_instructions(mealResponse_str)
         time = round_to_nearest_5(self.faker.random_int(min=5, max=150))
         meal_type = random.choice(['breakfast','lunch','dinner','snack','dessert'])
+        image_url = mealResponse_str.split('strMealThumb":')[1].split('"')[1].replace('\\', '')
+
         self.try_create_recipe({'title': title, 'description': description, 'ingredients': ingredients,
-         'time': time, 'meal_type': meal_type})
+         'instructions': instructions,'time': time, 'meal_type': meal_type, 'image_url': image_url})
 
     def try_create_recipe(self, data):
         """
@@ -246,8 +262,10 @@ class Command(BaseCommand):
             title=data['title'],
             description=data['description'],
             ingredients=data['ingredients'],
+            instructions=data['instructions'],
             time=data['time'],
             meal_type=data['meal_type'],
+            image_url=data['image_url']
         )
 
 
@@ -373,6 +391,73 @@ class Command(BaseCommand):
         )
 
 
+    #COMMENTS
+
+    def generate_random_comments(self):
+        """
+        Generate random comments until the database contains COMMENT_COUNT comment.
+
+        Prints a simple progress indicator to stdout during generation.
+        """
+        comment_count = Comment.objects.count()
+        while comment_count < self.COMMENT_COUNT:
+            print(f"Seeding comment {comment_count}/{self.COMMENT_COUNT}", end='\r')
+            self.generate_comment()
+            comment_count = Comment.objects.count()
+        print("Comment seeding complete.      ")
+
+    def generate_comment(self):
+        """
+        Decide whether the comment should have a parent
+        """
+        parent_options = [None]
+        r = random.random()
+        if r < 0.2 and Comment.objects.count() != 0:
+            parent_options.extend(Comment.objects.all())
+        elif r < 0.5 and Comment.objects.count() != 0:
+            parent_options.extend(Comment.objects.filter(parent=None))
+        """
+        Generate a single random comment and attempt to insert it.
+        """
+        parent = random.choice(parent_options)
+        if parent != None:
+            recipe = parent.recipe
+        else:
+            recipe = random.choice(self.recipes)
+        user = random.choice(self.users.exclude(id=recipe.author.id))
+        text = self.faker.sentence().strip('.') + '!'
+
+        self.try_create_comment({'recipe': recipe, 'user': user, 'text': text, 'parent': parent})
+
+    def try_create_comment(self, data):
+        """
+        Attempt to create a comment and ignore any errors.
+
+        Args:
+            data (dict): Mapping with keys ``recipe``, ``user``,
+                ``text``, and ``parent``.
+        """
+        try:
+            self.create_comment(data)
+        except:
+            pass
+
+    def create_comment(self, data):
+        """
+        Create a comment.
+
+        Args:
+            data (dict): Mapping with keys ``recipe``, ``user``,
+                ``text``, and ``parent``.
+        """
+        Comment.objects.create(
+            recipe=data['recipe'],
+            user=data['user'],
+            text=data['text'],
+            parent=data['parent']
+        )
+
+
 def create_username(first_name, last_name):
         """
         Construct a simple username from first and last names.
@@ -409,12 +494,88 @@ def shorten_string(s):
         """
         Cuts the given string to a reasonable length.
         """
-        s = s.split('.')[0]
-        if len(s) <= 110:
-            return s + '.'
-        else:
-            s = s.split(',')[0]
-            if '(' in s and ')' not in s:
-                return s +').'
-            else:
-                return s + '.'
+        return s.split('.')[0] + '.'
+
+def generate_recipe_instructions(ingredients):
+    temp = round_to_nearest_5(random.randint(100, 251))
+    instructions = f"1. Preheat the oven to {temp}°C"
+    count = 2
+    for ingredient in ingredients.split('\n'):
+        step = random.choice([f"Add some {ingredient}.", 
+            f"Add two cups of the {ingredient}, then stir.",
+            f"Chop the {ingredient}.",
+            f"Mix the {ingredient} with the other ingredients.",
+            f"Season the {ingredient} however you'd like.",
+            f"Shred the {ingredient}, and add it to the pan."])
+        
+        instructions += f"\n{count}. {step}"
+        count += 1
+    instructions += f"\n{count}. Serve and enjoy."
+
+    return instructions
+
+def represent_symbols(string_toConvert):
+    """
+    Accurately represent special symbols.
+    """
+    while '\\\\u' in string_toConvert:
+        uni_index = string_toConvert.find('\\\\u')
+        uni_str = string_toConvert[uni_index:uni_index+7]
+        string_toConvert = string_toConvert.replace(uni_str, chr(int(uni_str[3:], 16)))
+
+    return string_toConvert
+
+def create_title_string(mealResponse_str):
+    title_str = mealResponse_str.split('strMeal":')[1].split('"')[1]
+    title_str = represent_symbols(title_str)
+
+    return title_str.replace('\\', '')
+
+def create_ingredients_list(mealResponse_str):
+    count = 1
+    ingredients = ''
+    ingredient_sections = mealResponse_str.split('strIngredient')
+    while count < len(ingredient_sections) and len(ingredient_sections[count].split('"')) > 2:
+        ingredient = ingredient_sections[count].split('"')[2]
+        if len(ingredient) == 0:
+            break
+        ingredients += f'\n{ingredient}'
+        count += 1
+
+    return ingredients[1:]
+
+def create_instructions(mealResponse_str):
+    instructions = mealResponse_str.split('strInstructions":')[1].split('"')[1]
+    instructions_list = instructions.replace('\\\\r', '').replace('\\\\n', '').split('.')
+    #Remove any steps that just say 'step _' or are empty
+    remove_list = [instr for instr in instructions_list if 'step' in instr or len(instr) < 5]
+    for instr in remove_list:
+        instructions_list.remove(instr)
+
+    #Merge instructions if too many steps
+    length = len(instructions_list)
+    if length > 20 and length % 2 == 0:
+        instructions_list = merge_list(instructions_list)
+    elif length > 20 and length % 2 == 1:
+        last_step = instructions_list.pop()
+        instructions_list = merge_list(instructions_list)
+        instructions_list.append(last_step)
+    
+    return format_instructions(instructions_list)
+
+def merge_list(instr_list):
+    return [instr_list[i] + '.' + instr_list[i+1] for i in range(len(instr_list)) if i%2 == 0]
+
+def format_instructions(instructions_list):
+    #Represent all special symbols correctly
+    for index in range(len(instructions_list)):
+        instructions_list[index] = represent_symbols(instructions_list[index]).strip(' ').strip('\\\\u25a2')
+    
+    #Combine into a single string
+    count = 0
+    final_instructions = ''
+    for instr in instructions_list:
+        count += 1
+        final_instructions += f'\n{count}. {instr}.'
+
+    return final_instructions.replace('\\', '')[1:]

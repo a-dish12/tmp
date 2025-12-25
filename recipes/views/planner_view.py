@@ -64,7 +64,6 @@ def planner_day(request, date):
     day_date = parse_date(date)
     if not day_date:
         raise Http404("Invalid date format. Use YYYY-MM-DD")
-
     if request.method == "POST":
         form = PlannedMealForm(request.POST, user=request.user)
         if form.is_valid():
@@ -78,7 +77,6 @@ def planner_day(request, date):
                 user=request.user,
                 date=day_date
             )
-
             PlannedMeal.objects.get_or_create(
                 planned_day=planned_day,
                 meal_type=meal_type,
