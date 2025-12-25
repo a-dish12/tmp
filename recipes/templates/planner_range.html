@@ -15,7 +15,14 @@
   </label>
 
   <button type="submit">View</button>
+
+  
 </form>
+
+<a href="{% url 'ingredients_list' %}?start={{ start|date:'Y-m-d' }}&end={{ end|date:'Y-m-d' }}">
+  View ingredients list
+</a>
+
 
 <hr>
 
@@ -32,7 +39,7 @@
             <li>
               {{ meal.recipe.title }}
               <form method="post"
-                action="{% url 'remove_from_calendar' meal.pk %}?next={{ request.get_full_path|urlencode }}"
+                action="{% url 'remove_from_planner' meal.pk %}?next={{ request.get_full_path|urlencode }}"
                 style="display:inline;">
 
                 {% csrf_token %}

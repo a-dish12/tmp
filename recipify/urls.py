@@ -35,8 +35,8 @@ urlpatterns = [
     path('comments/<int:comment_pk>/reply/', views.add_reply, name='add_reply'),
     path('comments/<int:comment_pk>/delete/', views.delete_comment, name='delete_comment'),
     path("planner/range/", views.planner_range, name="planner_range"),
+    path('planner/ingredients-list/', views.ingredients_list, name='ingredients_list'),
     path('planner/<str:date>/', views.planner_day, name='planner_day'),
-
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
