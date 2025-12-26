@@ -1,4 +1,5 @@
 from datetime import date as date_cls, timedelta
+from datetime import date 
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
@@ -21,6 +22,7 @@ __all__ = [
     'add_to_planner',
     'remove_from_planner',
     'planner_range',
+    'ingredients_list'
 ]
 
 
@@ -201,7 +203,7 @@ def daterange(start, end):
 
 @login_required
 def planner_range(request):
-    """
+    """ss
     Range-based planner view (day blocks).
     Default: today -> today+6
     Accepts: ?start=YYYY-MM-DD&end=YYYY-MM-DD
@@ -315,3 +317,35 @@ def planner_range(request):
     }
 
     return render(request, "planner_range.html", context)
+
+@login_required
+def ingredients_list(request):
+    start = parse_date(request.GET.get("start", ""))
+    end = parse_date(request.GET.get("end", ""))
+
+    if not start or not end:
+        start = end = date.today()
+
+    planned_meals = (
+        PlannedMeal.objects
+        .filter(planned_day__user=request.user, planned_day__date__range=[start, end])
+        .select_related("recipe", "planned_day")
+        .order_by("planned_day__date", "meal_type")
+    )
+
+
+    ingredients_lines = []
+    for meal in planned_meals:
+        text = (meal.recipe.ingredients or "").strip()
+        if not text:
+            continue
+        for line in text.splitlines():
+            line = line.strip()
+            if line:
+                ingredients_lines.append(line)
+
+    return render(request, "ingredients_list.html", {
+        "start": start,
+        "end": end,
+        "ingredients_lines": ingredients_lines,
+    })

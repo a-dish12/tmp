@@ -36,6 +36,7 @@ urlpatterns = [
     path('planned-meals/<int:meal_pk>/remove/', views.remove_from_planner, name='remove_from_planner'),
     path('recipes/<int:recipe_pk>/comments/add/', views.add_comment, name='add_comment'),
     path('comments/<int:comment_pk>/delete/', views.delete_comment, name='delete_comment'),
+    path('planner/ingredients-list/', views.ingredients_list, name='ingredients_list'),
     path('recipes/<int:recipe_pk>/report/', views.report_recipe, name='report_recipe'),
     path('comments/<int:comment_pk>/report/', views.report_comment, name='report_comment'),
     path('notifications/', views.notifications_list, name='notifications_list'),
