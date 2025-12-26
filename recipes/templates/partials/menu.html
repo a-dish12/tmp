@@ -26,7 +26,7 @@
     </li>
 
     <li class="nav-item">
-      <a class="nav-link nav-pill {% if request.resolver_match.url_name == 'planner_calendar' or request.resolver_match.url_name == 'planner_events' or request.resolver_match.url_name == 'planner_day' %}active{% endif %}" href="{% url 'planner_range'%}">
+      <a class="nav-link nav-pill {% if request.resolver_match.url_name == 'planner_range' or request.resolver_match.url_name == 'planner_events' or request.resolver_match.url_name == 'planner_day' %}active{% endif %}" href="{% url 'planner_range' %}">
         <i class="bi bi-calendar3 nav-icon"></i>
         Meal Plan
       </a>
