@@ -22,6 +22,7 @@ __all__ = [
     'add_to_planner',
     'remove_from_planner',
     'planner_range',
+    'ingredients_list'
 ]
 
 
@@ -202,7 +203,7 @@ def daterange(start, end):
 
 @login_required
 def planner_range(request):
-    """
+    """ss
     Range-based planner view (day blocks).
     Default: today -> today+6
     Accepts: ?start=YYYY-MM-DD&end=YYYY-MM-DD
