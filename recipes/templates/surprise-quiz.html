@@ -1,19 +1,97 @@
 {% extends 'base_content.html' %}
+{% load static %}
+
+{% block body_class %}surprise-bg{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'surprise_me.css' %}">
+<link rel="stylesheet" href="{% static 'navbar.css' %}">
+{% endblock %}
+
 {% block content %}
 
-
-<div class = "container mt-5">
-    <h2>Surprise me</h2>
-    <p> Select the criteria for the surprise - We'll handle the rest</p>
-
-    <form method = "get" action = "{% url 'surprise-result' %}">
-    {{form.as_p}}
-    <button type = "submit" class = "btn btn-warning btn-lg">
-        Surprise me
-    </button>
-</form>
-
-
-
+<!-- Dust particles -->
+<div class="surprise-particles">
+  {% for _ in "123456789012345678901234567890" %}
+    <span></span>
+  {% endfor %}
 </div>
+
+<div class="container">
+  
+  <!-- Header -->
+  <div class="surprise-header">
+    <h1>🎲 Surprise me</h1>
+    <p class="surprise-subtitle">Select your preferences and discover something delicious</p>
+  </div>
+  
+  <!-- Form Card -->
+  <div class="surprise-card">
+    <form method="get" action="{% url 'surprise-result' %}">
+      
+      <!-- Meal Type Section -->
+      <div class="form-section">
+        <span class="section-label">🍽️ Meal type</span>
+        <div class="checkbox-group">
+          {% for code, label in meal_type_filters %}
+            <div class="checkbox-item">
+              <input type="checkbox" 
+                     name="meal_types" 
+                     value="{{ code }}" 
+                     id="id_meal_{{ code }}">
+              <label for="id_meal_{{ code }}">{{ label }}</label>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      
+      <!-- Diet Type Section -->
+      <div class="form-section">
+        <span class="section-label">🥗 Diet type</span>
+        <div class="radio-group">
+          {% for code, label in diet_filters %}
+            <div class="radio-item">
+              <input type="radio" 
+                     name="diet" 
+                     value="{{ code }}" 
+                     id="id_diet_{{ code }}">
+              <label for="id_diet_{{ code }}">{{ label }}</label>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      
+      <!-- Time Filter Section -->
+      <div class="form-section">
+        <span class="section-label">⏱️ Preparation time</span>
+        <div class="radio-group">
+          {% for filter in time_filters %}
+            <div class="radio-item">
+              <input type="radio" 
+                     name="time_filter" 
+                     value="{{ filter.key }}" 
+                     id="id_time_{{ filter.key }}">
+              <label for="id_time_{{ filter.key }}">{{ filter.label }}</label>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      
+      <!-- Surprise Button -->
+      <div class="button-group">
+        <a href="{% url 'dashboard-surprise' %}" class="btn-clear">
+          <span class="btn-icon">✕</span>
+          <span class="btn-text">Clear selection</span>
+        </a>
+        <button type="submit" class="btn-surprise">
+          <span class="btn-icon">🎲</span>
+          <span class="btn-text">Surprise me</span>
+        </button>
+      </div>
+      
+    </form>
+  </div>
+  
+</div>
+
 {% endblock %}

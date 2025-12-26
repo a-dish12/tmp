@@ -208,6 +208,40 @@ def planner_range(request):
     Default: today -> today+6
     Accepts: ?start=YYYY-MM-DD&end=YYYY-MM-DD
     """
+    # Handle modal form submission
+    if request.method == "POST":
+        date_str = request.POST.get("date")
+        meal_type = request.POST.get("meal_type")
+        recipe_id = request.POST.get("recipe_search")  # Get from datalist input
+        
+        if date_str and meal_type and recipe_id:
+            day_date = parse_date(date_str)
+            if day_date:
+                try:
+                    recipe = Recipe.objects.get(pk=recipe_id)
+                    
+                    # Check if recipe is visible to user
+                    if visible_recipes_for(request.user).filter(pk=recipe.pk).exists():
+                        planned_day, _ = PlannedDay.objects.get_or_create(
+                            user=request.user,
+                            date=day_date
+                        )
+                        PlannedMeal.objects.get_or_create(
+                            planned_day=planned_day,
+                            meal_type=meal_type,
+                            recipe=recipe
+                        )
+                        messages.success(request, f"Added {recipe.title} to {meal_type}!")
+                except (Recipe.DoesNotExist, ValueError):
+                    messages.error(request, "Invalid recipe selected.")
+        
+        # Redirect to preserve GET parameters
+        start_str = request.POST.get("start") or request.GET.get("start")
+        end_str = request.POST.get("end") or request.GET.get("end")
+        if start_str and end_str:
+            return redirect(f"{reverse('planner_range')}?start={start_str}&end={end_str}")
+        return redirect("planner_range")
+    
     start_str = request.GET.get("start")
     end_str = request.GET.get("end")
 
@@ -267,6 +301,9 @@ def planner_range(request):
     prev_week_end = end - week_delta
     next_week = start + week_delta
     next_week_end = end + week_delta
+    
+    # Get user's recipes for the modal dropdown
+    user_recipes = visible_recipes_for(request.user).order_by('title')
 
     context = {
         "start": start,
@@ -276,6 +313,7 @@ def planner_range(request):
         "prev_week_end": prev_week_end,
         "next_week": next_week,
         "next_week_end": next_week_end,
+        "user_recipes": user_recipes,  # Add recipes for modal
     }
 
     return render(request, "planner_range.html", context)
