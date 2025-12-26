@@ -15,6 +15,10 @@ from django.core.management.base import BaseCommand, CommandError
 from recipes.models import User, Recipe, Follow, Rating, Comment
 from recipes.management import Recipe_Fixtures
 import urllib.request
+import ssl
+
+# Disable SSL certificate verification for development/seeding
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 user_fixtures = [

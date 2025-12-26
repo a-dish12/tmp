@@ -6,7 +6,6 @@ from django.views import View
 from recipes.models import Recipe
 from recipes.forms.recipe_form import RecipeForm
 
-
 class CreateRecipeView(LoginRequiredMixin, View):
     template_name = 'create_recipe.html'
 
@@ -23,7 +22,7 @@ class CreateRecipeView(LoginRequiredMixin, View):
             # Mark as not validated to prevent error display
             form._errors = None
             return render(request, self.template_name, {'form': form, 'skip_validation': True})
-        
+
         if 'add_instruction' in request.POST:
             data = request.POST.copy()
             data['instruction_count'] = int(data.get('instruction_count', 1)) + 1
@@ -31,7 +30,7 @@ class CreateRecipeView(LoginRequiredMixin, View):
             # Mark as not validated to prevent error display
             form._errors = None
             return render(request, self.template_name, {'form': form, 'skip_validation': True})
-        
+
         # Check if user wants to remove fields (but keep at least 1)
         if 'remove_ingredient' in request.POST:
             data = request.POST.copy()
@@ -42,7 +41,7 @@ class CreateRecipeView(LoginRequiredMixin, View):
             # Mark as not validated to prevent error display
             form._errors = None
             return render(request, self.template_name, {'form': form, 'skip_validation': True})
-        
+
         if 'remove_instruction' in request.POST:
             data = request.POST.copy()
             current_count = int(data.get('instruction_count', 1))
@@ -55,12 +54,12 @@ class CreateRecipeView(LoginRequiredMixin, View):
 
         # Normal form submission - validate properly
         form = RecipeForm(request.POST, request.FILES)
-
         if form.is_valid():
             recipe = form.save(commit=False)
             recipe.author = request.user
             recipe.save()
-            return redirect('user_recipes')
+            # Redirect to the newly created recipe's detail page
+            return redirect('recipe_detail', pk=recipe.pk)
 
         # Invalid form - show validation errors
         return render(request, self.template_name, {'form': form})

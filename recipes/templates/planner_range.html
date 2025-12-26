@@ -1,59 +1,89 @@
 {% extends "base_content.html" %}
+{% load static %}
+{% block body_class %}meal-planner-bg{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'meal_planner.css' %}">
+<link rel="stylesheet" href="{% static 'navbar.css' %}">
+{% endblock %}
 {% block content %}
 
-<h1>Meal Planner</h1>
+<!-- Dust particles -->
+<div class="planner-particles">
+  {% for _ in "123456789012345678901234567890" %}
+    <span></span>
+  {% endfor %}
+</div>
 
-<form method="get">
-  <label>
-    Start:
-    <input type="date" name="start" value="{{ start|date:'Y-m-d' }}">
-  </label>
-
-  <label>
-    End:
-    <input type="date" name="end" value="{{ end|date:'Y-m-d' }}">
-  </label>
-
-  <button type="submit">View</button>
-</form>
-
-<hr>
-
-{% for day in days %}
-  <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-    <h3>{{ day.date }}</h3>
-
-    {% for slot in day.slots %}
-      <strong>{{ slot.name|title }}</strong>
-
-      {% if slot.meals %}
-        <ul>
-          {% for meal in slot.meals %}
-            <li>
-              {{ meal.recipe.title }}
-              <form method="post"
-                action="{% url 'remove_from_planner' meal.pk %}?next={{ request.get_full_path|urlencode }}"
-                style="display:inline;">
-
-                {% csrf_token %}
-                <button type="submit">Remove</button>
-              </form>
-            </li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p style="color:#888;">No meals</p>
-      {% endif %}
-      
-    {% endfor %}
-    <a href="{% url 'planner_day' day.date|date:'Y-m-d' %}?next={{ request.get_full_path|urlencode }}">
-    + Add
-    </a>
-
+<div class="container">
+  
+  <!-- Header -->
+  <div class="planner-header">
+    <h1>Meal Plan</h1>
+    <p class="planner-subtitle">Plan your meals for the week</p>
   </div>
-{% endfor %}
-    <div>
-        <a href="{% url 'dashboard' %}" class="btn btn-secondary mt-3">← Back to Dashboard</a>
+  
+  <!-- Week Navigation -->
+  <div class="week-navigation">
+    <a href="?start={{ prev_week|date:'Y-m-d' }}&end={{ prev_week_end|date:'Y-m-d' }}" class="nav-arrow">
+      <span>‹</span>
+    </a>
+    
+    <div class="week-range">
+      {{ start|date:"M j" }} - {{ end|date:"M j, Y" }}
     </div>
+    
+    <a href="?start={{ next_week|date:'Y-m-d' }}&end={{ next_week_end|date:'Y-m-d' }}" class="nav-arrow">
+      <span>›</span>
+    </a>
+  </div>
+  
+  <!-- Calendar Grid -->
+  <div class="calendar-grid">
+    {% for day in days %}
+      <div class="day-column {% if day.is_today %}today{% endif %}">
+        <div class="day-header">
+          <div class="day-name">{{ day.date|date:"D" }}</div>
+          <div class="day-number">{{ day.date|date:"j" }}</div>
+        </div>
+        
+        <div class="day-meals">
+          {% for slot in day.slots %}
+            <div class="meal-slot">
+              <div class="slot-header">
+                {% if slot.name == 'breakfast' %}🍳{% elif slot.name == 'lunch' %}☀️{% elif slot.name == 'snack' %}🍿{% elif slot.name == 'dinner' %}🌙{% endif %}
+                <span class="slot-name">{{ slot.name|title }}</span>
+              </div>
+              
+              {% if slot.meals %}
+                {% for meal in slot.meals %}
+                  <div class="meal-item">
+                    <div class="meal-name">{{ meal.recipe.title }}</div>
+                    <form method="post"
+                          action="{% url 'remove_from_planner' meal.pk %}?next={{ request.get_full_path|urlencode }}"
+                          class="remove-form">
+                      {% csrf_token %}
+                      <button type="submit" class="btn-remove-mini">×</button>
+                    </form>
+                  </div>
+                {% endfor %}
+              {% endif %}
+              
+              <a href="{% url 'planner_day' day.date|date:'Y-m-d' %}?next={{ request.get_full_path|urlencode }}" 
+                 class="add-btn">
+                +
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  
+  <!-- Back Button -->
+  <div class="back-button-container">
+    <a href="{% url 'dashboard' %}" class="btn-secondary">← Back to Dashboard</a>
+  </div>
+  
+</div>
 
 {% endblock %}
