@@ -1,7 +1,6 @@
 /* =========================
    NAVBAR - UNIVERSAL STYLING
    ========================= */
-
 .dashboard-nav {
   position: sticky;
   top: 0;
@@ -20,14 +19,14 @@
   padding-right: 1.5rem;
   display: flex;
   align-items: center;
-  gap: 2rem;
+  justify-content: space-between;
 }
 
 .dashboard-nav .navbar-collapse {
   flex-grow: 1;
   display: flex !important;
+  justify-content: center;
   align-items: center;
-  gap: 1rem;
 }
 
 /* Logo */
@@ -52,24 +51,24 @@
   line-height: 1;
 }
 
-/* Nav Items Container */
+/* Nav Items Container - CENTERED */
 .dashboard-nav-items {
   display: flex;
   gap: 0.4rem;
   margin: 0 !important;
   flex-wrap: nowrap;
   align-items: center;
-  flex-shrink: 1;
-  min-width: 0;
+  justify-content: center;
 }
 
 .dashboard-nav-logout {
   display: flex;
   gap: 0.4rem;
   margin: 0 !important;
-  margin-left: auto !important;
   flex-shrink: 0;
   align-items: center;
+  position: absolute;
+  right: 1.5rem;
 }
 
 /* Nav Pills */
@@ -130,11 +129,9 @@
   .dashboard-nav-items {
     gap: 0.3rem;
   }
-  
   .dashboard-nav-logout {
     gap: 0.3rem;
   }
-  
   .navbar .nav-link.nav-pill {
     padding: 0.45rem 0.85rem;
     font-size: 0.85rem;
@@ -147,11 +144,6 @@
     padding: 0.4rem 0.7rem;
     font-size: 0.8rem;
   }
-  
-  .dashboard-nav .container {
-    gap: 1rem;
-  }
-  
   .dashboard-logo {
     font-size: 1.3rem;
   }
@@ -162,18 +154,16 @@
     padding-left: 1rem;
     padding-right: 1rem;
   }
-  
   .navbar .nav-link.nav-pill {
     padding: 0.4rem 0.6rem;
     font-size: 0.75rem;
   }
-  
   .dashboard-nav-items {
     gap: 0.25rem;
   }
-  
   .dashboard-nav-logout {
     gap: 0.25rem;
+    right: 1rem;
   }
 }
 
@@ -181,7 +171,11 @@
   .dashboard-nav .container {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.75rem;
+  }
+  
+  .dashboard-nav .navbar-collapse {
+    width: 100%;
+    justify-content: flex-start;
   }
   
   .dashboard-nav-items {
@@ -191,10 +185,10 @@
   }
   
   .dashboard-nav-logout {
+    position: static;
     flex-direction: column;
     align-items: stretch;
     width: 100%;
-    margin-left: 0 !important;
   }
   
   .navbar .nav-link.nav-pill {
@@ -203,4 +197,208 @@
     font-size: 0.9rem;
   }
 }
+/* =========================
+   NOTIFICATIONS DROPDOWN
+   ========================= */
 
+/* Notification Bell Icon */
+.navbar .nav-link.position-relative {
+  position: relative;
+}
+
+/* Notification Badge */
+.navbar .nav-link .badge {
+  font-size: 0.65rem;
+  padding: 0.25em 0.45em;
+  font-weight: 700;
+}
+
+/* Dropdown Menu - Glassy Dark Theme */
+#notificationsDropdown + .dropdown-menu {
+  background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05)) !important;
+  backdrop-filter: blur(30px) !important;
+  -webkit-backdrop-filter: blur(30px) !important;
+  border: 1.5px solid rgba(255,255,255,0.15) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05) !important;
+  padding: 0 !important;
+  min-width: 360px !important;
+  max-height: 480px !important;
+  overflow-y: auto !important;
+  margin-top: 0.75rem !important;
+  display: none !important;
+}
+
+#notificationsDropdown + .dropdown-menu.show {
+  display: block !important;
+}
+
+/* Dropdown Header */
+#notificationsDropdown + .dropdown-menu .dropdown-header {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 1.05rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+/* Dropdown Divider */
+#notificationsDropdown + .dropdown-menu .dropdown-divider {
+  border-color: rgba(255, 255, 255, 0.08);
+  margin: 0;
+  opacity: 1;
+}
+
+/* Scrollable Area - removed flex that caused issues */
+
+/* Notification Items Container */
+#notificationsDropdown + .dropdown-menu > li {
+  flex-shrink: 0;
+}
+
+/* Individual Notification Item */
+#notificationsDropdown + .dropdown-menu .dropdown-item {
+  color: rgba(255, 255, 255, 0.9) !important;
+  padding: 1rem 1.5rem !important;
+  background: transparent !important;
+  border: none !important;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+#notificationsDropdown + .dropdown-menu .dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+}
+
+/* Unread Notification */
+#notificationsDropdown + .dropdown-menu .dropdown-item.bg-light {
+  background: rgba(77, 218, 225, 0.12) !important;
+  border-left: 3px solid #4ddae1;
+}
+
+#notificationsDropdown + .dropdown-menu .dropdown-item.bg-light:hover {
+  background: rgba(77, 218, 225, 0.18) !important;
+}
+
+/* Unread indicator */
+#notificationsDropdown + .dropdown-menu .dropdown-item.bg-light::before {
+  content: '';
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  background: #4ddae1;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(77, 218, 225, 0.6);
+}
+
+#notificationsDropdown + .dropdown-menu .dropdown-item.bg-light {
+  padding-left: 2.5rem !important;
+}
+
+/* Timestamp */
+#notificationsDropdown + .dropdown-menu .text-muted {
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.35rem;
+}
+
+/* Title */
+#notificationsDropdown + .dropdown-menu .dropdown-item strong {
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+/* Message */
+#notificationsDropdown + .dropdown-menu .dropdown-item p {
+  color: rgba(255, 255, 255, 0.75) !important;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* View All Link */
+#notificationsDropdown + .dropdown-menu .dropdown-item.text-center {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #4ddae1 !important;
+  font-weight: 700;
+  padding: 1rem !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.85rem;
+}
+
+#notificationsDropdown + .dropdown-menu .dropdown-item.text-center:hover {
+  background: rgba(77, 218, 225, 0.15) !important;
+  color: #5ce8ef !important;
+}
+
+/* No Notifications State */
+#notificationsDropdown + .dropdown-menu .dropdown-item.text-muted:not(.bg-light) {
+  padding: 2rem 1.5rem !important;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4) !important;
+  font-style: italic;
+}
+
+/* Scrollbar Styling */
+#notificationsDropdown + .dropdown-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+#notificationsDropdown + .dropdown-menu::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+#notificationsDropdown + .dropdown-menu::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+}
+
+#notificationsDropdown + .dropdown-menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Notification Bell Animation on New Notification */
+@keyframes bellRing {
+  0%, 100% { transform: rotate(0deg); }
+  10%, 30%, 50%, 70%, 90% { transform: rotate(-10deg); }
+  20%, 40%, 60%, 80% { transform: rotate(10deg); }
+}
+
+.navbar .nav-link.position-relative:has(.badge) .nav-icon {
+  animation: bellRing 0.8s ease-in-out;
+}
+
+/* Badge Pulse */
+@keyframes badgePulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.1); }
+}
+
+.navbar .nav-link .badge {
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  #notificationsDropdown + .dropdown-menu {
+    min-width: 300px !important;
+    left: auto !important;
+    right: 0 !important;
+  }
+}
