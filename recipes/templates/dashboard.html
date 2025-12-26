@@ -272,11 +272,7 @@
             {% for recipe in recipes %}
               <a href="{% url 'recipe_detail' recipe.pk %}" class="recipe-card">
 
-                <div class="recipe-image">
-                  {% if recipe.get_image_url %}
-                    <img src="{{ recipe.get_image_url }}" alt="{{ recipe.title }}">
-                  {% endif %}
-                </div>
+                <div class="recipe-image" {% if recipe.image_url %}style="background-image: url('{{ recipe.image_url }}');"{% elif recipe.image %}style="background-image: url('{{ recipe.image.url }}');"{% endif %}></div>
 
                 <h5 class="recipe-title">
                   {{ recipe.title }}
