@@ -1,3 +1,4 @@
+from datetime import date as date_cls, timedelta
 from datetime import date 
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, Http404
@@ -5,12 +6,23 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.dateparse import parse_date
 from django.urls import reverse
 from django.contrib import messages
+from django.utils import timezone
 
 from recipes.helpers import visible_recipes_for
 from recipes.models.planned_day import PlannedDay
 from recipes.models.planned_meal import PlannedMeal
 from recipes.models import Recipe
 from recipes.forms.planned_meal_form import PlannedMealForm
+
+# Export all planner view functions
+__all__ = [
+    'planner_calendar',
+    'planner_events',
+    'planner_day',
+    'add_to_planner',
+    'remove_from_planner',
+    'planner_range',
+]
 
 
 @login_required
@@ -178,8 +190,6 @@ def remove_from_planner(request, meal_pk):
     # Default to planner day view
     return redirect("planner_day", date=date_str)
 
-from datetime import timedelta
-from django.utils import timezone
 
 MEAL_SLOTS = ["breakfast", "lunch", "dinner", "snack"]
 
@@ -247,12 +257,24 @@ def planner_range(request):
         days.append({
             "date": d,
             "slots": slots,
+            "is_today": d == today,  # Add is_today flag
         })
+
+    # Calculate previous and next week dates for navigation
+    week_delta = timedelta(days=7)
+    prev_week = start - week_delta
+    prev_week_end = end - week_delta
+    next_week = start + week_delta
+    next_week_end = end + week_delta
 
     context = {
         "start": start,
         "end": end,
         "days": days,
+        "prev_week": prev_week,
+        "prev_week_end": prev_week_end,
+        "next_week": next_week,
+        "next_week_end": next_week_end,
     }
 
     return render(request, "planner_range.html", context)
