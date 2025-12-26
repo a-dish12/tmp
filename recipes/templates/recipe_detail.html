@@ -107,6 +107,48 @@
                 {% include 'partials/comment.html' with comment=comment %}
               {% endfor %}
             </div>
+
+            {% if comments_is_paginated %}
+              <nav aria-label="Comments pagination" class="mt-3">
+                <ul class="pagination justify-content-center">
+                  {% if comments_page_obj.has_previous %}
+                    <li class="page-item">
+                      <a class="page-link" href="?comments_page={{ comments_page_obj.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                      </a>
+                    </li>
+                  {% else %}
+                    <li class="page-item disabled">
+                      <span class="page-link" aria-hidden="true">&laquo;</span>
+                    </li>
+                  {% endif %}
+
+                  {% for num in comments_page_obj.paginator.page_range %}
+                    {% if num == comments_page_obj.number %}
+                      <li class="page-item active" aria-current="page">
+                        <span class="page-link">{{ num }}</span>
+                      </li>
+                    {% else %}
+                      <li class="page-item">
+                        <a class="page-link" href="?comments_page={{ num }}">{{ num }}</a>
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+
+                  {% if comments_page_obj.has_next %}
+                    <li class="page-item">
+                      <a class="page-link" href="?comments_page={{ comments_page_obj.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                      </a>
+                    </li>
+                  {% else %}
+                    <li class="page-item disabled">
+                      <span class="page-link" aria-hidden="true">&raquo;</span>
+                    </li>
+                  {% endif %}
+                </ul>
+              </nav>
+            {% endif %}
           {% else %}
             <p class="text-muted text-center">No comments yet. Be the first to comment!</p>
           {% endif %}
@@ -176,7 +218,7 @@
         </div>
       </div>
       
-      <!-- Add to Calendar Section -->
+      <!-- Add to planner Section -->
       {% if user.is_authenticated %}
       <div class="card">
         <div class="card-body">
@@ -192,7 +234,7 @@
                   <span>
                     <strong>{{ meal.planned_day.date|date:"M d" }}</strong> - {{ meal.meal_type|title }}
                   </span>
-                  <form method="post" action="{% url 'remove_from_calendar' meal.pk %}?next={% url 'recipe_detail' recipe.pk %}" style="display: inline;">
+                  <form method="post" action="{% url 'remove_from_planner' meal.pk %}?next={% url 'recipe_detail' recipe.pk %}" style="display: inline;">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-sm btn-outline-danger" title="Remove">×</button>
                   </form>
@@ -203,8 +245,8 @@
             </div>
           {% endif %}
           
-          <!-- Add to calendar form -->
-          <form method="post" action="{% url 'add_to_calendar' recipe.pk %}">
+          <!-- Add to planner form -->
+          <form method="post" action="{% url 'add_to_planner' recipe.pk %}">
             {% csrf_token %}
             {{ planned_meal_form.recipe }}
             <div class="mb-3">
@@ -215,11 +257,11 @@
               <label for="{{ planned_meal_form.meal_type.id_for_label }}" class="form-label">Meal Type</label>
               {{ planned_meal_form.meal_type }}
             </div>
-            <button type="submit" class="btn btn-success w-100">📅 Add to Calendar</button>
+            <button type="submit" class="btn btn-success w-100">📅 Add to planner</button>
           </form>
           
           <div class="mt-2">
-            <a href="{% url 'planner_calendar' %}" class="btn btn-sm btn-outline-secondary w-100">View Calendar</a>
+            <a href="{% url 'planner_range' %}" class="btn btn-sm btn-outline-secondary w-100">View planner</a>
           </div>
         </div>
       </div>

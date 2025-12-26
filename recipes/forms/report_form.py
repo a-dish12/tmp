@@ -25,3 +25,13 @@ class ReportForm(forms.ModelForm):
             'reason': 'Reason for reporting',
             'description': 'Additional details'
         }
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        reason = cleaned_data.get('reason')
+        description = cleaned_data.get('description')
+        
+        if not reason or not description:
+            raise forms.ValidationError('Please provide both a reason and description for your report.')
+        
+        return cleaned_data

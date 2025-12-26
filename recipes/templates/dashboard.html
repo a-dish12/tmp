@@ -5,12 +5,13 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'navbar.css' %}">
-<link rel="stylesheet" href="{% static 'dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard.css' %}?v=2">
 {% endblock %}
 
 {% block content %}
 
 <!-- Dust particles -->
+ 
 <div class="dashboard-particles">
   {% for _ in "123456789012345678901234567890" %}
     <span></span>
@@ -120,44 +121,53 @@
             {% endfor %}
           </div>
 
+          <!-- Rating Filter -->
+          <div class="mb-3">
+            <span class="form-label fw-bold d-block">Minimum rating</span>
+            
+            <div class="rating-dial">
+              <input type="radio" name="min_rating" value="" id="rating_any" checked>
+              <label for="rating_any" class="rating-option" data-index="0">
+                <span class="rating-circle"></span>
+                <span class="rating-label">Any</span>
+              </label>
+
+              <input type="radio" name="min_rating" value="1" id="rating_1">
+              <label for="rating_1" class="rating-option" data-index="1">
+                <span class="rating-circle"></span>
+                <span class="rating-label">1+</span>
+              </label>
+
+              <input type="radio" name="min_rating" value="2" id="rating_2">
+              <label for="rating_2" class="rating-option" data-index="2">
+                <span class="rating-circle"></span>
+                <span class="rating-label">2+</span>
+              </label>
+
+              <input type="radio" name="min_rating" value="3" id="rating_3">
+              <label for="rating_3" class="rating-option" data-index="3">
+                <span class="rating-circle"></span>
+                <span class="rating-label">3+</span>
+              </label>
+
+              <input type="radio" name="min_rating" value="4" id="rating_4">
+              <label for="rating_4" class="rating-option" data-index="4">
+                <span class="rating-circle"></span>
+                <span class="rating-label">4+</span>
+              </label>
+
+              <input type="radio" name="min_rating" value="5" id="rating_5">
+              <label for="rating_5" class="rating-option" data-index="5">
+                <span class="rating-circle"></span>
+                <span class="rating-label">5</span>
+              </label>
+            </div>
+          </div>
+
           <!-- Sort By -->
           <div class="mb-3">
             <span class="form-label fw-bold d-block">Sort by</span>
 
-    <!-- ================= Main Content ================= -->
-    <div class="col-md-9">
-      <h1>Welcome to your dashboard {{ user.username }}</h1>
-
-      <!-- Action buttons -->
-      <div class="mt-4 d-flex align-items-center gap-3 flex-wrap">
-        <a href="{% url 'user_profile' user.id %}" class="btn btn-primary btn-lg">
-          My profile
-        </a>
-        <a href="{% url 'planner_range'%}" class="btn btn-primary btn-lg me-3">
-          My Meal Planner
-        </a>
-        <a href="{% url 'create_recipe' %}" class="btn btn-primary btn-lg">
-          Create New Recipe
-        </a>
-        <a href="{% url 'dashboard-surprise' %}?{{request.GET.urlencode}}"
-        class="btn btn-warning btn-lg">Surprise me!!!
-      </a>
-      </div>
-
-      <!-- Explore header -->
-      <h2 class="list-title mt-5">Explore Recipes from Others</h2>
-
-
-      <!-- For You / Following -->
-      <nav class="nav nav-tabs justify-content-center mb-4">
-        {% if following_page %}
-          <a class="nav-link" href="{% url 'dashboard' %}">For You</a>
-          <a class="nav-link active" aria-current="page" href="{% url 'following_dashboard' %}">Following</a>
-        {% else %}
-          <a class="nav-link active" aria-current="page" href="{% url 'dashboard' %}">For You</a>
-          <a class="nav-link" href="{% url 'following_dashboard' %}">Following</a>
-        {% endif %}
-      </nav>
             {% for value, label in sort_options %}
               <div class="form-check">
                 <input
@@ -192,9 +202,26 @@
       <!-- MAIN CONTENT (RIGHT) -->
       <div class="col-md-9 recipes-col">
 
+        <!-- FEED TABS -->
+        <div class="dashboard-tabs mb-3">
+          <a
+            href="{% url 'dashboard' %}"
+            class="dashboard-tab {% if not following_page %}active{% endif %}"
+          >
+            For You
+          </a>
+
+          <a
+            href="{% url 'following_dashboard' %}"
+            class="dashboard-tab {% if following_page %}active{% endif %}"
+          >
+            Following
+          </a>
+        </div>
+
         <!-- Recipe count -->
         <p class="list-subtitle">
-          Showing {{ recipes|length }} recipe{% if recipes|length != 1 %}s{% endif %}
+          Showing {{ page_obj.paginator.count }} recipe{% if page_obj.paginator.count != 1 %}s{% endif %}
         </p>
 
         {% if has_active_filters %}
@@ -245,7 +272,11 @@
             {% for recipe in recipes %}
               <a href="{% url 'recipe_detail' recipe.pk %}" class="recipe-card">
 
-                <div class="recipe-image"></div>
+                <div class="recipe-image">
+                  {% if recipe.get_image_url %}
+                    <img src="{{ recipe.get_image_url }}" alt="{{ recipe.title }}">
+                  {% endif %}
+                </div>
 
                 <h5 class="recipe-title">
                   {{ recipe.title }}
@@ -260,7 +291,7 @@
 
                 <div class="recipe-meta">
                   <span>By {{ recipe.author.username }}</span>
-                  <span>{{ recipe.time }} min · {{ recipe.meal_type|capfirst }}</span>
+                  <span>Prep time: {{ recipe.time }} minutes · {{ recipe.meal_type|capfirst }}</span>
                 </div>
 
                 <div class="recipe-rating">
@@ -281,7 +312,53 @@
             {% endfor %}
           </div>
         {% else %}
-          <p class="low-key">No recipes available.</p>
+          {% if selected_meal_types %}
+            <p class="low-key">No recipes of the requested meal type are available from other users yet.</p>
+          {% else %}
+            <p class="low-key">No recipes available from other users yet.</p>
+          {% endif %}
+        {% endif %}
+
+        {% if is_paginated %}
+          <nav aria-label="Recipe pagination" class="mt-4">
+            <ul class="pagination justify-content-center dashboard-pagination">
+              {% if page_obj.has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+              {% else %}
+                <li class="page-item disabled">
+                  <span class="page-link" aria-hidden="true">&laquo;</span>
+                </li>
+              {% endif %}
+
+              {% for num in page_obj.paginator.page_range %}
+                {% if num == page_obj.number %}
+                  <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ num }}</span>
+                  </li>
+                {% else %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+
+              {% if page_obj.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              {% else %}
+                <li class="page-item disabled">
+                  <span class="page-link" aria-hidden="true">&raquo;</span>
+                </li>
+              {% endif %}
+            </ul>
+          </nav>
         {% endif %}
 
       </div>

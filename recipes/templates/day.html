@@ -37,7 +37,7 @@
       {% if m.meal_type == "breakfast" %}
         <li class="mb-2">
           <a href="{% url 'recipe_detail' m.recipe.pk %}">{{ m.recipe }}</a>
-          <form method="post" action="{% url 'remove_from_calendar' m.pk %}" style="display: inline;">
+          <form method="post" action="{% url 'remove_from_planner' m.pk %}" style="display: inline;">
             {% csrf_token %}
             <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
           </form>
@@ -52,7 +52,7 @@
       {% if m.meal_type == "lunch" %}
         <li class="mb-2">
           <a href="{% url 'recipe_detail' m.recipe.pk %}">{{ m.recipe }}</a>
-          <form method="post" action="{% url 'remove_from_calendar' m.pk %}" style="display: inline;">
+          <form method="post" action="{% url 'remove_from_planner' m.pk %}" style="display: inline;">
             {% csrf_token %}
             <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
           </form>
@@ -67,7 +67,7 @@
       {% if m.meal_type == "dinner" %}
         <li class="mb-2">
           <a href="{% url 'recipe_detail' m.recipe.pk %}">{{ m.recipe }}</a>
-          <form method="post" action="{% url 'remove_from_calendar' m.pk %}" style="display: inline;">
+          <form method="post" action="{% url 'remove_from_planner' m.pk %}" style="display: inline;">
             {% csrf_token %}
             <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
           </form>
@@ -82,7 +82,7 @@
       {% if m.meal_type == "snack" %}
         <li class="mb-2">
           <a href="{% url 'recipe_detail' m.recipe.pk %}">{{ m.recipe }}</a>
-          <form method="post" action="{% url 'remove_from_calendar' m.pk %}" style="display: inline;">
+          <form method="post" action="{% url 'remove_from_planner' m.pk %}" style="display: inline;">
             {% csrf_token %}
             <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
           </form>

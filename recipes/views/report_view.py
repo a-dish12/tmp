@@ -75,7 +75,11 @@ def report_recipe(request, recipe_pk):
             messages.success(request, "Thank you for your report. We will review it shortly.")
             return redirect('recipe_detail', pk=recipe_pk)
         else:
-            messages.error(request, "Please correct the errors in the form.")
+            # Show specific form errors
+            for error in form.non_field_errors():
+                messages.error(request, error)
+            if not form.non_field_errors():
+                messages.error(request, "Please correct the errors in the form.")
     else:
         form = ReportForm()
     
@@ -155,7 +159,11 @@ def report_comment(request, comment_pk):
             messages.success(request, "Thank you for your report. We will review it shortly.")
             return redirect('recipe_detail', pk=comment.recipe.pk)
         else:
-            messages.error(request, "Please correct the errors in the form.")
+            # Show specific form errors
+            for error in form.non_field_errors():
+                messages.error(request, error)
+            if not form.non_field_errors():
+                messages.error(request, "Please correct the errors in the form.")
     else:
         form = ReportForm()
     

@@ -45,6 +45,9 @@ urlpatterns = [
     path('notifications/dropdown/', views.notifications_dropdown, name='notifications_dropdown'),
     path('notifications/<int:notification_id>/read/', views.mark_notification_read, name='mark_notification_read'),
     path('notifications/mark-all-read/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
+    path("planner/range/", views.planner_range, name="planner_range"),
+    path('planner/<str:date>/', views.planner_day, name='planner_day'),
+
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
@@ -52,4 +55,3 @@ urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 # Serve media files in development
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-

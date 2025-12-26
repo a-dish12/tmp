@@ -3,9 +3,9 @@ from recipes.models import Recipe
 
 
 class RecipeForm(forms.ModelForm):
-    meal_types = forms.MultipleChoiceField(
+    meal_types = forms.ChoiceField(
         choices=Recipe.MEAL_TYPE_CHOICES,
-        widget=forms.CheckboxSelectMultiple,
+        widget=forms.RadioSelect,
         required=True,
         label='Meal Types'
     )
@@ -45,8 +45,9 @@ class RecipeForm(forms.ModelForm):
         
         # If editing an existing recipe, populate meal_types from meal_type
         if self.instance and self.instance.pk and self.instance.meal_type:
+            # Take the first meal type since we now only allow one
             meal_types_list = [mt.strip() for mt in self.instance.meal_type.split(',')]
-            self.fields['meal_types'].initial = meal_types_list
+            self.fields['meal_types'].initial = meal_types_list[0] if meal_types_list else None
         
         # Get number of fields from POST data or instance
         if self.data:
@@ -101,10 +102,10 @@ class RecipeForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         
-        # Convert meal_types checkboxes to comma-separated string
-        meal_types = cleaned_data.get('meal_types', [])
-        if meal_types:
-            cleaned_data['meal_type'] = ','.join(meal_types)
+        # Convert meal_types single choice to meal_type
+        meal_type = cleaned_data.get('meal_types', '')
+        if meal_type:
+            cleaned_data['meal_type'] = meal_type
         
         # Collect ingredients
         ingredient_count = int(self.data.get('ingredient_count', 1))
@@ -115,9 +116,9 @@ class RecipeForm(forms.ModelForm):
                 ingredients.append(ingredient)
         
         if not ingredients:
-            raise forms.ValidationError('Please add at least one ingredient.')
-        
-        cleaned_data['ingredients'] = '\n'.join(ingredients)
+            self.add_error('ingredient_0', 'Please add at least one ingredient.')
+        else:
+            cleaned_data['ingredients'] = '\n'.join(ingredients)
         
         # Collect instructions
         instruction_count = int(self.data.get('instruction_count', 1))
@@ -128,9 +129,9 @@ class RecipeForm(forms.ModelForm):
                 instructions.append(instruction)
         
         if not instructions:
-            raise forms.ValidationError('Please add at least one instruction.')
-        
-        cleaned_data['instructions'] = '\n'.join(instructions)
+            self.add_error('instruction_0', 'Please add at least one instruction.')
+        else:
+            cleaned_data['instructions'] = '\n'.join(instructions)
         
         return cleaned_data
     
