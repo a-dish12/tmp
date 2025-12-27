@@ -1,5 +1,22 @@
 {% extends 'base_content.html' %}
+{% load static %}
+
+{% block body_class %}recipe-detail-bg{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'recipe_detail.css' %}">
+<link rel="stylesheet" href="{% static 'navbar.css' %}">
+{% endblock %}
+
 {% block content %}
+
+<!-- Dust particles -->
+<div class="recipe-particles">
+  {% for _ in "123456789012345678901234567890" %}
+    <span></span>
+  {% endfor %}
+</div>
+
 <div class="container">
   <div class="row">
     <div class="col-lg-8">
@@ -160,7 +177,7 @@
     
     <div class="col-lg-4">
       <!-- Rating Section -->
-      <div class="card mb-3 sticky-top" style="top: 20px;">
+      <div class="card mb-3">
         <div class="card-body">
           <h5 class="card-title">Recipe Rating</h5>
           

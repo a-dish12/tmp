@@ -33,7 +33,7 @@
 
   <!-- FORM CONTAINER -->
   <div class="recipe-form-container">
-    <form action="{% url 'create_recipe' %}" method="post" enctype="multipart/form-data" class="recipe-form" novalidate>
+    <form action="{% url 'create_recipe' %}" method="post" enctype="multipart/form-data" class="recipe-form">
       {% csrf_token %}
       
       {# Show non-field errors #}
@@ -45,7 +45,7 @@
 
       {# Standard form fields #}
       {% for field in form %}
-        {% if field.name not in 'ingredient_count,instruction_count,image' and 'ingredient_' not in field.name and 'instruction_' not in field.name %}
+        {% if field.name not in 'ingredient_count,instruction_count,image,image_url' and 'ingredient_' not in field.name and 'instruction_' not in field.name %}
           <div class="form-group">
             <label for="{{ field.id_for_label }}" class="form-label">
               {{ field.label }}{% if field.field.required %}<span class="required">*</span>{% endif %}
@@ -61,8 +61,6 @@
               {% render_field field class="form-control" placeholder="30" %}
             {% elif field.name == 'title' %}
               {% render_field field class="form-control" placeholder="Enter recipe title" %}
-            {% elif field.name == 'image_url' %}
-              {% render_field field class="form-control" placeholder="https://example.com/image.jpg" %}
             {% else %}
               {% render_field field class="form-control" %}
             {% endif %}
@@ -86,6 +84,26 @@
             </label>
             
             {% render_field field class="custom-file-input" %}
+            
+            {% if field.errors %}
+              <div class="field-error">{{ field.errors }}</div>
+            {% endif %}
+            {% if field.help_text %}
+              <small class="field-help">{{ field.help_text }}</small>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+
+      {# Image URL Field - Right After Image Upload #}
+      {% for field in form %}
+        {% if field.name == 'image_url' %}
+          <div class="form-group">
+            <label for="{{ field.id_for_label }}" class="form-label">
+              {{ field.label }}{% if field.field.required %}<span class="required">*</span>{% endif %}
+            </label>
+            
+            {% render_field field class="form-control" placeholder="https://example.com/image.jpg" %}
             
             {% if field.errors %}
               <div class="field-error">{{ field.errors }}</div>

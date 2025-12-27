@@ -1,19 +1,28 @@
 {% extends "base_content.html" %}
+{% load static %}
+{% block body_class %}meal-planner-bg{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'meal_planner.css' %}">
+<link rel="stylesheet" href="{% static 'navbar.css' %}">
+{% endblock %}
+
 {% block content %}
 
-<h1>Meal Planner</h1>
+<div class="planner-particles">
+  {% for _ in "123456789012345678901234567890" %}
+    <span></span>
+  {% endfor %}
+</div>
 
-<form method="get">
-  <label>
-    Start:
-    <input type="date" name="start" value="{{ start|date:'Y-m-d' }}">
-  </label>
+<div class="container">
 
-  <label>
-    End:
-    <input type="date" name="end" value="{{ end|date:'Y-m-d' }}">
-  </label>
+  <div class="planner-header">
+    <h1>Meal Plan</h1>
+    <p class="planner-subtitle">Plan your meals for the week</p>
+  </div>
 
+<<<<<<< HEAD
   <button type="submit">View</button>
 </form>
 
@@ -48,12 +57,255 @@
     {% endfor %}
     <a href="{% url 'planner_day' day.date|date:'Y-m-d' %}?next={{ request.get_full_path|urlencode }}">
     + Add
+=======
+  <div class="week-navigation">
+    <a href="?start={{ prev_week|date:'Y-m-d' }}&end={{ prev_week_end|date:'Y-m-d' }}" class="nav-arrow">
+      <span>‹</span>
+>>>>>>> main
     </a>
 
-  </div>
-{% endfor %}
-    <div>
-        <a href="{% url 'dashboard' %}" class="btn btn-secondary mt-3">← Back to Dashboard</a>
+    <div class="week-range">
+      {{ start|date:"M j" }} - {{ end|date:"M j, Y" }}
     </div>
+
+    <a href="?start={{ next_week|date:'Y-m-d' }}&end={{ next_week_end|date:'Y-m-d' }}" class="nav-arrow">
+      <span>›</span>
+    </a>
+  </div>
+
+  <!-- Range picker + ingredients link -->
+  <div style="margin: 16px 0;">
+    <form method="get" style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+      <label>
+        Start:
+        <input type="date" name="start" value="{{ start|date:'Y-m-d' }}">
+      </label>
+
+      <label>
+        End:
+        <input type="date" name="end" value="{{ end|date:'Y-m-d' }}">
+      </label>
+
+      <button type="submit">View</button>
+
+      <a href="{% url 'ingredients_list' %}?start={{ start|date:'Y-m-d' }}&end={{ end|date:'Y-m-d' }}">
+        View ingredients list
+      </a>
+    </form>
+  </div>
+
+  <!-- Styled Calendar Grid -->
+  <div class="calendar-grid">
+    {% for day in days %}
+      <div class="day-column {% if day.is_today %}today{% endif %}">
+        <div class="day-header">
+          <div class="day-name">{{ day.date|date:"D" }}</div>
+          <div class="day-number">{{ day.date|date:"j" }}</div>
+        </div>
+
+        <div class="day-meals">
+          {% for slot in day.slots %}
+            <div class="meal-slot">
+              <div class="slot-header">
+                {% if slot.name == 'breakfast' %}🍳{% elif slot.name == 'lunch' %}☀️{% elif slot.name == 'snack' %}🍿{% elif slot.name == 'dinner' %}🌙{% endif %}
+                <span class="slot-name">{{ slot.name|title }}</span>
+              </div>
+
+              {% if slot.meals %}
+                {% for meal in slot.meals %}
+                  <div class="meal-item">
+                    <div class="meal-name">{{ meal.recipe.title }}</div>
+                    <form method="post"
+                          action="{% url 'remove_from_planner' meal.pk %}?next={{ request.get_full_path|urlencode }}"
+                          class="remove-form">
+                      {% csrf_token %}
+                      <button type="submit" class="btn-remove-mini">×</button>
+                    </form>
+                  </div>
+                {% endfor %}
+              {% endif %}
+              
+              <a href="#modal-{{ day.date|date:'Y-m-d' }}-{{ slot.name }}" class="add-btn">
+                +
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- ✅ DEBUG LIST (plain view) -->
+  <hr style="margin: 24px 0;">
+
+  <h2 style="margin-bottom: 12px;">Debug: Meals (Plain List)</h2>
+
+  {% for day in days %}
+    <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+      <h3 style="margin:0 0 10px 0;">{{ day.date|date:"D, j M Y" }}</h3>
+
+      {% for slot in day.slots %}
+        <div style="margin-bottom: 10px;">
+          <strong>{{ slot.name|title }}</strong>
+
+          {% if slot.meals %}
+            <ul style="margin: 6px 0 0 18px;">
+              {% for meal in slot.meals %}
+                <li>
+                  {{ meal.recipe.title }}
+                  <form method="post"
+                        action="{% url 'remove_from_planner' meal.pk %}?next={{ request.get_full_path|urlencode }}"
+                        style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Remove</button>
+                  </form>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <div style="opacity:0.7; margin-top:4px;">(none)</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+
+  <div class="back-button-container">
+    <a href="{% url 'dashboard' %}" class="btn-secondary">← Back to Dashboard</a>
+  </div>
+
+</div>
+
+<!-- Modals for each day-slot combination -->
+{% for day in days %}
+  {% for slot in day.slots %}
+    <div id="modal-{{ day.date|date:'Y-m-d' }}-{{ slot.name }}" class="modal-target">
+      <div class="modal-overlay">
+        <div class="modal-content-large">
+          <div class="modal-header">
+            <h2>Plan meals for {{ day.date|date:"M j, Y" }}</h2>
+            <a href="#" class="modal-close">&times;</a>
+          </div>
+          
+          <div class="modal-body">
+            
+            <!-- Create new recipe link -->
+            <p class="create-recipe-link">
+              <a href="{% url 'create_recipe' %}?next={% url 'planner_range' %}">
+                + Create a new recipe
+              </a>
+            </p>
+            
+            <hr class="modal-divider">
+            
+            <!-- Add a meal form with pre-filled meal type -->
+            <h3 class="section-heading">Add a meal</h3>
+            <form method="post" class="add-meal-form">
+              {% csrf_token %}
+              <input type="hidden" name="date" value="{{ day.date|date:'Y-m-d' }}">
+              <input type="hidden" name="start" value="{{ start|date:'Y-m-d' }}">
+              <input type="hidden" name="end" value="{{ end|date:'Y-m-d' }}">
+              
+              <div class="form-field">
+                <label>Meal type:</label>
+                <select name="meal_type" class="form-control" required>
+                  <option value="breakfast" {% if slot.name == 'breakfast' %}selected{% endif %}>Breakfast</option>
+                  <option value="lunch" {% if slot.name == 'lunch' %}selected{% endif %}>Lunch</option>
+                  <option value="dinner" {% if slot.name == 'dinner' %}selected{% endif %}>Dinner</option>
+                  <option value="snack" {% if slot.name == 'snack' %}selected{% endif %}>Snack</option>
+                </select>
+              </div>
+              
+              <div class="form-field">
+                <label for="recipe-{{ day.date|date:'Y-m-d' }}-{{ slot.name }}">Recipe:</label>
+                <input type="text" 
+                       name="recipe_search"
+                       id="recipe-{{ day.date|date:'Y-m-d' }}-{{ slot.name }}" 
+                       class="form-control" 
+                       placeholder="Search and select a recipe..."
+                       list="recipes-list-{{ day.date|date:'Y-m-d' }}-{{ slot.name }}"
+                       autocomplete="off"
+                       required>
+                <datalist id="recipes-list-{{ day.date|date:'Y-m-d' }}-{{ slot.name }}">
+                  {% for recipe in user_recipes %}
+                    <option value="{{ recipe.id }}">{{ recipe.title }}</option>
+                  {% endfor %}
+                </datalist>
+                <input type="hidden" name="recipe" id="recipe-hidden-{{ day.date|date:'Y-m-d' }}-{{ slot.name }}">
+              </div>
+              
+              <button type="submit" class="btn-add-meal">Add</button>
+            </form>
+            
+            <hr class="modal-divider">
+            
+            <!-- Planned meals section for THIS DAY -->
+            <h3 class="section-heading">Planned meals</h3>
+            
+            {% if day.slots.0.meals or day.slots.1.meals or day.slots.2.meals or day.slots.3.meals %}
+              <!-- Breakfast -->
+              <h4 class="meal-type-heading">Breakfast</h4>
+              <ul class="meal-list-modal">
+                {% for meal in day.slots.0.meals %}
+                  <li class="meal-list-item">
+                    <a href="{% url 'recipe_detail' meal.recipe.pk %}" class="meal-link">{{ meal.recipe.title }}</a>
+                    <form method="post" action="{% url 'remove_from_planner' meal.pk %}?next={{ request.get_full_path|urlencode }}" style="display: inline;">
+                      {% csrf_token %}
+                      <button type="submit" class="btn-remove-inline">Remove</button>
+                    </form>
+                  </li>
+                {% endfor %}
+              </ul>
+              
+              <!-- Lunch -->
+              <h4 class="meal-type-heading">Lunch</h4>
+              <ul class="meal-list-modal">
+                {% for meal in day.slots.1.meals %}
+                  <li class="meal-list-item">
+                    <a href="{% url 'recipe_detail' meal.recipe.pk %}" class="meal-link">{{ meal.recipe.title }}</a>
+                    <form method="post" action="{% url 'remove_from_planner' meal.pk %}?next={{ request.get_full_path|urlencode }}" style="display: inline;">
+                      {% csrf_token %}
+                      <button type="submit" class="btn-remove-inline">Remove</button>
+                    </form>
+                  </li>
+                {% endfor %}
+              </ul>
+              
+              <!-- Dinner -->
+              <h4 class="meal-type-heading">Dinner</h4>
+              <ul class="meal-list-modal">
+                {% for meal in day.slots.2.meals %}
+                  <li class="meal-list-item">
+                    <a href="{% url 'recipe_detail' meal.recipe.pk %}" class="meal-link">{{ meal.recipe.title }}</a>
+                    <form method="post" action="{% url 'remove_from_planner' meal.pk %}?next={{ request.get_full_path|urlencode }}" style="display: inline;">
+                      {% csrf_token %}
+                      <button type="submit" class="btn-remove-inline">Remove</button>
+                    </form>
+                  </li>
+                {% endfor %}
+              </ul>
+              
+              <!-- Snack -->
+              <h4 class="meal-type-heading">Snack</h4>
+              <ul class="meal-list-modal">
+                {% for meal in day.slots.3.meals %}
+                  <li class="meal-list-item">
+                    <a href="{% url 'recipe_detail' meal.recipe.pk %}" class="meal-link">{{ meal.recipe.title }}</a>
+                    <form method="post" action="{% url 'remove_from_planner' meal.pk %}?next={{ request.get_full_path|urlencode }}" style="display: inline;">
+                      {% csrf_token %}
+                      <button type="submit" class="btn-remove-inline">Remove</button>
+                    </form>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p class="no-meals-text">No meals planned yet for this day.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+{% endfor %}
 
 {% endblock %}

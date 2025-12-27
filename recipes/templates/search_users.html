@@ -1,56 +1,68 @@
 {% extends 'base_content.html' %}
+{% load static %}
+
+{% block body_class %}find-users-bg{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'find_users.css' %}">
+<link rel="stylesheet" href="{% static 'navbar.css' %}">
+{% endblock %}
+
 {% block content %}
+
+<!-- Dust particles -->
+<div class="find-users-particles">
+  {% for _ in "123456789012345678901234567890" %}
+    <span></span>
+  {% endfor %}
+</div>
+
 <div class="container">
   <div class="row">
     <div class="col-12">
-      <h1 class="mb-4">Find Users</h1>
+      <h1>Find Users</h1>
       
       <!-- Search Bar -->
-      <div class="card mb-4">
-        <div class="card-body">
-          <div class="input-group">
-            <span class="input-group-text">
-              <i class="bi bi-search"></i>
-            </span>
-            <input 
-              type="text" 
-              class="form-control" 
-              id="userSearchInput" 
-              placeholder="Search by username or name..."
-              autocomplete="off"
-            >
-          </div>
-          <small class="text-muted">
-            Search for users by username, first name, or last name
-          </small>
+      <div class="search-card">
+        <div class="input-group">
+          <span class="input-group-text">
+            <i class="bi bi-search"></i>
+          </span>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="userSearchInput" 
+            placeholder="Search by username or name..."
+            autocomplete="off"
+          >
         </div>
+        <small class="text-muted">
+          Search for users by username, first name, or last name
+        </small>
       </div>
 
       <!-- Results Count -->
-      <div id="resultsCount" class="mb-3">
-        <span class="badge bg-secondary">{{ users.count }} user{{ users.count|pluralize }} found</span>
+      <div id="resultsCount" class="results-count">
+        <span class="badge">{{ users.count }} user{{ users.count|pluralize }} found</span>
       </div>
 
       <!-- User List -->
-      <div id="userList" class="row">
+      <div id="userList" class="user-grid">
         {% for user in users %}
-        <div class="col-md-6 col-lg-4 mb-3 user-card" data-user-id="{{ user.id }}">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex align-items-center">
-              <img 
-                src="{{ user.mini_gravatar }}" 
-                alt="{{ user.username }}" 
-                class="rounded-circle me-3"
-                style="width: 50px; height: 50px;"
-              >
-              <div class="flex-grow-1">
-                <h6 class="card-title mb-1">{{ user.full_name }}</h6>
-                <p class="card-text text-muted small mb-0">{{ user.username }}</p>
-              </div>
-              <a href="{% url 'user_profile' user.id %}" class="btn btn-sm btn-primary">
-                View Profile
-              </a>
-            </div>
+        <div class="user-card-item" data-user-id="{{ user.id }}">
+          <img 
+            src="{{ user.mini_gravatar }}" 
+            alt="{{ user.username }}" 
+            class="user-avatar"
+          >
+          <div class="user-info">
+            <h6 class="user-name">{{ user.full_name }}</h6>
+            <p class="user-username">{{ user.username }}</p>
+          </div>
+          <div class="user-actions">
+            <a href="{% url 'user_profile' user.id %}" class="btn-view-profile">
+              View Profile
+            </a>
           </div>
         </div>
         {% empty %}
@@ -63,8 +75,8 @@
       </div>
 
       <!-- Loading Indicator -->
-      <div id="loadingIndicator" class="text-center py-4" style="display: none;">
-        <div class="spinner-border text-primary" role="status">
+      <div id="loadingIndicator" class="loading-indicator">
+        <div class="spinner-border" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
       </div>
@@ -93,15 +105,15 @@ function searchUsers(query) {
   const resultsCount = document.getElementById('resultsCount');
   
   // Show loading indicator
-  loadingIndicator.style.display = 'block';
-  userList.style.opacity = '0.5';
+  loadingIndicator.classList.add('active');
+  userList.classList.add('loading');
   
   // Make AJAX request
   fetch(`/search-users-ajax/?q=${encodeURIComponent(query)}`)
     .then(response => response.json())
     .then(data => {
       // Update results count
-      resultsCount.innerHTML = `<span class="badge bg-secondary">${data.count} user${data.count !== 1 ? 's' : ''} found</span>`;
+      resultsCount.innerHTML = `<span class="badge">${data.count} user${data.count !== 1 ? 's' : ''} found</span>`;
       
       // Clear current list
       userList.innerHTML = '';
@@ -118,23 +130,20 @@ function searchUsers(query) {
       } else {
         data.users.forEach(user => {
           const userCard = `
-            <div class="col-md-6 col-lg-4 mb-3 user-card" data-user-id="${user.id}">
-              <div class="card h-100 shadow-sm">
-                <div class="card-body d-flex align-items-center">
-                  <img 
-                    src="${user.gravatar_url}" 
-                    alt="${user.username}" 
-                    class="rounded-circle me-3"
-                    style="width: 50px; height: 50px;"
-                  >
-                  <div class="flex-grow-1">
-                    <h6 class="card-title mb-1">${user.full_name}</h6>
-                    <p class="card-text text-muted small mb-0">${user.username}</p>
-                  </div>
-                  <a href="/users/${user.id}/" class="btn btn-sm btn-primary">
-                    View Profile
-                  </a>
-                </div>
+            <div class="user-card-item" data-user-id="${user.id}">
+              <img 
+                src="${user.gravatar_url}" 
+                alt="${user.username}" 
+                class="user-avatar"
+              >
+              <div class="user-info">
+                <h6 class="user-name">${user.full_name}</h6>
+                <p class="user-username">${user.username}</p>
+              </div>
+              <div class="user-actions">
+                <a href="/users/${user.id}/" class="btn-view-profile">
+                  View Profile
+                </a>
               </div>
             </div>
           `;
@@ -143,13 +152,13 @@ function searchUsers(query) {
       }
       
       // Hide loading indicator
-      loadingIndicator.style.display = 'none';
-      userList.style.opacity = '1';
+      loadingIndicator.classList.remove('active');
+      userList.classList.remove('loading');
     })
     .catch(error => {
       console.error('Error searching users:', error);
-      loadingIndicator.style.display = 'none';
-      userList.style.opacity = '1';
+      loadingIndicator.classList.remove('active');
+      userList.classList.remove('loading');
       userList.innerHTML = `
         <div class="col-12">
           <div class="alert alert-danger">

@@ -2,7 +2,7 @@
 <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
   <!-- CENTER NAV ITEMS -->
-  <ul class="navbar-nav align-items-center dashboard-nav-items">
+  <ul class="navbar-nav mx-auto align-items-center dashboard-nav-items">
 
     <li class="nav-item">
       <a class="nav-link nav-pill {% if request.resolver_match.url_name == 'dashboard' or request.resolver_match.url_name == 'following_dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
@@ -26,7 +26,7 @@
     </li>
 
     <li class="nav-item">
-      <a class="nav-link nav-pill {% if request.resolver_match.url_name == 'planner_calendar' or request.resolver_match.url_name == 'planner_events' or request.resolver_match.url_name == 'planner_day' %}active{% endif %}" href="{% url 'planner_range'%}">
+      <a class="nav-link nav-pill {% if request.resolver_match.url_name == 'planner_range' or request.resolver_match.url_name == 'planner_day' %}active{% endif %}" href="{% url 'planner_range'%}">
         <i class="bi bi-calendar3 nav-icon"></i>
         Meal Plan
       </a>
@@ -36,13 +36,6 @@
       <a class="nav-link nav-pill {% if request.resolver_match.url_name == 'create_recipe' %}active{% endif %}" href="{% url 'create_recipe' %}">
         <i class="bi bi-plus-circle nav-icon"></i>
         Create
-      </a>
-    </li>
-
-    <li class="nav-item">
-      <a class="nav-link nav-pill {% if 'user_recipes' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'user_recipes' %}">
-        <i class="bi bi-journal-text nav-icon"></i>
-        My Recipes
       </a>
     </li>
 
@@ -70,7 +63,7 @@
         </span>
         {% endif %}
       </a>
-      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown">
         <li><h6 class="dropdown-header">Notifications</h6></li>
         <li><hr class="dropdown-divider"></li>
         {% if user.notifications.all %}
