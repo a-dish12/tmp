@@ -154,14 +154,14 @@ def get_recipe_fixtures():
 			'image_url': 'https://static01.nyt.com/images/2021/08/30/dining/as-grilled-cheese-sandwich-on-the-grill/as-grilled-cheese-sandwich-on-the-grill-threeByTwoMediumAt2X.jpg'
 	    },
 	    {
-	        'title': 'Salmon with Lemon and Dill',
-	        'description': 'Baked salmon fillets topped with lemon and fresh dill for a light and healthy dinner.',
-	        'ingredients': '2 salmon fillets\n1 lemon, sliced\n1 tbsp fresh dill, chopped\nSalt and pepper\nOlive oil',
-	        'instructions': '1. Preheat the oven to 200°C (400°F) and line a baking sheet with parchment paper.\n2. Place the salmon fillets on the baking sheet and drizzle with olive oil.\n3. Season with salt and pepper.\n4. Top each fillet with lemon slices and sprinkle with chopped fresh dill.\n5. Bake for 12–15 minutes, or until the salmon is cooked through and flakes easily with a fork.\n6. Serve immediately.',
-			'time': 25,
-	        'meal_type': 'Dinner',
-			'image_url': 'https://www.lecremedelacrumb.com/wp-content/uploads/2017/07/lemon-dill-salmon-102.jpg'
-	    },
+			"title": "Japanese Onigiri (Rice Balls)",
+			"description": "Traditional Japanese rice balls filled with savory ingredients and wrapped in nori.",
+			"ingredients": "Short-grain rice\nWater\nSalt\nNori sheets\nTuna fish\nMayonnaise",
+			"instructions": "1. Cook the rice according to package instructions and let it cool slightly.\n2. Mix tuna with mayonnaise in a small bowl.\n3. Wet your hands lightly and sprinkle with salt.\n4. Place rice in your palm, add a small amount of tuna filling, and shape gently into a triangle.\n5. Wrap with a strip of nori.\n6. Repeat with remaining rice and filling.\n7. Serve at room temperature.",
+			"time": 25,
+			"meal_type": "lunch",
+			"image_url": "https://www.justonecookbook.com/wp-content/uploads/2023/09/Onigiri-Japanese-Rice-Balls-2071-I-2.jpg"
+		},
 	    {
 	        'title': 'Pesto Pasta',
 	        'description': 'Pasta tossed in a flavorful pesto sauce made from basil, garlic, pine nuts, and parmesan.',
@@ -352,14 +352,14 @@ def get_recipe_fixtures():
 			'image_url': 'https://gimmedelicious.com/wp-content/uploads/2024/03/easypeanutbutterenergybites-12-1.jpg'
 	    },
 	    {
-	        'title': 'Lemon Blueberry Muffins',
-	        'description': 'Fluffy muffins with fresh blueberries and a zesty lemon flavor, great for breakfast or a snack.',
-	        'ingredients': '1 ½ cups all-purpose flour\n¾ cup sugar\n1 tsp baking powder\n1 tsp baking soda\n1 cup blueberries\n1 tsp lemon zest\n1 egg\n1 cup buttermilk\n¼ cup butter, melted',
-	        'instructions': '1. Preheat the oven to 375°F (190°C) and line a muffin tin with paper liners.\n2. In a bowl, whisk together flour, sugar, baking powder, and baking soda.\n3. In a separate bowl, mix the egg, buttermilk, melted butter, and lemon zest.\n4. Gently fold the wet ingredients into the dry ingredients until just combined.\n5. Fold in the blueberries.\n6. Divide the batter evenly among the muffin cups.\n7. Bake for 18–22 minutes, or until a toothpick inserted into the center comes out clean.\n8. Let muffins cool slightly before serving.',
-			'time': 25,
-	        'meal_type': 'Breakfast',
-			'image_url': 'https://www.cookingclassy.com/wp-content/uploads/2016/01/lemon_blueberry_muffins2..jpg'
-	    },
+			"title": "Black Garlic Mushroom Risotto",
+			"description": "Creamy risotto elevated with the deep umami flavor of black garlic.",
+			"ingredients": "Arborio rice\nVegetable broth\nBlack garlic\nMushrooms\nOnion\nOlive oil\nParmesan cheese",
+			"instructions": "1. Heat olive oil in a pan and sauté chopped onion until soft.\n2. Add sliced mushrooms and cook until browned.\n3. Stir in arborio rice and toast lightly.\n4. Gradually add warm vegetable broth, stirring constantly.\n5. Mash black garlic and mix it into the risotto.\n6. Finish with grated Parmesan and serve hot.",
+			"time": 40,
+			"meal_type": "dinner",
+			"image_url": "https://dishnthekitchen.com/wp-content/uploads/2014/11/BlackGarlicRisotto2.jpg"
+		},
 	    {
 	        'title': 'Chocolate Avocado Mousse',
 	        'description': 'A creamy, rich chocolate mousse made with ripe avocado for a healthier dessert.',
@@ -424,15 +424,6 @@ def get_recipe_fixtures():
 			'image_url': 'https://theyogafunk.com/wp-content/uploads/2024/07/ACUCUM2-1024x576.jpg'
 	    },
 	    {
-	        'title': 'Banana Bread',
-	        'description': 'Moist and fluffy banana bread with a hint of vanilla, perfect for breakfast or a snack.',
-	        'ingredients': '2 ripe bananas, mashed\n1 cup sugar\n1 ½ cups all-purpose flour\n1 tsp baking powder\n1 tsp vanilla extract\n2 eggs\n½ cup butter, melted',
-	        'instructions': '1. Preheat the oven to 350°F (175°C) and grease a loaf pan.\n2. In a bowl, mash the ripe bananas.\n3. Mix in sugar, eggs, melted butter, and vanilla extract.\n4. In a separate bowl, combine flour and baking powder.\n5. Gradually fold the dry ingredients into the banana mixture until just combined.\n6. Pour the batter into the prepared loaf pan.\n7. Bake for 50–60 minutes, or until a toothpick inserted into the center comes out clean.\n8. Let cool before slicing and serving.',
-			'time': 60,
-	        'meal_type': 'Snack',
-			'image_url': 'https://natashaskitchen.com/wp-content/uploads/2018/05/Banana-Bread-Recipe-7.jpg'
-	    },
-	    {
 	        'title': 'Oatmeal Raisin Cookies',
 	        'description': 'Chewy oatmeal cookies filled with raisins and a touch of cinnamon, perfect for a quick snack or dessert.',
 	        'ingredients': '1 ½ cups rolled oats\n¾ cup flour\n½ cup brown sugar\n½ cup raisins\n1 tsp cinnamon\n1 egg\n½ cup butter, softened\n1 tsp vanilla extract',
@@ -440,15 +431,6 @@ def get_recipe_fixtures():
 			'time': 30,
 	        'meal_type': 'Dessert',
 			'image_url': 'https://www.modernhoney.com/wp-content/uploads/2020/12/The-Best-Oatmeal-Raisin-Cookies-3-scaled.jpg'
-	    },
-	    {
-	        'title': 'Avocado Toast with Tomato',
-	        'description': 'Creamy avocado spread on toasted bread, topped with sliced tomatoes and a sprinkle of sea salt.',
-	        'ingredients': '2 slices whole grain bread\n1 ripe avocado\n1 tomato, sliced\nSalt and pepper\nOlive oil (optional)',
-	        'instructions': '1. Toast the slices of whole grain bread until golden and crispy.\n2. Mash the avocado in a bowl and season with salt and pepper.\n3. Spread the mashed avocado evenly on the toasted bread.\n4. Layer sliced tomatoes on top.\n5. Drizzle with olive oil if desired.\n6. Sprinkle with additional salt and pepper to taste and serve immediately.',
-			'time': 10,
-	        'meal_type': 'Breakfast',
-			'image_url': 'https://www.deliciousmagazine.co.uk/wp-content/uploads/2018/11/avo-toast-tomato-768x960.jpg'
 	    },
 	    {
 	        'title': 'Spinach and Feta Stuffed Pita',
@@ -469,14 +451,14 @@ def get_recipe_fixtures():
 			'image_url': 'https://joyfoodsunshine.com/wp-content/uploads/2020/05/peach-cobbler-recipe-7.jpg'
 	    },
 	    {
-	        'title': 'Greek Yogurt Parfait',
-	        'description': 'Layers of creamy Greek yogurt, honey, and fresh berries, topped with granola for crunch.',
-	        'ingredients': '2 cups Greek yogurt\n2 tbsp honey\n1 cup fresh berries (strawberries, blueberries, etc.)\n½ cup granola',
-	        'instructions': '1. In serving glasses or bowls, spoon a layer of Greek yogurt.\n2. Drizzle a little honey over the yogurt.\n3. Add a layer of fresh berries.\n4. Repeat layers if desired.\n5. Top with granola for crunch.\n6. Serve immediately.',
-			'time': 15,
-	        'meal_type': 'Breakfast',
-			'image_url': 'https://www.muydelish.com/wp-content/uploads/2023/07/greek-yogurt-parfait-recipe.jpg'
-	    },
+			"title": "Pandan Coconut Pancakes",
+			"description": "Fluffy green pancakes with a subtle vanilla-like pandan aroma.",
+			"ingredients": "Flour\nCoconut milk\nEggs\nPandan extract\nSugar\nBaking powder",
+			"instructions": "1. In a bowl, whisk flour, sugar, and baking powder.\n2. Add eggs, coconut milk, and pandan extract.\n3. Mix until a smooth batter forms.\n4. Heat a non-stick pan and lightly grease it.\n5. Pour batter to form pancakes and cook until bubbles appear.\n6. Flip, cook briefly, and serve warm.",
+			"time": 20,
+			"meal_type": "breakfast",
+			"image_url": "https://img.buzzfeed.com/thumbnailer-prod-us-east-1/video-api/assets/319191.jpg"
+		},
 		{
 			"title": "Blueberry Oatmeal Bowl",
 			"description": "A warm, comforting oatmeal bowl with blueberries and honey.",
@@ -490,7 +472,7 @@ def get_recipe_fixtures():
 			"title": "Avocado Toast with Egg",
 			"description": "Crispy toast topped with avocado and a perfectly cooked egg.",
 			"ingredients": "Bread\nAvocado\nEgg\nSalt\nPepper\nLemon juice",
-			"instrctions": "1. Toast the bread slices until golden and crispy.\n2. Mash the avocado in a bowl and season with salt, pepper, and a squeeze of lemon juice.\n3. Spread the mashed avocado evenly on the toast.\n4. Cook the egg to your preferred style (fried, poached, or scrambled).\n5. Place the cooked egg on top of the avocado toast.\n6. Season with additional salt and pepper if desired and serve immediately.",
+			"instructions": "1. Toast the bread slices until golden and crispy.\n2. Mash the avocado in a bowl and season with salt, pepper, and a squeeze of lemon juice.\n3. Spread the mashed avocado evenly on the toast.\n4. Cook the egg to your preferred style (fried, poached, or scrambled).\n5. Place the cooked egg on top of the avocado toast.\n6. Season with additional salt and pepper if desired and serve immediately.",
 			"time": 8,
 			"meal_type": "breakfast",
 			"image_url": "https://www.skinnytaste.com/wp-content/uploads/2015/01/Avocado-Toast-with-Egg-3.jpg"
@@ -514,22 +496,22 @@ def get_recipe_fixtures():
 			"image_url": "https://www.cannibalnyc.com/wp-content/uploads/2025/06/Turkey-and-Hummus-Wrap.jpg"
 		},
 		{
-			"title": "Grilled Lemon Herb Chicken",
-			"description": "Juicy grilled chicken marinated in lemon and fresh herbs.",
-			"ingredients": "Chicken breast\nLemon\nGarlic\nOlive oil\nThyme\nSalt\nPepper",
-			"instructions": "1. In a bowl, mix lemon juice and zest, minced garlic, olive oil, thyme, salt, and pepper to make a marinade.\n2. Add the chicken breasts and coat them evenly. Let marinate for at least 15 minutes.\n3. Preheat the grill to medium-high heat.\n4. Grill the chicken for 6–8 minutes per side, or until fully cooked and juices run clear.\n5. Remove from the grill and let rest for a few minutes before serving.",
-			"time": 30,
-			"meal_type": "dinner",
-			"image_url": "https://lovegrowswild.com/wp-content/uploads/2015/05/Grilled-Lemon-Herb-Chicken-6.jpg"
-		},
-		{
-			"title": "Vegetable Stir Fry",
-			"description": "Colorful vegetables sautéed in a savory soy sauce mixture.",
-			"ingredients": "Broccoli\nCarrots\nBell peppers\nSoy sauce\nGarlic\nGinger\nOil",
-			"instructions": "1. Heat oil in a large skillet or wok over medium-high heat.\n2. Add minced garlic and ginger, sautéing for 30 seconds until fragrant.\n3. Add broccoli, carrots, and bell peppers to the pan.\n4. Stir-fry the vegetables for 5–7 minutes until tender-crisp.\n5. Pour in soy sauce and toss to coat the vegetables evenly.\n6. Cook for an additional 1–2 minutes.\n7. Serve immediately over rice or noodles if desired.",
+			"title": "Peruvian Ceviche",
+			"description": "Fresh fish marinated in citrus juice with onion, chili, and cilantro.",
+			"ingredients": "Fresh white fish\nLime juice\nRed onion\nChili pepper\nCilantro\nSalt\nSweet potato",
+			"instructions": "1. Cut the fish into bite-sized cubes and place in a bowl.\n2. Season lightly with salt.\n3. Pour fresh lime juice over the fish until just covered.\n4. Add thinly sliced red onion and chopped chili pepper.\n5. Let marinate for a few minutes until the fish turns opaque.\n6. Garnish with chopped cilantro.\n7. Serve immediately, traditionally with cooked sweet potato on the side.",
 			"time": 20,
 			"meal_type": "dinner",
-			"image_url": "https://www.recipetineats.com/tachyon/2020/01/Vegetable-Stir-Fry_0.jpg?resize=650"
+			"image_url": "https://www.enigmaperu.com/blog/wp-content/uploads/2018/06/CEVICHE.jpg"
+		},
+		{
+			"title": "Yuzu Sesame Noodle Salad",
+			"description": "Bright and refreshing noodles tossed with citrusy yuzu and nutty sesame.",
+			"ingredients": "Soba noodles\nYuzu juice\nSesame oil\nSoy sauce\nSesame seeds\nGreen onions",
+			"instructions": "1. Cook soba noodles according to package instructions.\n2. Drain and rinse noodles under cold water.\n3. In a bowl, whisk yuzu juice, soy sauce, and sesame oil.\n4. Toss noodles with the dressing.\n5. Sprinkle with sesame seeds and chopped green onions.\n6. Serve chilled or at room temperature.",
+			"time": 15,
+			"meal_type": "lunch",
+			"image_url": "https://i0.wp.com/thefoodiediaries.co/wp-content/uploads/2021/06/img_5602-1.jpg?resize=800%2C800&ssl=1"
 		},
 		{
 			"title": "Chocolate Chip Mug Cake",
@@ -550,19 +532,19 @@ def get_recipe_fixtures():
 			"image_url": "https://mytriedrecipes.com/wp-content/uploads/2025/09/Berry_Yogurt_Parfait_wstkvy.webp"
 		},
 		{
-			"title": "Classic Caesar Salad",
-			"description": "Crisp romaine with creamy Caesar dressing and croutons.",
-			"ingredients": "Romaine lettuce\nCroutons\nParsmesan\nCaesar dressing\nLemon",
-			"instructions": "1. Wash and chop the romaine lettuce and place it in a large salad bowl.\n2. Add croutons and grated Parmesan cheese.\n3. Drizzle Caesar dressing over the salad.\n4. Toss gently to combine.\n5. Squeeze a little fresh lemon juice on top if desired.\n6. Serve immediately.",
-			"time": 12,
-			"meal_type": "lunch",
-			"image_url": "https://assets.bonappetit.com/photos/624215f8a76f02a99b29518f/1:1/w_2560%2Cc_limit/0328-ceasar-salad-lede.jpg"
+			"title": "Dal Tadka",
+			"description": "A comforting Indian lentil dish finished with a fragrant ghee tempering.",
+			"ingredients": "Yellow lentils (toor or moong dal)\nGhee\nOnion\nTomato\nGarlic\nCumin seeds\nTurmeric\nSalt\nCilantro",
+			"instructions": "1. Rinse the lentils thoroughly and cook them in water with turmeric and salt until soft.\n2. Mash the cooked lentils slightly and set aside.\n3. Heat ghee in a small pan over medium heat.\n4. Add cumin seeds and let them sizzle.\n5. Add chopped onion and sauté until golden.\n6. Stir in garlic and chopped tomato, cooking until soft.\n7. Pour the ghee mixture (tadka) over the cooked lentils and mix well.\n8. Garnish with chopped cilantro and serve warm.",
+			"time": 30,
+			"meal_type": "dinner",
+			"image_url": "https://www.indianhealthyrecipes.com/wp-content/uploads/2021/04/dal-tadka-recipe.jpg"
 		},
 		{
 			"title": "Tomato Basil Soup",
 			"description": "A smooth tomato soup flavored with basil and garlic.",
 			"ingredients": "Tomatoes\nBasil\nGarlic\nOnion\nOlive oil\nVegetable broth",
-			"instruction": "1. Heat olive oil in a large pot over medium heat.\n2. Sauté chopped onion and minced garlic until soft and fragrant.\n3. Add chopped tomatoes and cook for 5–7 minutes.\n4. Pour in vegetable broth and bring to a simmer for 20 minutes.\n5. Stir in fresh basil leaves.\n6. Use an immersion blender to puree the soup until smooth.\n7. Season with salt and pepper to taste.\n8. Serve hot.",
+			"instructions": "1. Heat olive oil in a large pot over medium heat.\n2. Sauté chopped onion and minced garlic until soft and fragrant.\n3. Add chopped tomatoes and cook for 5–7 minutes.\n4. Pour in vegetable broth and bring to a simmer for 20 minutes.\n5. Stir in fresh basil leaves.\n6. Use an immersion blender to puree the soup until smooth.\n7. Season with salt and pepper to taste.\n8. Serve hot.",
 			"time": 40,
 			"meal_type": "dinner",
 			"image_url": "https://lostinfood.co.uk/wp-content/uploads/2020/09/Tomato-Basil-Soup-4.jpg"
@@ -613,13 +595,13 @@ def get_recipe_fixtures():
 			"image_url": "https://www.jocooks.com/wp-content/uploads/2021/09/garlic-butter-shrimp-1-10.jpg"
 		},
 		{
-			"title": "Apple Cinnamon Overnight Oats",
-			"description": "Creamy oats mixed with apples and cinnamon, chilled overnight.",
-			"ingredients": "Oats\nMilk\nApple\nCinnamon\nHoney",
-			"instructions": "1. In a jar or bowl, combine oats, milk, and a pinch of cinnamon.\n2. Dice the apple and stir it into the mixture.\n3. Add honey to taste and mix well.\n4. Cover and refrigerate overnight.\n5. In the morning, stir the oats and add extra apple or toppings if desired.\n6. Serve chilled.",
-			"time": 10,
-			"meal_type": "breakfast",
-			"image_url": "https://www.eatloveeats.com/wp-content/uploads/2021/10/Apple-Cinnamon-Overnight-Oats-Featured-Image.jpg"
+			"title": "Saffron Rose Rice Pudding",
+			"description": "Fragrant rice pudding infused with saffron threads and delicate rose aroma.",
+			"ingredients": "Basmati rice\nMilk\nSaffron threads\nRose water\nSugar\nPistachios",
+			"instructions": "1. Rinse the basmati rice and add it to a saucepan with milk.\n2. Simmer on low heat, stirring occasionally, until the rice is tender.\n3. Crush saffron threads and add them to the pudding.\n4. Stir in sugar and a few drops of rose water.\n5. Cook for another 5 minutes until creamy.\n6. Garnish with chopped pistachios and serve warm or chilled.",
+			"time": 35,
+			"meal_type": "dessert",
+			"image_url": "https://img.freepik.com/premium-photo/saffron-scented-kheer-rice-pudding-nuts-rose-petals-topping_1003615-4793.jpg"
 		},
 		{
 			"title": "Caprese Sandwich",
@@ -674,6 +656,24 @@ def get_recipe_fixtures():
 			"time": 10,
 			"meal_type": "dessert",
 			"image_url": "https://diyjoy.com/wp-content/uploads/2023/04/no-bake-strawberry-cheesecake-cups-recipe.jpg"
+		},
+		{
+			"title": "Bouillabaisse",
+			"description": "Traditional Provençal fish stew made with assorted seafood and saffron.",
+			"ingredients": "Assorted fish\nShellfish\nSaffron\nFennel\nTomatoes\nOlive oil\nGarlic",
+			"instructions": "1. Sauté garlic and fennel in olive oil.\n2. Add tomatoes and saffron.\n3. Pour in water and simmer.\n4. Add firm fish first.\n5. Add delicate seafood last.\n6. Serve hot with bread.",
+			"time": 120,
+			"meal_type": "dinner",
+			"image_url": "https://img.taste.com.au/xevn8hx3/taste/2016/11/bouillabaisse-78546-1.jpeg"
+		},
+		{
+			"title": "Dolsot Bibimbap",
+			"description": "Korean rice bowl topped with vegetables, egg, and gochujang.",
+			"ingredients": "Rice\nSpinach\nBean sprouts\nCarrots\nEgg\nGochujang",
+			"instructions": "1. Cook rice and keep warm.\n2. Sauté vegetables separately.\n3. Fry egg sunny-side up.\n4. Arrange toppings over rice.\n5. Add gochujang.\n6. Mix before eating.",
+			"time": 45,
+			"meal_type": "lunch",
+			"image_url": "https://upload.wikimedia.org/wikipedia/commons/4/44/Dolsot-bibimbap.jpg"
 		}
 	]
 
