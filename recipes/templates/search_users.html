@@ -6,6 +6,7 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'find_users.css' %}">
 <link rel="stylesheet" href="{% static 'navbar.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -24,30 +25,35 @@
       
       <!-- Search Bar -->
       <div class="search-card">
-        <div class="input-group">
-          <span class="input-group-text">
-            <i class="bi bi-search"></i>
-          </span>
-          <input 
-            type="text" 
-            class="form-control" 
-            id="userSearchInput" 
-            placeholder="Search by username or name..."
-            autocomplete="off"
-          >
-        </div>
+        <form method="get" action="">
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="bi bi-search"></i>
+            </span>
+            <input 
+              type="text" 
+              class="form-control" 
+              name="search"
+              placeholder="Search by username or name..."
+              autocomplete="off"
+              value="{{ search_query }}"
+            >
+          </div>
+        </form>
         <small class="text-muted">
           Search for users by username, first name, or last name
         </small>
       </div>
 
       <!-- Results Count -->
-      <div id="resultsCount" class="results-count">
-        <span class="badge">{{ users.count }} user{{ users.count|pluralize }} found</span>
+      {% if search_query %}
+      <div class="results-count">
+        <span class="badge">{{ page_obj.paginator.count }} user{{ page_obj.paginator.count|pluralize }} found</span>
       </div>
+      {% endif %}
 
       <!-- User List -->
-      <div id="userList" class="user-grid">
+      <div class="user-grid">
         {% for user in users %}
         <div class="user-card-item" data-user-id="{{ user.id }}">
           <img 
@@ -74,108 +80,50 @@
         {% endfor %}
       </div>
 
-      <!-- Loading Indicator -->
-      <div id="loadingIndicator" class="loading-indicator">
-        <div class="spinner-border" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-      </div>
+      <!-- Pagination -->
+      {% if is_paginated %}
+        <nav aria-label="User pagination" class="mt-4">
+          <ul class="pagination justify-content-center dashboard-pagination">
+            {% if page_obj.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&laquo;</span>
+              </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+              {% if num == page_obj.number %}
+                <li class="page-item active" aria-current="page">
+                  <span class="page-link">{{ num }}</span>
+                </li>
+              {% else %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ num }}</a>
+                </li>
+              {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&raquo;</span>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      {% endif %}
     </div>
   </div>
 </div>
 
-<script>
-// Debounce function to prevent too many AJAX requests
-function debounce(func, wait) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-}
-
-// Search users via AJAX
-function searchUsers(query) {
-  const userList = document.getElementById('userList');
-  const loadingIndicator = document.getElementById('loadingIndicator');
-  const resultsCount = document.getElementById('resultsCount');
-  
-  // Show loading indicator
-  loadingIndicator.classList.add('active');
-  userList.classList.add('loading');
-  
-  // Make AJAX request
-  fetch(`/search-users-ajax/?q=${encodeURIComponent(query)}`)
-    .then(response => response.json())
-    .then(data => {
-      // Update results count
-      resultsCount.innerHTML = `<span class="badge">${data.count} user${data.count !== 1 ? 's' : ''} found</span>`;
-      
-      // Clear current list
-      userList.innerHTML = '';
-      
-      // Display users
-      if (data.users.length === 0) {
-        userList.innerHTML = `
-          <div class="col-12">
-            <div class="alert alert-info">
-              <i class="bi bi-info-circle"></i> No users found matching your search.
-            </div>
-          </div>
-        `;
-      } else {
-        data.users.forEach(user => {
-          const userCard = `
-            <div class="user-card-item" data-user-id="${user.id}">
-              <img 
-                src="${user.gravatar_url}" 
-                alt="${user.username}" 
-                class="user-avatar"
-              >
-              <div class="user-info">
-                <h6 class="user-name">${user.full_name}</h6>
-                <p class="user-username">${user.username}</p>
-              </div>
-              <div class="user-actions">
-                <a href="/users/${user.id}/" class="btn-view-profile">
-                  View Profile
-                </a>
-              </div>
-            </div>
-          `;
-          userList.innerHTML += userCard;
-        });
-      }
-      
-      // Hide loading indicator
-      loadingIndicator.classList.remove('active');
-      userList.classList.remove('loading');
-    })
-    .catch(error => {
-      console.error('Error searching users:', error);
-      loadingIndicator.classList.remove('active');
-      userList.classList.remove('loading');
-      userList.innerHTML = `
-        <div class="col-12">
-          <div class="alert alert-danger">
-            <i class="bi bi-exclamation-triangle"></i> An error occurred while searching. Please try again.
-          </div>
-        </div>
-      `;
-    });
-}
-
-// Create debounced search function (300ms delay)
-const debouncedSearch = debounce(searchUsers, 300);
-
-// Attach event listener to search input
-document.getElementById('userSearchInput').addEventListener('input', function(e) {
-  const query = e.target.value.trim();
-  debouncedSearch(query);
-});
-</script>
 {% endblock %}
