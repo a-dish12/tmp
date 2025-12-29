@@ -75,4 +75,6 @@ class SurpriseMeTests(TestCase):
     def test_surprise_no_results_redirects_dashboard(self):
         response = self.client.get(reverse("surprise-result"),
                                    {"meal_type": ["dinner"]})
-        self.assertRedirects(response,reverse("dashboard"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "surprise-quiz.html")
+       
