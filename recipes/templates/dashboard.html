@@ -30,15 +30,7 @@
       Find your next culinary adventure from our community of home chefs
     </p>
 
-    <form method="get" class="dashboard-search">
-      <input
-        type="text"
-        name="search"
-        class="form-control form-control-lg"
-        placeholder="Search recipes..."
-        value="{{ search_term }}"
-      >
-    </form>
+    {% include "partials/search_function.html" %}
   </div>
 
   <!-- WIDE CONTENT CONTAINER -->
