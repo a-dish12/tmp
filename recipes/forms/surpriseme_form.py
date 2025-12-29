@@ -1,6 +1,5 @@
-from recipes.constants.filters import MEAL_TYPES, TIME_FILTERS
+from recipes.constants.filters import MEAL_TYPES, TIME_FILTERS, DIET_FILTERS
 from django import forms
-""", DIET_FILTERS"""
 
 class SurpriseMeForm(forms.Form):
 
@@ -19,8 +18,8 @@ class SurpriseMeForm(forms.Form):
       
     )
 
-"""    diet_filter = forms.ChoiceField(
+    diet_filter = forms.ChoiceField(
         choices = DIET_FILTERS,
         widget = forms.RadioSelect,
         required = True
-    )"""
+    )
