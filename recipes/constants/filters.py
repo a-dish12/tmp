@@ -12,9 +12,10 @@ TIME_FILTERS = [
     ("over_90", "Over 90 minutes"),
 ]
 
-"""DIET_FILTERS = [
-    ("any", "No diet requirements"),
+DIET_FILTERS = [
+        ("any", "No diet requirements"),
     ("non_veg", "Non-vegetarian"),
     ("veg", "Vegetarian"),
     ("vegan", "Vegan"),
-]"""
+
+]
