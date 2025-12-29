@@ -22,46 +22,9 @@
     <p class="planner-subtitle">Plan your meals for the week</p>
   </div>
 
-<<<<<<< HEAD
-  <button type="submit">View</button>
-</form>
-
-<hr>
-
-{% for day in days %}
-  <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-    <h3>{{ day.date }}</h3>
-
-    {% for slot in day.slots %}
-      <strong>{{ slot.name|title }}</strong>
-
-      {% if slot.meals %}
-        <ul>
-          {% for meal in slot.meals %}
-            <li>
-              {{ meal.recipe.title }}
-              <form method="post"
-                action="{% url 'remove_from_planner' meal.pk %}?next={{ request.get_full_path|urlencode }}"
-                style="display:inline;">
-
-                {% csrf_token %}
-                <button type="submit">Remove</button>
-              </form>
-            </li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p style="color:#888;">No meals</p>
-      {% endif %}
-      
-    {% endfor %}
-    <a href="{% url 'planner_day' day.date|date:'Y-m-d' %}?next={{ request.get_full_path|urlencode }}">
-    + Add
-=======
   <div class="week-navigation">
     <a href="?start={{ prev_week|date:'Y-m-d' }}&end={{ prev_week_end|date:'Y-m-d' }}" class="nav-arrow">
       <span>‹</span>
->>>>>>> main
     </a>
 
     <div class="week-range">

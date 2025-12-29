@@ -90,4 +90,4 @@ def reject_follow_request(request, request_id):
     from_user_id = follow_request.from_user.id
     
     follow_request.delete()
-    return redirect('user_profile', user_id=from_user_id)
+    return redirect('user_profile', user_id=request.user.id)
