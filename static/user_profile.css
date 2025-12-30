@@ -116,6 +116,7 @@ body.user-profile-bg::after {
   padding: 2.5rem;
   margin-bottom: 2rem;
   text-align: center;
+  position: relative;
 }
 
 .profile-header h1 {
@@ -542,4 +543,36 @@ body.user-profile-bg::after {
   .action-buttons {
     flex-direction: column;
   }
+}
+
+/* =========================
+   SETTINGS BUTTON
+   ========================= */
+
+a.btn-settings-icon {
+  position: absolute !important;
+  top: 20px !important;
+  right: 20px !important;
+  width: 45px !important;
+  height: 45px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(92, 214, 214, 0.2) !important;
+  border: 2px solid #5cd6d6 !important;
+  border-radius: 50% !important;
+  color: #5cd6d6 !important;
+  font-size: 1.3rem !important;
+  text-decoration: none !important;
+  z-index: 100 !important;
+  transition: all 0.3s ease !important;
+}
+
+a.btn-settings-icon:hover,
+a.btn-settings-icon:focus,
+a.btn-settings-icon:active {
+  background: rgba(92, 214, 214, 0.3) !important;
+  color: #5cd6d6 !important;
+  transform: rotate(90deg) !important;
+  text-decoration: none !important;
 }
