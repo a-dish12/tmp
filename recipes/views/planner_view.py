@@ -80,7 +80,6 @@ def planner_events(request):
 
     return JsonResponse(events, safe=False)
 
-
 @login_required
 def planner_day(request, date):
     """
@@ -88,36 +87,42 @@ def planner_day(request, date):
     (breakfast/lunch/dinner/snack) for the given YYYY-MM-DD date.
     """
 
-    # Parse date from URL
     day_date = parse_date(date)
     if not day_date:
         raise Http404("Invalid date format. Use YYYY-MM-DD")
 
-    # Handle meal-add submission
+    # Search term for filtering visible recipes in the form dropdown
+    search_term = request.GET.get("search", "").strip()
+
+    # Build the visible recipes queryset (filtered if search term provided)
+    recipes_qs = visible_recipes_for(request.user)
+    if search_term:
+        recipes_qs = recipes_qs.filter(title__icontains=search_term)
+
     if request.method == "POST":
         form = PlannedMealForm(request.POST, user=request.user)
+
+        # Ensure the recipe dropdown only contains (filtered) visible recipes
+        form.fields["recipe"].queryset = recipes_qs
+
         if form.is_valid():
             meal_type = form.cleaned_data["meal_type"]
             recipe = form.cleaned_data["recipe"]
 
-            # Enforce that the selected recipe is visible to the current user
             if not visible_recipes_for(request.user).filter(pk=recipe.pk).exists():
                 raise Http404("Recipe not visible.")
 
-            # Ensure there is a PlannedDay entry for this user and date
             planned_day, _ = PlannedDay.objects.get_or_create(
                 user=request.user,
                 date=day_date
             )
 
-            # Create the planned meal entry (or do nothing if it already exists)
             PlannedMeal.objects.get_or_create(
                 planned_day=planned_day,
                 meal_type=meal_type,
                 recipe=recipe
             )
 
-            # Optional redirect target (useful when coming from another page)
             next_url = request.GET.get("next")
             if next_url:
                 return redirect(next_url)
@@ -125,22 +130,23 @@ def planner_day(request, date):
             return redirect("planner_day", date=day_date.isoformat())
 
     else:
-        # GET request: initialise a blank form
         form = PlannedMealForm(user=request.user)
 
-    # Fetch the day's PlannedDay object if it exists
+        # Ensure the recipe dropdown only contains (filtered) visible recipes
+        form.fields["recipe"].queryset = recipes_qs
+
     planned_day = PlannedDay.objects.filter(user=request.user, date=day_date).first()
 
-    # Fetch all meals for this planned day (ordered by meal type for consistent display)
     meals = []
     if planned_day:
         meals = planned_day.meals.select_related("recipe").all().order_by("meal_type")
 
     context = {
-        "planned_day": planned_day,   # can be None if the user has not planned anything yet
+        "planned_day": planned_day,
         "day_date": day_date,
         "meals": meals,
         "form": form,
+        "search_term": search_term,
     }
     return render(request, "day.html", context)
 
