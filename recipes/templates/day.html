@@ -20,13 +20,25 @@
 <hr>
 
 <h2>Add a meal</h2>
-<form method="post">
+
+<form method="get" class="dashboard-search mb-3">
+  <input
+    type="text"
+    name="search"
+    class="form-control form-control-lg"
+    placeholder="Search recipes..."
+    value="{{ search_term }}"
+  >
+</form>
+
+<form method="post" action="?search={{ search_term|urlencode }}">
   {% csrf_token %}
   {{ form.as_p }}
   <button type="submit">Add</button>
 </form>
 
 <hr>
+
 
 <h2>Planned meals</h2>
 
