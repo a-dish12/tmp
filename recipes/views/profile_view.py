@@ -8,39 +8,44 @@ from recipes.forms import UserForm
 
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     """
-    Allow authenticated users to view and update their profile information.
+    Allows authenticated users to view and update their profile information.
 
-    This class-based view displays a user profile editing form and handles
-    updates to the authenticated user’s profile. Access is restricted to
-    logged-in users via `LoginRequiredMixin`.
+    This class-based view renders a profile editing form and handles updates
+    to the currently logged-in user's profile. Access is restricted to
+    authenticated users via LoginRequiredMixin.
     """
 
-    model = UserForm
-    template_name = "profile.html"
+    # The form used to edit the user's profile information
     form_class = UserForm
+
+    # Template used to render the profile update page
+    template_name = "profile.html"
 
     def get_object(self):
         """
-        Retrieve the user object to be edited.
+        Returns the user object to be edited.
 
-        This ensures that users can only update their own profile, rather
-        than any other user’s data.
+        This ensures that users can only update their own profile and
+        prevents access to other users' profile data.
 
         Returns:
             User: The currently authenticated user instance.
         """
-        user = self.request.user
-        return user
+        return self.request.user
 
     def get_success_url(self):
         """
-        Determine the redirect URL after a successful profile update.
+        Determines the redirect URL after a successful profile update.
 
-        Also adds a success message to inform the user that their profile
-        was successfully updated.
+        Adds a success message to provide user feedback after saving
+        profile changes.
 
         Returns:
-            str: The URL to redirect to (typically the dashboard or user home).
+            str: URL to redirect to after a successful update.
         """
-        messages.add_message(self.request, messages.SUCCESS, "Profile updated!")
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            "Profile updated!"
+        )
         return reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
