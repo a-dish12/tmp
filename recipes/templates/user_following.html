@@ -1,33 +1,75 @@
 {% extends 'base_content.html' %}
+{% load static %}
+
+{% block body_class %}dashboard-bg{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'navbar.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'followers.css' %}">
+{% endblock %}
 
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-12">
 
-      <h2>Users {{ profile_user.full_name }} ({{ profile_user.username }}) is Following</h2>
-      <hr>
-
-      {% if following %}
-        <ul class="list-group">
-          {% for u in following %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <a href="{% url 'user_profile' u.id %}">
-                {{ u.full_name }} ({{ u.username }})
-              </a>
-            </li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p>This user isn't following anyone yet.</p>
-      {% endif %}
-
-      <br>
-      <a href="{% url 'user_profile' profile_user.id %}" class="btn btn-secondary">
-        Back to Profile
-      </a>
-
-    </div>
-  </div>
+<!-- Dust particles -->
+<div class="dashboard-particles">
+  {% for _ in "123456789012345678901234567890" %}
+    <span></span>
+  {% endfor %}
 </div>
+
+<div class="container followers-container">
+  
+  <!-- Header -->
+  <div class="followers-header">
+    <h1>
+      Following by <span class="username-highlight">{{ profile_user.username }}</span>
+    </h1>
+    <p class="followers-subtitle">
+      Following {{ following|length }} user{{ following|length|pluralize }}
+    </p>
+  </div>
+
+  <!-- Users List -->
+  <div class="users-grid">
+    {% if following %}
+      {% for u in following %}
+        <a href="{% url 'user_profile' u.id %}" class="user-card">
+          <div class="user-avatar">
+            {% if u.profile_picture %}
+              <img src="{{ u.profile_picture.url }}" alt="{{ u.username }}">
+            {% else %}
+              <div class="avatar-placeholder">{{ u.username|slice:":1"|upper }}</div>
+            {% endif %}
+          </div>
+          <div class="user-info">
+            <h3 class="user-name">{{ u.full_name|default:u.username }}</h3>
+            <p class="user-username">{{ u.username }}</p>
+            {% if u.bio %}
+              <p class="user-bio">{{ u.bio|truncatewords:15 }}</p>
+            {% endif %}
+          </div>
+          <div class="user-arrow">
+            <i class="bi bi-arrow-right"></i>
+          </div>
+        </a>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <i class="bi bi-person-plus"></i>
+        <p>Not following anyone yet</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Back Button -->
+  <div class="back-button-container">
+    <a href="{% url 'user_profile' profile_user.id %}" class="btn-back">
+      <i class="bi bi-arrow-left"></i>
+      Back to Profile
+    </a>
+  </div>
+
+</div>
+
 {% endblock %}

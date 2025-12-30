@@ -1,17 +1,25 @@
 <!-- My Recipes Section -->
 <div class="my-recipes-section">
-  <h3 class="section-title">My Recipes</h3>
+  <h3 class="section-title">{% if is_own_profile %}My Recipes{% else %}Recipes{% endif %}</h3>
   
-  <div class="action-buttons">
-    <a href="{% url 'create_recipe' %}" class="btn btn-primary">
-      Create New Recipe
-    </a>
-    <a href="{% url 'dashboard' %}" class="btn btn-secondary">
-      Go To Dashboard
-    </a>
-  </div>
+  {% if is_own_profile %}
+    <div class="action-buttons">
+      <a href="{% url 'create_recipe' %}" class="btn btn-primary">
+        Create New Recipe
+      </a>
+      <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+        Go To Dashboard
+      </a>
+    </div>
+  {% endif %}
   
-  {% if recipes %}
+  {% if profile_user.is_private and not is_following and not is_own_profile %}
+    <!-- Private account, not following -->
+    <div class="empty-state">
+      <p>This account is private.</p>
+      <p>Follow this account to see their recipes.</p>
+    </div>
+  {% elif recipes %}
     <div class="recipe-grid">
       {% for recipe in recipes %}
         <a href="{% url 'recipe_detail' pk=recipe.pk %}" class="recipe-card">
@@ -95,49 +103,13 @@
     {% endif %}
   {% else %}
     <div class="empty-state">
-      <p>You haven't created any recipes yet.</p>
-      <a href="{% url 'create_recipe' %}" class="btn btn-primary">
-        Create Your First Recipe
-      </a>
-
-<div class="container">
-  <div class="row">
-    <div class="col-12">
-      <h3 class="list-title">My Recipes</h3>
-      
-      <a href="{% url 'create_recipe' %}" class="btn btn-primary mb-3">
-        Create New Recipe
-      </a>
-
-      <a href="{% url 'dashboard' %}" class="btn btn-secondary mb-3">
-        Go To Dashboard
-      </a>
-      {% if recipes %}
-        <div class="list-group">
-          {% for recipe in recipes %}
-            <a href="{% url 'recipe_detail' pk=recipe.pk %}" class="list-group-item list-group-item-action">
-              <div class="d-flex w-100 justify-content-between align-items-start">
-                <div class="flex-grow-1">
-                  <h5 class="mb-1">{{ recipe.title }}</h5>
-                  <p class="mb-1 text-muted">{{ recipe.description|truncatewords:20 }}</p>
-                  <small class="text-muted">
-                    Prep time: {{ recipe.time }} minutes | 
-                    Created: {{ recipe.created_at|date:"M d, Y" }} |
-                    Meal type: {{ recipe.meal_type|capfirst }}
-                  </small>
-                </div>
-                {% if recipe.get_image_url %}
-                <img src="{{ recipe.get_image_url }}" alt="{{ recipe.title }}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; margin-left: 15px;">
-                {% endif %}
-              </div>
-            </a>
-          {% endfor %}
-        </div>
-      {% else %}
-        <p class="low-key">You haven't created any recipes yet.</p>
+      {% if is_own_profile %}
+        <p>You haven't created any recipes yet.</p>
         <a href="{% url 'create_recipe' %}" class="btn btn-primary">
           Create Your First Recipe
         </a>
+      {% else %}
+        <p>{{ profile_user.first_name|default:profile_user.username }} hasn't posted any recipes yet.</p>
       {% endif %}
     </div>
   {% endif %}

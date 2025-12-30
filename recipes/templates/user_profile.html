@@ -23,6 +23,13 @@
       
       <!-- Profile Header -->
       <div class="profile-header">
+        <!-- Settings Icon (own profile only) - Top Right -->
+        {% if user.is_authenticated and user.id == profile_user.id %}
+          <a href="{% url 'profile' %}" class="btn-settings-icon" title="Settings" style="position: absolute !important; top: 20px !important; right: 20px !important; width: 45px; height: 45px; display: flex !important; align-items: center; justify-content: center; background: rgba(92, 214, 214, 0.2) !important; border: 2px solid #5cd6d6 !important; border-radius: 50%; color: #5cd6d6 !important; font-size: 1.3rem; text-decoration: none; z-index: 100;">
+            <i class="bi bi-gear-fill"></i>
+          </a>
+        {% endif %}
+
         <h1>{{ profile_user.full_name }}</h1>
         <div class="profile-username">{{ profile_user.username }}</div>
 
@@ -92,33 +99,29 @@
         {% endif %}
       </div>
 
-      <!-- Follow Requests (for own profile only) -->
-      {% if user.is_authenticated and user.id == profile_user.id %}
+      <!-- Follow Requests (only for own profile AND private account AND has requests) -->
+      {% if user.is_authenticated and user.id == profile_user.id and profile_user.is_private and incoming_follow_requests %}
         <div class="requests-card">
           <h3>Follow requests</h3>
-          {% if incoming_follow_requests %}
-            <ul class="list-group">
-              {% for fr in incoming_follow_requests %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <a href="{% url 'user_profile' fr.from_user.id %}">
-                    {{ fr.from_user.username }}
-                  </a>
-                  <div>
-                    <form method="post" action="{% url 'accept_follow_request' fr.id %}" class="d-inline">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-success btn-sm">Accept</button>
-                    </form>
-                    <form method="post" action="{% url 'reject_follow_request' fr.id %}" class="d-inline">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-outline-secondary btn-sm">Reject</button>
-                    </form>
-                  </div>
-                </li>
-              {% endfor %}
-            </ul>
-          {% else %}
-            <p>No pending friend requests.</p>
-          {% endif %}
+          <ul class="list-group">
+            {% for fr in incoming_follow_requests %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="{% url 'user_profile' fr.from_user.id %}">
+                  {{ fr.from_user.username }}
+                </a>
+                <div>
+                  <form method="post" action="{% url 'accept_follow_request' fr.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                  </form>
+                  <form method="post" action="{% url 'reject_follow_request' fr.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">Reject</button>
+                  </form>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
         </div>
       {% endif %}
 

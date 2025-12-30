@@ -5,6 +5,29 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'meal_planner.css' %}">
 <link rel="stylesheet" href="{% static 'navbar.css' %}">
+<style>
+  .btn-ghost {
+    background: linear-gradient(135deg, #ff8a65, #ec407a) !important;
+    border: 2px solid transparent !important;
+    color: #000 !important;
+    padding: 0.75rem 1.75rem !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .btn-ghost:hover {
+    background: transparent !important;
+    border-color: #ff8a65 !important;
+    color: #ff8a65 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(255, 138, 101, 0.3) !important;
+    text-decoration: none !important;
+  }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -36,25 +59,11 @@
     </a>
   </div>
 
-  <!-- Range picker + ingredients link -->
-  <div style="margin: 16px 0;">
-    <form method="get" style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
-      <label>
-        Start:
-        <input type="date" name="start" value="{{ start|date:'Y-m-d' }}">
-      </label>
-
-      <label>
-        End:
-        <input type="date" name="end" value="{{ end|date:'Y-m-d' }}">
-      </label>
-
-      <button type="submit">View</button>
-
-      <a href="{% url 'ingredients_list' %}?start={{ start|date:'Y-m-d' }}&end={{ end|date:'Y-m-d' }}">
-        View ingredients list
-      </a>
-    </form>
+  <!-- Ingredients List Button -->
+  <div style="text-align: center; margin-bottom: 2rem;">
+    <a href="#ingredients-modal" class="btn-ghost">
+      View Ingredients List
+    </a>
   </div>
 
   <!-- Styled Calendar Grid -->
@@ -86,52 +95,17 @@
                     </form>
                   </div>
                 {% endfor %}
+              {% else %}
+                <a href="#modal-{{ day.date|date:'Y-m-d' }}-{{ slot.name }}" class="add-btn">
+                  +
+                </a>
               {% endif %}
-              
-              <a href="#modal-{{ day.date|date:'Y-m-d' }}-{{ slot.name }}" class="add-btn">
-                +
-              </a>
             </div>
           {% endfor %}
         </div>
       </div>
     {% endfor %}
   </div>
-
-  <!-- ✅ DEBUG LIST (plain view) -->
-  <hr style="margin: 24px 0;">
-
-  <h2 style="margin-bottom: 12px;">Debug: Meals (Plain List)</h2>
-
-  {% for day in days %}
-    <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-      <h3 style="margin:0 0 10px 0;">{{ day.date|date:"D, j M Y" }}</h3>
-
-      {% for slot in day.slots %}
-        <div style="margin-bottom: 10px;">
-          <strong>{{ slot.name|title }}</strong>
-
-          {% if slot.meals %}
-            <ul style="margin: 6px 0 0 18px;">
-              {% for meal in slot.meals %}
-                <li>
-                  {{ meal.recipe.title }}
-                  <form method="post"
-                        action="{% url 'remove_from_planner' meal.pk %}?next={{ request.get_full_path|urlencode }}"
-                        style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit">Remove</button>
-                  </form>
-                </li>
-              {% endfor %}
-            </ul>
-          {% else %}
-            <div style="opacity:0.7; margin-top:4px;">(none)</div>
-          {% endif %}
-        </div>
-      {% endfor %}
-    </div>
-  {% endfor %}
 
   <div class="back-button-container">
     <a href="{% url 'dashboard' %}" class="btn-secondary">← Back to Dashboard</a>
@@ -270,5 +244,55 @@
     </div>
   {% endfor %}
 {% endfor %}
+
+<!-- Ingredients List Modal -->
+<div id="ingredients-modal" class="modal-target">
+  <div class="modal-overlay">
+    <div class="modal-content-large">
+      <div class="modal-header">
+        <h2>🛒 Ingredients List</h2>
+        <a href="#" class="modal-close">&times;</a>
+      </div>
+      
+      <div class="modal-body">
+        <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem;">
+          {{ start|date:"M j" }} - {{ end|date:"M j, Y" }}
+        </p>
+        
+        {% if days %}
+          {% for day in days %}
+            {% for slot in day.slots %}
+              {% for meal in slot.meals %}
+                <div style="margin-bottom: 2rem;">
+                  <h4 style="color: #ff8a65; margin-bottom: 0.75rem; font-size: 1.1rem;">
+                    {{ meal.recipe.title }}
+                  </h4>
+                  {% if meal.recipe.ingredients %}
+                    <ul style="list-style: none; padding-left: 0; color: rgba(255,255,255,0.85);">
+                      {% for line in meal.recipe.ingredients.splitlines %}
+                        {% if line.strip %}
+                          <li style="margin-bottom: 0.5rem; padding-left: 1.5rem; position: relative;">
+                            <span style="position: absolute; left: 0; color: #5cd6d6;">•</span>
+                            {{ line }}
+                          </li>
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                  {% else %}
+                    <p style="color: rgba(255,255,255,0.5); font-style: italic;">No ingredients listed</p>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            {% endfor %}
+          {% endfor %}
+        {% else %}
+          <p style="color: rgba(255,255,255,0.5); font-style: italic; text-align: center; padding: 2rem;">
+            No meals planned for this week yet.
+          </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}

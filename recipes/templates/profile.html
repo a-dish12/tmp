@@ -1,16 +1,156 @@
 {% extends 'base_content.html' %}
+{% load static %}
+
+{% block body_class %}dashboard-bg{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'navbar.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'profile_settings.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-12">
-      <h1>Edit profile</h1>
-      <form action="{% url 'profile' %}" method="post">
-        {% csrf_token %}
-        {% include 'partials/bootstrap_form.html' with form=form %}
-        <input type="submit" value="Update" class="btn btn-primary">
-        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
-      </form>
-    </div>
-  </div>
+
+<!-- Dust particles -->
+<div class="dashboard-particles">
+  {% for _ in "123456789012345678901234567890" %}
+    <span></span>
+  {% endfor %}
 </div>
+
+<div class="settings-wrapper">
+  
+  <!-- Header -->
+  <div class="settings-header">
+    <h1>
+      Profile <span class="accent-orange">Settings</span>
+    </h1>
+    <p class="settings-subtitle">
+      Update your account information and privacy settings
+    </p>
+  </div>
+
+  <!-- Settings Form -->
+  <div class="settings-container">
+    <form method="post" enctype="multipart/form-data" class="settings-form">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <!-- Personal Information Section -->
+      <div class="settings-section">
+        <h3 class="section-title">Personal Information</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="id_first_name" class="form-label">
+              First Name <span class="required">*</span>
+            </label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}
+              <div class="field-error">{{ form.first_name.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label for="id_last_name" class="form-label">
+              Last Name <span class="required">*</span>
+            </label>
+            {{ form.last_name }}
+            {% if form.last_name.errors %}
+              <div class="field-error">{{ form.last_name.errors }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="id_username" class="form-label">
+            Username <span class="required">*</span>
+          </label>
+          {{ form.username }}
+          {% if form.username.errors %}
+            <div class="field-error">{{ form.username.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="id_email" class="form-label">
+            Email <span class="required">*</span>
+          </label>
+          {{ form.email }}
+          {% if form.email.errors %}
+            <div class="field-error">{{ form.email.errors }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Profile Picture Section -->
+      {% if form.profile_picture %}
+      <div class="settings-section">
+        <h3 class="section-title">Profile Picture</h3>
+        
+        {% if user.profile_picture %}
+          <div class="current-picture">
+            <img src="{{ user.profile_picture.url }}" alt="Current profile picture">
+            <p>Current profile picture</p>
+          </div>
+        {% endif %}
+
+        <div class="form-group">
+          <label for="id_profile_picture" class="form-label">
+            Upload New Picture
+          </label>
+          {{ form.profile_picture }}
+          {% if form.profile_picture.errors %}
+            <div class="field-error">{{ form.profile_picture.errors }}</div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Privacy Settings Section -->
+      <div class="settings-section">
+        <h3 class="section-title">Privacy Settings</h3>
+        
+        <div class="privacy-toggle">
+          <div class="toggle-info">
+            <label for="id_is_private" class="toggle-label">
+              Private Account
+            </label>
+            <p class="toggle-description">
+              When enabled, only approved followers can see your recipes and activity. 
+              {% if user.is_private %}
+                <strong class="status-badge private">Currently Private</strong>
+              {% else %}
+                <strong class="status-badge public">Currently Public</strong>
+              {% endif %}
+            </p>
+          </div>
+          <div class="toggle-switch">
+            {{ form.is_private }}
+          </div>
+        </div>
+        {% if form.is_private.errors %}
+          <div class="field-error">{{ form.is_private.errors }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">
+          Save Changes
+        </button>
+        <a href="{% url 'user_profile' user.id %}" class="btn-secondary">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+
+</div>
+
 {% endblock %}

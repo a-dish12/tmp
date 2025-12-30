@@ -7,7 +7,6 @@ from django.utils.dateparse import parse_date
 from django.urls import reverse
 from django.contrib import messages
 from django.utils import timezone
-
 from recipes.helpers import visible_recipes_for
 from recipes.models.planned_day import PlannedDay
 from recipes.models.planned_meal import PlannedMeal
@@ -39,11 +38,9 @@ def planner_calendar(request):
 def planner_events(request):
     """
     Returns planned meals as FullCalendar events (JSON).
-
     FullCalendar sends "start" and "end" as query parameters.
     This endpoint returns a list of event objects expected by FullCalendar.
     """
-
     # FullCalendar range filters
     start_str = request.GET.get("start")
     end_str = request.GET.get("end")
@@ -80,13 +77,13 @@ def planner_events(request):
 
     return JsonResponse(events, safe=False)
 
+
 @login_required
 def planner_day(request, date):
     """
     Displays the planner for a single day, and allows adding a meal
     (breakfast/lunch/dinner/snack) for the given YYYY-MM-DD date.
     """
-
     day_date = parse_date(date)
     if not day_date:
         raise Http404("Invalid date format. Use YYYY-MM-DD")
@@ -155,12 +152,12 @@ def planner_day(request, date):
 def add_to_planner(request, recipe_pk):
     """
     Adds a recipe to the planner from the recipe detail page.
+    Replaces any existing recipe in the same slot (max 1 per slot).
 
     Expects a POST request containing:
       - date (YYYY-MM-DD)
       - meal_type (e.g. breakfast/lunch/dinner/snack)
     """
-
     recipe = get_object_or_404(Recipe, pk=recipe_pk)
 
     # Ensure the recipe is visible to the current user
@@ -188,23 +185,31 @@ def add_to_planner(request, recipe_pk):
             date=day_date
         )
 
-        # Create (or fetch) the planned meal record
-        meal, created = PlannedMeal.objects.get_or_create(
+        # Check if a meal already exists in this slot
+        existing_meal = PlannedMeal.objects.filter(
             planned_day=planned_day,
-            meal_type=meal_type,
-            recipe=recipe
-        )
+            meal_type=meal_type
+        ).first()
 
-        # Provide feedback message depending on whether the record was newly created
-        if created:
+        if existing_meal:
+            # Replace existing meal
+            old_title = existing_meal.recipe.title
+            existing_meal.recipe = recipe
+            existing_meal.save()
+            messages.success(
+                request,
+                f"Replaced '{old_title}' with '{recipe.title}' for {meal_type} on {day_date.strftime('%B %d, %Y')}."
+            )
+        else:
+            # Create new meal
+            PlannedMeal.objects.create(
+                planned_day=planned_day,
+                meal_type=meal_type,
+                recipe=recipe
+            )
             messages.success(
                 request,
                 f"Added '{recipe.title}' to {meal_type} on {day_date.strftime('%B %d, %Y')}."
-            )
-        else:
-            messages.info(
-                request,
-                f"This recipe is already planned for {meal_type} on {day_date.strftime('%B %d, %Y')}."
             )
 
         return redirect("recipe_detail", pk=recipe_pk)
@@ -220,7 +225,6 @@ def remove_from_planner(request, meal_pk):
 
     Only the owner of the PlannedDay can remove its meals.
     """
-
     meal = get_object_or_404(PlannedMeal, pk=meal_pk)
 
     # Ensure the planned meal belongs to the current user
@@ -269,9 +273,8 @@ def planner_range(request):
     Default: today -> today+6
     Accepts: ?start=YYYY-MM-DD&end=YYYY-MM-DD
 
-    Note: There is also a POST handler here for the model "add meal" form.
+    Note: There is also a POST handler here for the modal "add meal" form.
     """
-
     # Handle modal form submission
     if request.method == "POST":
         date_str = request.POST.get("date")
@@ -293,12 +296,27 @@ def planner_range(request):
                             user=request.user,
                             date=day_date
                         )
-                        PlannedMeal.objects.get_or_create(
+                        
+                        # Check if a meal already exists in this slot
+                        existing_meal = PlannedMeal.objects.filter(
                             planned_day=planned_day,
-                            meal_type=meal_type,
-                            recipe=recipe
-                        )
-                        messages.success(request, f"Added {recipe.title} to {meal_type}!")
+                            meal_type=meal_type
+                        ).first()
+                        
+                        if existing_meal:
+                            # Replace existing meal
+                            old_title = existing_meal.recipe.title
+                            existing_meal.recipe = recipe
+                            existing_meal.save()
+                            messages.success(request, f"Replaced '{old_title}' with '{recipe.title}'")
+                        else:
+                            # Create new meal
+                            PlannedMeal.objects.create(
+                                planned_day=planned_day,
+                                meal_type=meal_type,
+                                recipe=recipe
+                            )
+                            messages.success(request, f"Added '{recipe.title}' to {meal_type}!")
                 except (Recipe.DoesNotExist, ValueError):
                     messages.error(request, "Invalid recipe selected.")
 
@@ -404,7 +422,6 @@ def ingredients_list(request):
 
     If start/end are missing or invalid, defaults to today's date only.
     """
-
     start = parse_date(request.GET.get("start", ""))
     end = parse_date(request.GET.get("end", ""))
 

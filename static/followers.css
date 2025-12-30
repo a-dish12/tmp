@@ -1,0 +1,332 @@
+/* =========================
+   FOLLOWERS PAGE STYLES
+   ========================= */
+
+.followers-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================
+   HEADER
+   ========================= */
+
+.followers-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.followers-header h1 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.02em;
+}
+
+.username-highlight {
+  background: linear-gradient(135deg, #ff8a65, #ec407a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.followers-subtitle {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* =========================
+   USERS GRID
+   ========================= */
+
+.users-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+/* =========================
+   USER CARD
+   ========================= */
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 2px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.user-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 138, 101, 0.1), rgba(236, 64, 122, 0.05));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.user-card:hover {
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.08));
+  border-color: rgba(255, 138, 101, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(255, 138, 101, 0.3);
+}
+
+.user-card:hover::before {
+  opacity: 1;
+}
+
+/* =========================
+   USER AVATAR
+   ========================= */
+
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: border-color 0.3s ease;
+}
+
+.user-card:hover .user-avatar img {
+  border-color: #ff8a65;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff8a65, #ec407a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #000;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.user-card:hover .avatar-placeholder {
+  transform: scale(1.05);
+}
+
+/* =========================
+   USER INFO
+   ========================= */
+
+.user-info {
+  flex-grow: 1;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.user-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 0.15rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-username {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  font-weight: 500;
+}
+
+.user-bio {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0.25rem 0 0 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* =========================
+   USER ARROW
+   ========================= */
+
+.user-arrow {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.4);
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.user-card:hover .user-arrow {
+  color: #ff8a65;
+  transform: translateX(4px);
+}
+
+/* =========================
+   EMPTY STATE
+   ========================= */
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+  backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 24px;
+}
+
+.empty-state i {
+  font-size: 4rem;
+  color: rgba(255, 255, 255, 0.3);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.empty-state p {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+  font-weight: 500;
+}
+
+/* =========================
+   BACK BUTTON
+   ========================= */
+
+.back-button-container {
+  text-align: center;
+}
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 18px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+}
+
+.btn-back:hover {
+  background: rgba(77, 218, 225, 0.15);
+  border-color: #4ddae1;
+  color: #4ddae1;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(77, 218, 225, 0.3);
+}
+
+.btn-back i {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.btn-back:hover i {
+  transform: translateX(-3px);
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 768px) {
+  .followers-container {
+    padding: 2rem 1rem;
+  }
+
+  .followers-header h1 {
+    font-size: 2rem;
+  }
+
+  .followers-subtitle {
+    font-size: 1rem;
+  }
+
+  .user-card {
+    padding: 0.85rem 1.25rem;
+    gap: 0.85rem;
+  }
+
+  .user-avatar {
+    width: 45px;
+    height: 45px;
+  }
+
+  .avatar-placeholder {
+    font-size: 1.1rem;
+  }
+
+  .user-name {
+    font-size: 0.95rem;
+  }
+
+  .user-username {
+    font-size: 0.8rem;
+  }
+
+  .user-bio {
+    font-size: 0.8rem;
+  }
+
+  .user-arrow {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .user-arrow {
+    display: none;
+  }
+
+  .user-info {
+    width: 100%;
+  }
+
+  .user-name,
+  .user-username {
+    white-space: normal;
+  }
+}
