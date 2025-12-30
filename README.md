@@ -1,9 +1,9 @@
-# Team *enter team name here* Small Group project
+# Team Jet-6 Small Group project
 
 ## Team members
 The members of the team are:
 - Sabah Abdullah Abdulkarem Al-Aswadi
-- *enter full name 2 here*
+- Moyondafoluwa Bliss Modupe Akinwande
 - *enter full name 3 here*
 - *enter full name 4 here*
 - *enter full name 5 here (or delete if not applicable)*

@@ -222,6 +222,9 @@ class Command(BaseCommand):
         Get a random meal from themealdb.com
         """
         mealResponse_str = str(urllib.request.urlopen('https://www.themealdb.com/api/json/v1/1/random.php').read())
+        #Regenerate if the recipe is not unique
+        while Recipe.objects.filter(title=create_title_string(mealResponse_str)).count() > 0:
+            mealResponse_str = str(urllib.request.urlopen('https://www.themealdb.com/api/json/v1/1/random.php').read())
         """
         Generate a single random recipe and attempt to insert it.
 
@@ -244,8 +247,8 @@ class Command(BaseCommand):
         Attempt to create a recipe and ignore any errors.
 
         Args:
-            data (dict): Mapping with keys ``title``, ``description``,
-                ``ingredients``, ``time``, and ``meal_type``.
+            data (dict): Mapping with keys ``title``, ``description``, ``ingredients``,
+                ``instructions``, ``time``, ``meal_type`` and ``image_url``.
         """
         try:
             self.create_recipe(data)
@@ -257,11 +260,11 @@ class Command(BaseCommand):
         Create a recipe.
 
         Args:
-            data (dict): Mapping with keys ``title``, ``description``,
-                ``ingredients``, ``time``, and ``meal_type``.
+            data (dict): Mapping with keys ``title``, ``description``, ``ingredients``,
+                ``instructions``, ``time``, ``meal_type`` and ``image_url``.
         """
         Recipe.objects.create(
-            author=random.choice(self.users),
+            author=random.choice(self.users.exclude(username='admin')),
             title=data['title'],
             description=data['description'],
             ingredients=data['ingredients'],
@@ -550,12 +553,12 @@ def create_ingredients_list(mealResponse_str):
 def create_instructions(mealResponse_str):
     instructions = mealResponse_str.split('strInstructions":')[1].split('"')[1]
     instructions_list = instructions.replace('\\\\r', '').replace('\\\\n', '').split('.')
-    #Remove any steps that just say 'step _' or are empty
+    """Remove any steps that just say 'step _' or are empty"""
     remove_list = [instr for instr in instructions_list if 'step' in instr or len(instr) < 5]
     for instr in remove_list:
         instructions_list.remove(instr)
 
-    #Merge instructions if too many steps
+    """Merge instructions if it contains too many steps"""
     length = len(instructions_list)
     if length > 20 and length % 2 == 0:
         instructions_list = merge_list(instructions_list)
@@ -570,11 +573,11 @@ def merge_list(instr_list):
     return [instr_list[i] + '.' + instr_list[i+1] for i in range(len(instr_list)) if i%2 == 0]
 
 def format_instructions(instructions_list):
-    #Represent all special symbols correctly
+    """Represent all special symbols correctly"""
     for index in range(len(instructions_list)):
         instructions_list[index] = represent_symbols(instructions_list[index]).strip(' ').strip('\\\\u25a2')
     
-    #Combine into a single string
+    """Combine into a single string"""
     count = 0
     final_instructions = ''
     for instr in instructions_list:
