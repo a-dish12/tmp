@@ -161,4 +161,5 @@ def reject_follow_request(request, request_id):
 
     # Delete the follow request without creating a follow relationship
     follow_request.delete()
-    return redirect('user_profile', user_id=request.user.id)
+
+    return redirect('user_profile', user_id=from_user_id)
