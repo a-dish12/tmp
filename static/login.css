@@ -1,6 +1,4 @@
-/* =========================================================
-   LOGIN PAGE – FULL SCREEN SPLIT LAYOUT
-   ========================================================= */
+/* Login page - full screen split layout */
 
 .login-page {
   min-height: 100vh;
@@ -17,10 +15,7 @@
   width: 100%;
 }
 
-/* =========================================================
-   LEFT: LOGIN FORM SECTION
-   ========================================================= */
-
+/* Login form section */
 .login-form-section {
   flex: 1;
   padding: 4rem;
@@ -70,10 +65,7 @@
   z-index: 3;
 }
 
-/* =========================================================
-   INPUTS
-   ========================================================= */
-
+/* Form inputs */
 .input-group-custom {
   position: relative;
   margin-bottom: 1.6rem;
@@ -93,7 +85,7 @@
 .login-form-section input[type="password"] {
   width: 100%;
   padding: 0.95rem 1rem 0.95rem 3.2rem;
-  border-radius: 14px; /* same as Sign In button */
+  border-radius: 14px;
 
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -103,7 +95,6 @@
 
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
-
 
 .login-form-section input::placeholder {
   color: rgba(245, 245, 245, 0.4);
@@ -116,10 +107,7 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
-/* =========================================================
-   BUTTON
-   ========================================================= */
-
+/* Login button */
 .login-btn {
   width: 100%;
   padding: 1rem;
@@ -142,10 +130,7 @@
   box-shadow: 0 15px 40px rgba(236, 64, 122, 0.45);
 }
 
-/* =========================================================
-   ERROR MESSAGES
-   ========================================================= */
-
+/* Error messages */
 .login-form-section .errorlist {
   margin-bottom: 1rem;
   color: #ff8a65;

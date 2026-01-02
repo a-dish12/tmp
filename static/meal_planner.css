@@ -1,6 +1,4 @@
-/* =========================
-   MEAL PLANNER - CALENDAR VIEW
-   ========================= */
+/* Meal planner - calendar view */
 
 /* Background matching dashboard */
 body.meal-planner-bg {
@@ -177,28 +175,42 @@ body.meal-planner-bg::after {
 }
 
 /* Ghost Button (filled to ghost on hover) */
+/* Apply Button Enhanced */
 .btn-ghost {
-  background: linear-gradient(135deg, #ff8a65, #ec407a) !important;
-  border: 2px solid transparent !important;
-  color: #000 !important;
-  padding: 0.75rem 1.75rem !important;
-  border-radius: 12px !important;
-  font-weight: 600 !important;
-  font-size: 1rem !important;
-  text-decoration: none !important;
-  display: inline-block !important;
-  transition: all 0.3s ease !important;
-  backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
+  background: linear-gradient(135deg, #ff8a65, #ec407a);
+  padding: 0.75rem 1.3rem;
+  border-radius: 12px;
+  color: #000;
+  font-weight: 800;
+  font-size: 0.9rem;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+  margin-top: 0.25rem;
+  box-shadow: 0 6px 20px rgba(236, 64, 122, 0.35);
+  transition: background 0.18s ease, color 0.18s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn-ghost:hover {
-  background: transparent !important;
-  border-color: #ff8a65 !important;
-  color: #ff8a65 !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 6px 20px rgba(255, 138, 101, 0.3) !important;
-  text-decoration: none !important;
+  background: transparent;
+  border-image: linear-gradient(135deg, #ff8a65, #ec407a) 1;
+  color: #ff8a65;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(236, 64, 122, 0.55);
+}
+
+.btn-ghost:active {
+  transform: translateY(0);
+}
+
+.btn-ghost:focus,
+.btn-ghost:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 138, 101, 0.3);
 }
 
 /* =========================

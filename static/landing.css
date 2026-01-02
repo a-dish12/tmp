@@ -62,8 +62,6 @@
    NAVBAR
    ========================================================= */
 
-/* ================= NAVBAR (TRANSPARENT OVER HERO) ================= */
-
 .lp-nav {
   position: absolute;          /* sits on top of hero */
   top: 0;
@@ -98,8 +96,6 @@
   margin: 0 auto;
   padding: 0 1.5rem;
 }
-
-/* ================= NAVBAR (FIXED) ================= */
 
 .lp-logo {
   display: flex;
@@ -309,8 +305,6 @@
 }
 
 
-
-/* ================= HERO BACKGROUND IMAGE (TRUE EDGE FADE) ================= */
 
 .lp-hero-with-image {
   position: relative;
@@ -584,8 +578,6 @@
     0 40px 120px rgba(92, 56, 255, 0.35),
     inset 0 0 60px rgba(255,255,255,0.06);
 }
-
-/* ===== CSS-ONLY FADE-IN ===== */
 
 .fade-in-on-scroll {
   opacity: 0;

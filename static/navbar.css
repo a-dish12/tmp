@@ -1,6 +1,4 @@
-/* =========================
-   NAVBAR - UNIVERSAL STYLING
-   ========================= */
+/* Navbar - universal styling */
 .dashboard-nav {
   position: sticky;
   top: 0;
@@ -42,16 +40,7 @@
   flex-shrink: 0;
 }
 
-.dashboard-logo .logo-icon {
-  font-size: 1.4rem;
-  line-height: 1;
-}
-
-.dashboard-logo .logo-text {
-  line-height: 1;
-}
-
-/* Nav Items Container - CENTERED */
+/* Nav items container - centered */
 .dashboard-nav-items {
   display: flex;
   gap: 0.4rem;
@@ -61,6 +50,7 @@
   justify-content: center;
 }
 
+/* Logout nav container */
 .dashboard-nav-logout {
   display: flex;
   gap: 0.4rem;
@@ -71,7 +61,7 @@
   right: 1.5rem;
 }
 
-/* Nav Pills */
+/* Nav pills */
 .navbar .nav-link.nav-pill {
   display: inline-flex;
   align-items: center;

@@ -8,14 +8,12 @@
       <form action="{% url 'edit_recipe' recipe.pk %}" method="post" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
         
-        {# Show non-field errors #}
         {% if form.non_field_errors %}
           <div class="alert alert-danger">
             {{ form.non_field_errors }}
           </div>
         {% endif %}
         
-        {# Standard form fields #}
         {% for field in form %}
           {% if field.name not in 'ingredient_count,instruction_count' and 'ingredient_' not in field.name and 'instruction_' not in field.name %}
             <div class="mb-3">
@@ -37,11 +35,9 @@
           {% endif %}
         {% endfor %}
         
-        {# Hidden count fields #}
         {{ form.ingredient_count }}
         {{ form.instruction_count }}
         
-        {# Dynamic Ingredients Section #}
         <div class="mb-3">
           <label class="form-label">Ingredients <span class="text-danger">*</span></label>
           {% for field in form %}
@@ -62,13 +58,12 @@
           </div>
         </div>
         
-        {# Dynamic Instructions Section #}
         <div class="mb-3">
           <label class="form-label">Instructions <span class="text-danger">*</span></label>
           {% for field in form %}
             {% if 'instruction_' in field.name %}
               <div class="input-group mb-2">
-                {% with step_num=field.name|slice:"12:"|add:"0"|add:1 %}
+                {% with step_num=field.name|slice:"12:"|add:"0"|add:"1" %}
                   <span class="input-group-text">Step {{ step_num }}</span>
                 {% endwith %}
                 {{ field }}

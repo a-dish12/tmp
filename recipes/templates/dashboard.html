@@ -10,8 +10,6 @@
 
 {% block content %}
 
-<!-- Dust particles -->
- 
 <div class="dashboard-particles">
   {% for _ in "123456789012345678901234567890" %}
     <span></span>
@@ -20,7 +18,6 @@
 
 <div class="dashboard-wrapper">
 
-  <!-- HERO -->
   <div class="dashboard-hero mb-5">
     <h1 class="dashboard-title">
       Discover <span class="accent-orange">Recipes</span>
@@ -33,13 +30,10 @@
     {% include "partials/search_function.html" %}
   </div>
 
-  <!-- WIDE CONTENT CONTAINER -->
   <div class="dashboard-container">
 
-    <!-- FILTERS + CONTENT -->
     <div class="row dashboard-row">
 
-      <!-- FILTERS (LEFT) -->
       <div class="col-md-3 filters-col">
         <div class="filters-pane">
           
@@ -47,7 +41,6 @@
           
           <form method="get" class="filters-card">
 
-          <!-- Meal Type -->
           <div class="mb-3">
             <span class="form-label fw-bold d-block">Meal type</span>
             {% for value, label in meal_type_filters %}
@@ -65,7 +58,6 @@
             {% endfor %}
           </div>
 
-          <!-- Prep Time -->
           <div class="mb-3">
             <span class="form-label fw-bold d-block">Prep time</span>
 

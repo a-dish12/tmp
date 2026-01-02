@@ -1,6 +1,4 @@
-/* =========================
-   SIGN UP PAGE LAYOUT
-   ========================= */
+/* Sign up page layout */
 
 .signup-page {
   min-height: 100vh;
@@ -16,10 +14,7 @@
   flex: 1;
 }
 
-/* =========================
-   LEFT: IMAGE PANEL
-   ========================= */
-
+/* Image panel */
 .signup-visual {
   flex: 1;
   position: relative;
@@ -34,17 +29,11 @@
   content: "";
   position: absolute;
   inset: 0;
-
-  /* SAME darkness as login */
   background: rgba(11, 13, 18, 0.7);
-
   z-index: 1;
 }
 
-/* =========================================================
-   SIGN UP — IMAGE TEXT LIFT / SHADOW
-   ========================================================= */
-
+/* Sign up - image text lift / shadow */
 .signup-visual-overlay {
   position: absolute;
   inset: 0;
@@ -65,7 +54,6 @@
   font-weight: 700;
   margin-bottom: 1rem;
 
-  /* SAME lifted text effect as login */
   text-shadow:
     0 6px 20px rgba(0, 0, 0, 0.6),
     0 2px 6px rgba(0, 0, 0, 0.8);
@@ -76,8 +64,6 @@
   max-width: 520px;
   line-height: 1.6;
   color: rgba(245, 245, 245, 0.75);
-
-  /* Slightly softer shadow for body text */
   text-shadow:
     0 10px 30px rgba(0, 0, 0, 0.7);
 }
@@ -258,8 +244,6 @@
    SIGN UP — ENTRY ANIMATIONS
    ========================================================= */
 
-/* ---------- FORM: GLIDE IN FROM RIGHT ---------- */
-
 @keyframes signupGlideIn {
   from {
     opacity: 0;
@@ -276,8 +260,6 @@
   animation: signupGlideIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-
-/* ---------- IMAGE TEXT: FADE UP ---------- */
 
 @keyframes signupFadeUp {
   from {
