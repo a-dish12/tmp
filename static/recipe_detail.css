@@ -1,106 +1,5 @@
-/* =========================
-   RECIPE DETAIL PAGE
-   ========================= */
-
-/* NOTE: Navbar styles are in navbar.css and should not be overridden */
-/* Ensure navbar retains its original styling */
-.navbar,
-.navbar *,
-.dashboard-nav,
-.dashboard-nav * {
-  /* Allow navbar.css to fully control navbar styling */
-}
-
-/* Background matching dashboard */
-body.recipe-detail-bg {
-  background:
-    radial-gradient(circle at 15% 20%, #3a1c2e 0%, transparent 45%),
-    radial-gradient(circle at 85% 30%, #1f2f5f 0%, transparent 45%),
-    radial-gradient(circle at 50% 90%, #1b3a2f 0%, transparent 40%),
-    #0b0d12;
-  background-attachment: fixed;
-  color: #ffffff;
-  min-height: 100vh;
-}
-
-body.recipe-detail-bg::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
-  background-size: 120px 120px;
-  opacity: 0.14;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* =========================
-   FLOATING DUST PARTICLES
-   ========================= */
-
-.recipe-particles {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.recipe-particles span {
-  position: absolute;
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.5);
-  box-shadow: 0 0 10px rgba(255,255,255,0.3);
-  animation: floatDustRecipe 2s ease-in-out infinite;
-}
-
-.recipe-particles span:nth-child(1)  { top: 10%; left: 15%; animation-duration: 6s; }
-.recipe-particles span:nth-child(2)  { top: 30%; left: 70%; animation-duration: 8s; }
-.recipe-particles span:nth-child(3)  { top: 60%; left: 40%; animation-duration: 7s; }
-.recipe-particles span:nth-child(4)  { top: 80%; left: 20%; animation-duration: 9s; }
-.recipe-particles span:nth-child(5)  { top: 50%; left: 85%; animation-duration: 6s; }
-.recipe-particles span:nth-child(6)  { top: 20%; left: 55%; animation-duration: 8s; }
-.recipe-particles span:nth-child(7)  { top: 75%; left: 65%; animation-duration: 7s; }
-.recipe-particles span:nth-child(8)  { top: 35%; left: 25%; animation-duration: 9s; }
-.recipe-particles span:nth-child(9)  { top: 15%; left: 80%; animation-duration: 6s; }
-.recipe-particles span:nth-child(10) { top: 65%; left: 10%; animation-duration: 8s; }
-.recipe-particles span:nth-child(11) { top: 5%; left: 45%; animation-duration: 7s; }
-.recipe-particles span:nth-child(12) { top: 25%; left: 90%; animation-duration: 9s; }
-.recipe-particles span:nth-child(13) { top: 45%; left: 5%; animation-duration: 6s; }
-.recipe-particles span:nth-child(14) { top: 70%; left: 50%; animation-duration: 8s; }
-.recipe-particles span:nth-child(15) { top: 90%; left: 75%; animation-duration: 7s; }
-.recipe-particles span:nth-child(16) { top: 12%; left: 35%; animation-duration: 9s; }
-.recipe-particles span:nth-child(17) { top: 55%; left: 95%; animation-duration: 6s; }
-.recipe-particles span:nth-child(18) { top: 85%; left: 60%; animation-duration: 8s; }
-.recipe-particles span:nth-child(19) { top: 40%; left: 15%; animation-duration: 7s; }
-.recipe-particles span:nth-child(20) { top: 8%; left: 65%; animation-duration: 9s; }
-.recipe-particles span:nth-child(21) { top: 28%; left: 30%; animation-duration: 6s; }
-.recipe-particles span:nth-child(22) { top: 62%; left: 80%; animation-duration: 8s; }
-.recipe-particles span:nth-child(23) { top: 18%; left: 10%; animation-duration: 7s; }
-.recipe-particles span:nth-child(24) { top: 48%; left: 70%; animation-duration: 9s; }
-.recipe-particles span:nth-child(25) { top: 72%; left: 35%; animation-duration: 6s; }
-.recipe-particles span:nth-child(26) { top: 33%; left: 50%; animation-duration: 8s; }
-.recipe-particles span:nth-child(27) { top: 82%; left: 45%; animation-duration: 7s; }
-.recipe-particles span:nth-child(28) { top: 52%; left: 25%; animation-duration: 9s; }
-.recipe-particles span:nth-child(29) { top: 68%; left: 88%; animation-duration: 6s; }
-.recipe-particles span:nth-child(30) { top: 22%; left: 2%; animation-duration: 8s; }
-
-@keyframes floatDustRecipe {
-  0% {
-    transform: translate(0, 0);
-    opacity: 0.25;
-  }
-  50% {
-    transform: translate(28px, -42px);
-    opacity: 0.6;
-  }
-  100% {
-    transform: translate(0, 0);
-    opacity: 0.25;
-  }
-}
+/* Recipe detail page - navbar styling note */
+/* Navbar styles in navbar.css should not be overridden */
 
 /* Main content container - NOT navbar */
 .recipe-detail-bg .container:not(.navbar .container) {
@@ -110,10 +9,7 @@ body.recipe-detail-bg::after {
   padding-bottom: 4rem;
 }
 
-/* =========================
-   RECIPE HEADER
-   ========================= */
-
+/* Recipe header */
 .recipe-detail-bg h1 {
   font-size: 2.5rem;
   font-weight: 800;

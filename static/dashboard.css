@@ -1,7 +1,4 @@
-/* =========================
-   DASHBOARD LAYOUT
-   ========================= */
-
+/* Dashboard layout */
 .dashboard-wrapper {
   position: relative;
   z-index: 1;
@@ -27,35 +24,7 @@
   margin-top: 0;
 }
 
-/* =========================
-   BACKGROUND & EFFECTS
-   ========================= */
-
-body.dashboard-bg {
-  background:
-    radial-gradient(circle at 15% 20%, #3a1c2e 0%, transparent 45%),
-    radial-gradient(circle at 85% 30%, #1f2f5f 0%, transparent 45%),
-    radial-gradient(circle at 50% 90%, #1b3a2f 0%, transparent 40%),
-    #0b0d12;
-  background-attachment: fixed;
-  color: #ffffff;
-}
-
-body.dashboard-bg::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
-  background-size: 120px 120px;
-  opacity: 0.14;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* =========================
-   FLOATING DUST PARTICLES
-   ========================= */
-
+/* Floating dust particles */
 .dashboard-particles {
   position: fixed;
   inset: 0;
@@ -105,25 +74,12 @@ body.dashboard-bg::after {
 .dashboard-particles span:nth-child(29) { top: 68%; left: 88%; animation-duration: 6s; }
 .dashboard-particles span:nth-child(30) { top: 95%; left: 55%; animation-duration: 8s; }
 
-@keyframes dashboardFloatDust {
-  0% {
-    transform: translate(0, 0);
-    opacity: 0.25;
-  }
-  50% {
-    transform: translate(28px, -42px);
-    opacity: 0.6;
-  }
-  100% {
-    transform: translate(0, 0);
-    opacity: 0.25;
-  }
+/* Add animation to dashboard particles */
+.dashboard-particles span {
+  animation: floatDust 2s ease-in-out infinite;
 }
 
-/* =========================
-   HERO SECTION
-   ========================= */
-
+/* Hero section */
 .dashboard-hero {
   max-width: none;
   margin-bottom: 2rem;

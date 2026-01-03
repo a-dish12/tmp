@@ -12,7 +12,6 @@
 
 {% block content %}
 
-<!-- Dust particles -->
 <div class="dashboard-particles">
   {% for _ in "123456789012345678901234567890" %}
     <span></span>
@@ -20,8 +19,6 @@
 </div>
 
 <div class="dashboard-wrapper">
-  
-  <!-- HERO -->
   <div class="dashboard-hero mb-5">
     <h1 class="dashboard-title">
       Create New <span class="accent-orange">Recipe</span>
@@ -31,19 +28,16 @@
     </p>
   </div>
 
-  <!-- FORM CONTAINER -->
   <div class="recipe-form-container">
     <form action="{% url 'create_recipe' %}" method="post" enctype="multipart/form-data" class="recipe-form">
       {% csrf_token %}
       
-      {# Show non-field errors #}
       {% if form.non_field_errors %}
         <div class="alert alert-danger mb-4">
           {{ form.non_field_errors }}
         </div>
       {% endif %}
 
-      {# Standard form fields #}
       {% for field in form %}
         {% if field.name not in 'ingredient_count,instruction_count,image,image_url' and 'ingredient_' not in field.name and 'instruction_' not in field.name %}
           <div class="form-group">
@@ -75,7 +69,6 @@
         {% endif %}
       {% endfor %}
 
-      {# Custom Image Upload Section #}
       {% for field in form %}
         {% if field.name == 'image' %}
           <div class="form-group">
@@ -95,7 +88,6 @@
         {% endif %}
       {% endfor %}
 
-      {# Image URL Field - Right After Image Upload #}
       {% for field in form %}
         {% if field.name == 'image_url' %}
           <div class="form-group">
@@ -115,11 +107,9 @@
         {% endif %}
       {% endfor %}
 
-      {# Hidden count fields #}
       {{ form.ingredient_count }}
       {{ form.instruction_count }}
 
-      {# Dynamic Ingredients Section #}
       <div class="form-group">
         <label class="form-label">
           Ingredients <span class="required">*</span>
@@ -150,7 +140,6 @@
         </div>
       </div>
 
-      {# Dynamic Instructions Section #}
       <div class="form-group">
         <label class="form-label">
           Instructions <span class="required">*</span>
@@ -160,7 +149,7 @@
           {% for field in form %}
             {% if 'instruction_' in field.name %}
               <div class="instruction-field-item">
-                {% with step_num=field.name|slice:"12:"|add:"0"|add:1 %}
+                {% with step_num=field.name|slice:"12:"|add:"0"|add:"1" %}
                   <span class="step-label">Step {{ step_num }}</span>
                 {% endwith %}
                 {% render_field field class="form-control form-textarea" placeholder="Describe this step in detail..." %}
@@ -184,7 +173,6 @@
         </div>
       </div>
 
-      {# Submit Buttons #}
       <div class="form-actions">
         <button type="submit" class="btn-primary">
           Create Recipe

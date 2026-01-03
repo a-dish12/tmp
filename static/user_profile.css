@@ -1,8 +1,6 @@
-/* =========================
-   USER PROFILE PAGE
-   ========================= */
+/* User Profile Page */
 
-/* Background matching dashboard */
+/* Background */
 body.user-profile-bg {
   background:
     radial-gradient(circle at 15% 20%, #3a1c2e 0%, transparent 45%),
@@ -25,16 +23,13 @@ body.user-profile-bg::after {
   z-index: 0;
 }
 
-/* =========================
-   FLOATING DUST PARTICLES
-   ========================= */
-
+/* Dust particles */
 .profile-particles {
   position: fixed;
   inset: 0;
   pointer-events: none;
   overflow: hidden;
-  z-index: 1;
+  z-index: 0;
 }
 
 .profile-particles span {
@@ -42,9 +37,8 @@ body.user-profile-bg::after {
   width: 3px;
   height: 3px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.5);
-  box-shadow: 0 0 10px rgba(255,255,255,0.3);
-  animation: floatDustProfile 2s ease-in-out infinite;
+  background: rgba(255,255,255,0.4);
+  animation: floatDust 2s ease-in-out infinite;
 }
 
 .profile-particles span:nth-child(1)  { top: 10%; left: 15%; animation-duration: 6s; }
@@ -76,40 +70,25 @@ body.user-profile-bg::after {
 .profile-particles span:nth-child(27) { top: 82%; left: 45%; animation-duration: 7s; }
 .profile-particles span:nth-child(28) { top: 52%; left: 25%; animation-duration: 9s; }
 .profile-particles span:nth-child(29) { top: 68%; left: 88%; animation-duration: 6s; }
-.profile-particles span:nth-child(30) { top: 22%; left: 2%; animation-duration: 8s; }
+.profile-particles span:nth-child(30) { top: 95%; left: 55%; animation-duration: 8s; }
 
-@keyframes floatDustProfile {
-  0% {
-    transform: translate(0, 0);
-    opacity: 0.25;
-  }
-  50% {
-    transform: translate(28px, -42px);
-    opacity: 0.6;
-  }
-  100% {
-    transform: translate(0, 0);
-    opacity: 0.25;
-  }
+@keyframes floatDust {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+  50% { transform: translateY(-20px) translateX(10px); opacity: 0.6; }
 }
 
-/* Main content container - NOT navbar */
+/* Container */
 .user-profile-bg .container:not(.navbar .container) {
   position: relative;
   z-index: 1;
-  padding-top: 2rem;
-  padding-bottom: 4rem;
+  padding: 2rem 0 4rem;
   max-width: 1200px;
 }
 
-/* =========================
-   PROFILE HEADER
-   ========================= */
-
+/* Profile Header */
 .profile-header {
   background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
   backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 20px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.3);
@@ -144,8 +123,6 @@ body.user-profile-bg::after {
 .stat-item a {
   color: rgba(255, 255, 255, 0.7);
   text-decoration: none;
-  font-size: 1rem;
-  transition: color 0.2s ease;
 }
 
 .stat-item a:hover {
@@ -158,10 +135,7 @@ body.user-profile-bg::after {
   color: #fff;
 }
 
-/* =========================
-   BUTTONS
-   ========================= */
-
+/* Buttons */
 .user-profile-bg .btn {
   border-radius: 10px;
   font-weight: 600;
@@ -185,20 +159,9 @@ body.user-profile-bg::after {
   color: #fff;
 }
 
-.user-profile-bg .btn-success:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
-}
-
 .user-profile-bg .btn-outline-danger {
   background: transparent;
   border: 1.5px solid #ef5350;
-  color: #ef5350;
-}
-
-.user-profile-bg .btn-outline-danger:hover {
-  background: rgba(239, 83, 80, 0.1);
-  border-color: #ef5350;
   color: #ef5350;
 }
 
@@ -208,41 +171,48 @@ body.user-profile-bg::after {
   color: rgba(255, 255, 255, 0.8);
 }
 
-.user-profile-bg .btn-outline-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.5);
-  color: #fff;
-}
-
 .user-profile-bg .btn-secondary {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: rgba(255, 255, 255, 0.9);
 }
 
-.user-profile-bg .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
+/* Gradient Button */
+.filters-apply-btn {
+  background: linear-gradient(135deg, #ff8a65, #ec407a);
+  padding: 0.75rem 1.3rem;
+  border-radius: 12px;
+  color: #000;
+  font-weight: 800;
+  font-size: 0.9rem;
+  border: 2px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(236, 64, 122, 0.35);
+  transition: all 0.2s ease;
+  text-decoration: none;
 }
 
-.user-profile-bg .btn-sm {
-  padding: 0.4rem 1rem;
-  font-size: 0.85rem;
+.filters-apply-btn:hover {
+  background: transparent;
+  border-color: #ff8a65;
+  color: #ff8a65;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(236, 64, 122, 0.55);
+  text-decoration: none;
 }
 
-/* =========================
-   FOLLOW REQUESTS SECTION
-   ========================= */
-
+/* Follow Requests Section */
 .requests-card {
   background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
   backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
   padding: 2rem;
   margin-bottom: 2rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
 }
 
 .requests-card h3 {
@@ -255,6 +225,8 @@ body.user-profile-bg::after {
 .requests-card .list-group {
   background: transparent;
   border: none;
+  list-style: none;
+  padding: 0;
 }
 
 .requests-card .list-group-item {
@@ -263,8 +235,12 @@ body.user-profile-bg::after {
   border-radius: 12px;
   color: rgba(255, 255, 255, 0.9);
   margin-bottom: 0.75rem;
-  padding: 1rem 1.25rem;
+  padding: 1rem 1.5rem;
   transition: all 0.2s ease;
+}
+
+.requests-card .list-group-item:last-child {
+  margin-bottom: 0;
 }
 
 .requests-card .list-group-item:hover {
@@ -276,6 +252,7 @@ body.user-profile-bg::after {
   color: #ff8a65;
   text-decoration: none;
   font-weight: 600;
+  font-size: 1rem;
 }
 
 .requests-card .list-group-item a:hover {
@@ -283,48 +260,7 @@ body.user-profile-bg::after {
   text-decoration: underline;
 }
 
-.requests-card p {
-  color: rgba(255, 255, 255, 0.6);
-  text-align: center;
-  margin: 1rem 0;
-}
-
-/* =========================
-   DIVIDERS
-   ========================= */
-
-.user-profile-bg hr {
-  border-color: rgba(255, 255, 255, 0.1);
-  margin: 2rem 0;
-}
-
-/* =========================
-   RESPONSIVE
-   ========================= */
-
-@media (max-width: 768px) {
-  .profile-header h1 {
-    font-size: 2rem;
-  }
-  
-  .profile-stats {
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .profile-header {
-    padding: 2rem;
-  }
-  
-  .requests-card {
-    padding: 1.5rem;
-  }
-}
-
-/* =========================
-   MY RECIPES SECTION
-   ========================= */
-
+/* My Recipes Section */
 .my-recipes-section {
   margin-top: 2rem;
 }
@@ -340,10 +276,9 @@ body.user-profile-bg::after {
   display: flex;
   gap: 1rem;
   margin-bottom: 2rem;
-  flex-wrap: wrap;
 }
 
-/* Recipe Grid - Same as Dashboard */
+/* Recipe Grid */
 .recipe-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -351,55 +286,29 @@ body.user-profile-bg::after {
   margin-bottom: 2rem;
 }
 
-/* Recipe Cards - Same as Dashboard */
+/* Recipe Card */
 .recipe-card {
-  position: relative;
   text-decoration: none;
   color: inherit;
   background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015));
   backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
   border-radius: 26px;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 20px 50px rgba(0,0,0,0.55);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.55);
+  transition: transform 0.25s ease;
 }
 
 .recipe-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 28px 70px rgba(0,0,0,0.7);
-}
-
-.recipe-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 26px;
-  padding: 1px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02));
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-}
-
-.recipe-card:hover::before {
-  opacity: 1;
 }
 
 .recipe-image {
   width: 100%;
   height: 180px;
-  max-height: 180px;
-  min-height: 180px;
   background: #000000;
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
-  flex-shrink: 0;
 }
 
 .recipe-card > :not(.recipe-image) {
@@ -410,28 +319,17 @@ body.user-profile-bg::after {
   padding-bottom: 1.6rem;
 }
 
-/* Recipe Card Text */
 .recipe-title {
   font-size: 1.25rem;
   font-weight: 700;
   color: #ffffff;
   margin-bottom: 0.75rem;
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 .recipe-desc {
   font-size: 0.9rem;
   color: rgba(255,255,255,0.65);
   margin-bottom: 1rem;
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 .recipe-meta {
@@ -443,7 +341,6 @@ body.user-profile-bg::after {
   margin-bottom: 0.75rem;
 }
 
-/* Recipe Ratings */
 .recipe-rating {
   display: flex;
   align-items: center;
@@ -458,12 +355,6 @@ body.user-profile-bg::after {
   color: #ffc107;
 }
 
-.rating-num {
-  margin-left: 0.4rem;
-  font-size: 0.85rem;
-  color: rgba(255,255,255,0.65);
-}
-
 /* Empty State */
 .empty-state {
   text-align: center;
@@ -472,7 +363,6 @@ body.user-profile-bg::after {
   backdrop-filter: blur(30px);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
 }
 
 .empty-state p {
@@ -481,98 +371,41 @@ body.user-profile-bg::after {
   margin-bottom: 1.5rem;
 }
 
-/* Pagination */
-.pagination {
+/* Settings Icon */
+.btn-settings-icon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 45px;
+  height: 45px;
   display: flex;
-  gap: 0.5rem;
+  align-items: center;
   justify-content: center;
-  margin-top: 2rem;
-}
-
-.page-item {
-  list-style: none;
-}
-
-.page-link {
-  padding: 0.6rem 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 600;
+  background: rgba(92, 214, 214, 0.2);
+  border: 2px solid #5cd6d6;
+  border-radius: 50%;
+  color: #5cd6d6;
   text-decoration: none;
-  transition: all 0.2s ease;
-  min-width: 40px;
-  text-align: center;
+  transition: all 0.3s ease;
 }
 
-.page-link:hover {
-  background: rgba(77, 218, 225, 0.1);
-  border-color: rgba(77, 218, 225, 0.3);
-  color: #4ddae1;
-  transform: translateY(-2px);
-  box-shadow: 0 0 20px rgba(77, 218, 225, 0.3);
+.btn-settings-icon:hover {
+  background: rgba(92, 214, 214, 0.3);
+  transform: rotate(90deg);
 }
 
-.page-item.active .page-link {
-  background: linear-gradient(135deg, #ff8a65, #ec407a);
-  border-color: transparent;
-  color: #000;
-  font-weight: 700;
-}
-
-.page-item.disabled .page-link {
-  background: rgba(255, 255, 255, 0.02);
-  border-color: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.3);
-  cursor: not-allowed;
-}
-
-.page-item.disabled .page-link:hover {
-  transform: none;
-  background: rgba(255, 255, 255, 0.02);
-  border-color: rgba(255, 255, 255, 0.05);
-  box-shadow: none;
-}
-
+/* Responsive */
 @media (max-width: 768px) {
+  .profile-header h1 {
+    font-size: 2rem;
+  }
+  
+  .profile-stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
   .recipe-grid {
     grid-template-columns: 1fr;
   }
-  
-  .action-buttons {
-    flex-direction: column;
-  }
-}
-
-/* =========================
-   SETTINGS BUTTON
-   ========================= */
-
-a.btn-settings-icon {
-  position: absolute !important;
-  top: 20px !important;
-  right: 20px !important;
-  width: 45px !important;
-  height: 45px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  background: rgba(92, 214, 214, 0.2) !important;
-  border: 2px solid #5cd6d6 !important;
-  border-radius: 50% !important;
-  color: #5cd6d6 !important;
-  font-size: 1.3rem !important;
-  text-decoration: none !important;
-  z-index: 100 !important;
-  transition: all 0.3s ease !important;
-}
-
-a.btn-settings-icon:hover,
-a.btn-settings-icon:focus,
-a.btn-settings-icon:active {
-  background: rgba(92, 214, 214, 0.3) !important;
-  color: #5cd6d6 !important;
-  transform: rotate(90deg) !important;
-  text-decoration: none !important;
 }

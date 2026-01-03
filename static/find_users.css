@@ -1,6 +1,4 @@
-/* =========================
-   FIND USERS PAGE
-   ========================= */
+/* Find users page */
 
 /* Background matching dashboard */
 body.find-users-bg {
@@ -255,23 +253,46 @@ body.find-users-bg::after {
   flex-shrink: 0;
 }
 
-.btn-view-profile {
+/* Apply Button Enhanced - EXACT COPY FROM DASHBOARD */
+.filters-apply-btn {
   background: linear-gradient(135deg, #ff8a65, #ec407a);
-  border: none;
-  color: #000;
-  font-weight: 600;
-  padding: 0.5rem 1.2rem;
+  padding: 0.5rem 1rem;
   border-radius: 10px;
-  font-size: 0.85rem;
-  transition: all 0.2s ease;
-  text-decoration: none;
-  display: inline-block;
+  color: #000;
+  font-weight: 800;
+  font-size: 0.8rem;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-bottom: 0;
+  margin-top: 0;
+  box-shadow: 0 6px 20px rgba(236, 64, 122, 0.35);
+  transition: background 0.18s ease, color 0.18s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none !important;
 }
 
-.btn-view-profile:hover {
+.filters-apply-btn:hover {
+  background: transparent;
+  border-image: linear-gradient(135deg, #ff8a65, #ec407a) 1;
+  color: #ff8a65;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 138, 101, 0.4);
-  color: #000;
+  box-shadow: 0 12px 35px rgba(236, 64, 122, 0.55);
+  text-decoration: none !important;
+}
+
+.filters-apply-btn:active {
+  transform: translateY(0);
+  text-decoration: none !important;
+}
+
+.filters-apply-btn:focus,
+.filters-apply-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 138, 101, 0.3);
+  text-decoration: none !important;
 }
 
 /* =========================
@@ -366,7 +387,7 @@ body.find-users-bg::after {
 }
 
 @media (max-width: 576px) {
-  .btn-view-profile {
+  .filters-apply-btn {
     padding: 0.4rem 0.9rem;
     font-size: 0.8rem;
   }
