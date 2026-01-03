@@ -4,7 +4,7 @@
 The members of the team are:
 - Sabah Abdullah Abdulkarem Al-Aswadi
 - Moyondafoluwa Bliss Modupe Akinwande
-- *enter full name 3 here*
+- Aniekan Essen-Kolo
 - *enter full name 4 here*
 - *enter full name 5 here (or delete if not applicable)*
 
@@ -77,3 +77,4 @@ $ python3 manage.py createsuperuser
 The packages used by this application are specified in `requirements.txt`
 
 *Declare are other sources here, and remove this line*
+
