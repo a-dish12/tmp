@@ -2,21 +2,14 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import get_user_model
 
-from recipes.models import Follow, FollowRequest
+from recipes.models import Follow, FollowRequest, Notification
 
 User = get_user_model()
 
 
 @login_required
 def follow_user(request, user_id):
-    """
-    Handles a request by the logged-in user to follow another user.
-
-    If the target user has a private account, a follow request is created.
-    Otherwise, a follow relationship is created immediately.
-    """
-
-    # The user that the current user wants to follow
+    # for private accounts creates follow request, otherwise follows directly
     followed = get_object_or_404(User, pk=user_id)
 
     # Prevent users from following themselves
@@ -26,10 +19,13 @@ def follow_user(request, user_id):
     # If the target user is private, create a follow request
     # Otherwise, create a follow relationship directly
     if followed.is_private:
-        FollowRequest.objects.get_or_create(
+        follow_request, created = FollowRequest.objects.get_or_create(
             from_user=request.user,
             to_user=followed
         )
+        # Send notification only if this is a new request
+        if created:
+            Notification.create_follow_request_notification(request.user, followed)
     else:
         Follow.objects.get_or_create(
             follower=request.user,
@@ -41,10 +37,6 @@ def follow_user(request, user_id):
 
 @login_required
 def unfollow_user(request, user_id):
-    """
-    Removes an existing follow relationship between the logged-in user
-    and the specified user.
-    """
 
     # The user to be unfollowed
     unfollowed = get_object_or_404(User, pk=user_id)
@@ -59,9 +51,6 @@ def unfollow_user(request, user_id):
 
 
 def user_followers(request, user_id):
-    """
-    Displays a list of users who are following the specified user.
-    """
 
     profile_user = get_object_or_404(User, pk=user_id)
 
@@ -79,9 +68,6 @@ def user_followers(request, user_id):
 
 
 def user_following(request, user_id):
-    """
-    Displays a list of users that the specified user is following.
-    """
 
     profile_user = get_object_or_404(User, pk=user_id)
 
@@ -100,9 +86,6 @@ def user_following(request, user_id):
 
 @login_required
 def cancel_follow_request(request, user_id):
-    """
-    Allows a user to cancel a previously sent follow request.
-    """
 
     to_user = get_object_or_404(User, pk=user_id)
 
@@ -117,11 +100,6 @@ def cancel_follow_request(request, user_id):
 
 @login_required
 def accept_follow_request(request, request_id):
-    """
-    Allows a user to accept an incoming follow request.
-
-    This creates a follow relationship and removes the follow request.
-    """
 
     follow_request = get_object_or_404(
         FollowRequest,
@@ -147,9 +125,6 @@ def accept_follow_request(request, request_id):
 
 @login_required
 def reject_follow_request(request, request_id):
-    """
-    Allows a user to reject an incoming follow request.
-    """
 
     follow_request = get_object_or_404(
         FollowRequest,

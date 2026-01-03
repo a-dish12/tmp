@@ -90,6 +90,82 @@ class NotificationModelTestCase(TestCase):
         notifications = list(Notification.objects.all())
         self.assertEqual(notifications[0], notif2)
         self.assertEqual(notifications[1], notif1)
+    
+    def test_create_follow_request_notification(self):
+        """Test creating a follow request notification."""
+        requester = User.objects.create_user(
+            username='@requester',
+            email='requester@test.com',
+            password='Password123',
+            first_name='Request',
+            last_name='User'
+        )
+        
+        notification = Notification.create_follow_request_notification(requester, self.user)
+        
+        self.assertEqual(notification.recipient, self.user)
+        self.assertEqual(notification.notification_type, 'follow_request')
+        self.assertIn('Follow Request', notification.title)
+        self.assertIn(requester.username, notification.message)
+        self.assertIn('follow', notification.message.lower())
+        self.assertIsNotNone(notification.action_url)
+        self.assertFalse(notification.is_read)
+    
+    def test_create_rating_notification(self):
+        """Test creating a rating notification."""
+        rater = User.objects.create_user(
+            username='@rater',
+            email='rater@test.com',
+            password='Password123',
+            first_name='Rater',
+            last_name='User'
+        )
+        
+        notification = Notification.create_rating_notification(rater, self.recipe, 5)
+        
+        self.assertEqual(notification.recipient, self.recipe.author)
+        self.assertEqual(notification.notification_type, 'recipe_rated')
+        self.assertIn('Rating', notification.title)
+        self.assertIn(rater.username, notification.message)
+        self.assertIn(self.recipe.title, notification.message)
+        self.assertIn('5 stars', notification.message)
+        self.assertIsNotNone(notification.action_url)
+        self.assertFalse(notification.is_read)
+    
+    def test_create_rating_notification_singular_star(self):
+        """Test rating notification with 1 star uses singular form."""
+        rater = User.objects.create_user(
+            username='@rater2',
+            email='rater2@test.com',
+            password='Password123',
+            first_name='Rater',
+            last_name='Two'
+        )
+        
+        notification = Notification.create_rating_notification(rater, self.recipe, 1)
+        
+        self.assertIn('1 star', notification.message)
+        self.assertNotIn('1 stars', notification.message)
+    
+    def test_create_comment_notification(self):
+        """Test creating a comment notification."""
+        commenter = User.objects.create_user(
+            username='@commenter',
+            email='commenter@test.com',
+            password='Password123',
+            first_name='Comment',
+            last_name='User'
+        )
+        
+        notification = Notification.create_comment_notification(commenter, self.recipe)
+        
+        self.assertEqual(notification.recipient, self.recipe.author)
+        self.assertEqual(notification.notification_type, 'comment_reply')
+        self.assertIn('Comment', notification.title)
+        self.assertIn(commenter.username, notification.message)
+        self.assertIn(self.recipe.title, notification.message)
+        self.assertIsNotNone(notification.action_url)
+        self.assertFalse(notification.is_read)
 
 
 class NotificationViewTestCase(TestCase):

@@ -2,14 +2,6 @@ from django.db import models
 from django.conf import settings
 
 class Follow(models.Model):
-    """
-    Represents a follow relationship between two users.
-
-    Each instance indicates that one user (the follower) is following
-    another user (the following).
-    """
-
-
     # The user who initiates the follow
     follower = models.ForeignKey(
         settings.AUTH_USER_MODEL,

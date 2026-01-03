@@ -54,7 +54,6 @@ class Notification(models.Model):
     
     @classmethod
     def create_report_received_notification(cls, reporter):
-        """Create notification when user submits a report."""
         return cls.objects.create(
             recipient=reporter,
             notification_type='report_received',
@@ -64,7 +63,6 @@ class Notification(models.Model):
     
     @classmethod
     def create_report_resolved_notification(cls, reporter, action_taken, content_title):
-        """Create notification when admin resolves a report."""
         if action_taken in ['hidden', 'deleted']:
             message = f'Your report has been reviewed. The content "{content_title}" has been removed. Thank you for helping keep our community safe.'
         elif action_taken == 'dismissed':
@@ -81,7 +79,6 @@ class Notification(models.Model):
     
     @classmethod
     def create_content_removed_notification(cls, author, content_type_str, content_title, reason):
-        """Create notification when content is removed."""
         return cls.objects.create(
             recipient=author,
             notification_type='content_removed',
@@ -91,10 +88,42 @@ class Notification(models.Model):
     
     @classmethod
     def create_warning_notification(cls, user, reason):
-        """Create notification when user receives a warning."""
         return cls.objects.create(
             recipient=user,
             notification_type='warning_issued',
             title='Community Guidelines Warning',
             message=f'You have received a warning for violating our community guidelines. Reason: {reason}. Please review our guidelines to avoid further action.'
+        )
+    
+    @classmethod
+    def create_follow_request_notification(cls, from_user, to_user):
+        from django.urls import reverse
+        return cls.objects.create(
+            recipient=to_user,
+            notification_type='follow_request',
+            title='New Follow Request',
+            message=f'{from_user.username} has requested to follow you.',
+            action_url=reverse('user_profile', kwargs={'user_id': from_user.id})
+        )
+    
+    @classmethod
+    def create_rating_notification(cls, rater, recipe, stars):
+        from django.urls import reverse
+        return cls.objects.create(
+            recipient=recipe.author,
+            notification_type='recipe_rated',
+            title='New Recipe Rating',
+            message=f'{rater.username} rated your recipe "{recipe.title}" {stars} star{"s" if stars != 1 else ""}.',
+            action_url=reverse('recipe_detail', kwargs={'pk': recipe.id})
+        )
+    
+    @classmethod
+    def create_comment_notification(cls, commenter, recipe):
+        from django.urls import reverse
+        return cls.objects.create(
+            recipient=recipe.author,
+            notification_type='comment_reply',
+            title='New Comment',
+            message=f'{commenter.username} commented on your recipe "{recipe.title}".',
+            action_url=reverse('recipe_detail', kwargs={'pk': recipe.id})
         )
