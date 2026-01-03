@@ -4,7 +4,7 @@
 The members of the team are:
 - Sabah Abdullah Abdulkarem Al-Aswadi
 - Moyondafoluwa Bliss Modupe Akinwande
-- *enter full name 3 here*
+- Aniekan Essen-Kolo
 - *enter full name 4 here*
 - *enter full name 5 here (or delete if not applicable)*
 
@@ -12,7 +12,7 @@ The members of the team are:
 The project is called `recipify`.  It currently consists of a single app `recipes`.
 
 ## Deployed version of the application
-The deployed version of the application can be found at [*enter url here*](*enter_url_here*).
+The deployed version of the application can be found at [recipifyjet6.pythonanywhere.com](https://recipifyjet6.pythonanywhere.com).
 
 ## Installation instructions
 To install the software and use it in your local development environment, you must first set up and activate a local development environment.  The project source code has been developed using Python 3.12, so you are recommended to use the same version.  From the root of the project:
@@ -76,4 +76,4 @@ $ python3 manage.py createsuperuser
 ## Sources
 The packages used by this application are specified in `requirements.txt`
 
-*Declare are other sources here, and remove this line*
+ChatGPT was used for seeding, specifically to generate the data fixtures in `recipes/management/RecipeFixtures`
