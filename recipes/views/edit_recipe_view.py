@@ -8,19 +8,16 @@ from recipes.forms import RecipeForm
 
 
 class EditRecipeView(LoginRequiredMixin, UserPassesTestMixin, View):
-    """View for editing an existing recipe. Only the author can edit."""
     template_name = 'edit_recipe.html'
 
     def get_object(self):
         return get_object_or_404(Recipe, pk=self.kwargs['pk'])
     
     def test_func(self):
-        """Check that the current user is the recipe author."""
         recipe = self.get_object()
         return self.request.user == recipe.author
     
     def dispatch(self, request, *args, **kwargs):
-        """Override dispatch to perform the test_func check."""
         if not self.test_func():
             from django.core.exceptions import PermissionDenied
             raise PermissionDenied
@@ -84,7 +81,6 @@ class EditRecipeView(LoginRequiredMixin, UserPassesTestMixin, View):
 
 
 class DeleteRecipeView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    """View for deleting a recipe. Only the author can delete."""
     model = Recipe
     template_name = 'delete_recipe.html'
     success_url = reverse_lazy('user_recipes')

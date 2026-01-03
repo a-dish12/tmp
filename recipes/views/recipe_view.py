@@ -3,7 +3,7 @@ from django.views.generic import DetailView, CreateView
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.urls import reverse
-from recipes.models import Recipe, Rating
+from recipes.models import Recipe, Rating, Notification
 from recipes.models.planned_meal import PlannedMeal
 from recipes.forms.comment_form import CommentForm
 from recipes.forms.planned_meal_form import PlannedMealForm
@@ -13,14 +13,11 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 class RecipeDetailView(DetailView):
-    """Display full recipe details with rating."""
-    
     model = Recipe
     template_name = 'recipe_detail.html'
     context_object_name = 'recipe'
     
     def get_object(self, queryset=None):
-        """Get recipe and track view."""
         obj = super().get_object(queryset)
         
         # Track view for authenticated or anonymous users (exclude staff/superusers)
@@ -88,8 +85,6 @@ class RecipeDetailView(DetailView):
 
 
 class RateRecipeView(LoginRequiredMixin, CreateView):
-    """Handle recipe rating (create or update)."""
-    
     model = Rating
     form_class = RatingForm
     
@@ -110,6 +105,14 @@ class RateRecipeView(LoginRequiredMixin, CreateView):
             user=self.request.user,
             defaults={'stars': form.cleaned_data['stars']}
         )
+        
+        # Send notification to recipe author (only for new ratings, not updates)
+        if created and self.recipe.author != self.request.user:
+            Notification.create_rating_notification(
+                self.request.user,
+                self.recipe,
+                form.cleaned_data['stars']
+            )
         
         if created:
             messages.success(self.request, "Thank you for rating this recipe!")

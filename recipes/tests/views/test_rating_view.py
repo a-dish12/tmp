@@ -1,7 +1,7 @@
 """Tests for rating views."""
 from django.test import TestCase
 from django.urls import reverse
-from recipes.models import User, Recipe, Rating
+from recipes.models import User, Recipe, Rating, Notification
 from recipes.tests.helpers import LogInTester
 
 
@@ -48,6 +48,60 @@ class RateRecipeViewTestCase(TestCase, LogInTester):
         self.assertTrue(Rating.objects.filter(recipe=self.recipe, user=self.user).exists())
         rating = Rating.objects.get(recipe=self.recipe, user=self.user)
         self.assertEqual(rating.stars, 4)
+    
+    def test_rating_creates_notification_for_recipe_author(self):
+        """Test that rating a recipe creates a notification for the recipe author."""
+        self.client.login(username=self.user.username, password='Password123')
+        
+        # Initially no notifications
+        self.assertEqual(Notification.objects.filter(recipient=self.other_user).count(), 0)
+        
+        response = self.client.post(self.url, {'stars': 5})
+        
+        # Check notification was created
+        self.assertEqual(Notification.objects.filter(recipient=self.other_user).count(), 1)
+        notification = Notification.objects.get(recipient=self.other_user)
+        self.assertEqual(notification.notification_type, 'recipe_rated')
+        self.assertIn(self.user.username, notification.message)
+        self.assertIn(self.recipe.title, notification.message)
+        self.assertIn('5 stars', notification.message)
+    
+    def test_rating_update_no_duplicate_notification(self):
+        """Test that updating a rating doesn't create a duplicate notification."""
+        self.client.login(username=self.user.username, password='Password123')
+        
+        # First rating
+        self.client.post(self.url, {'stars': 4})
+        self.assertEqual(Notification.objects.filter(recipient=self.other_user).count(), 1)
+        
+        # Update rating
+        self.client.post(self.url, {'stars': 5})
+        # Should still be only 1 notification
+        self.assertEqual(Notification.objects.filter(recipient=self.other_user).count(), 1)
+    
+    def test_rating_own_recipe_no_notification(self):
+        """Test that rating your own recipe doesn't create a notification."""
+        # Create recipe by the rater
+        own_recipe = Recipe.objects.create(
+            author=self.user,
+            title="My Recipe",
+            description="My test recipe",
+            ingredients="Test ingredients",
+            time=30,
+            meal_type="dinner"
+        )
+        
+        # Try to rate own recipe (should be prevented by view, but test notification logic)
+        url = reverse('rate_recipe', kwargs={'recipe_pk': own_recipe.pk})
+        self.client.login(username=self.user.username, password='Password123')
+        
+        initial_count = Notification.objects.filter(recipient=self.user).count()
+        
+        # This will be redirected, but ensure no notification is created
+        response = self.client.post(url, {'stars': 5})
+        
+        # Should not create notification
+        self.assertEqual(Notification.objects.filter(recipient=self.user).count(), initial_count)
         self.assertRedirects(response, self.redirect_url, status_code=302, target_status_code=200)
 
     def test_update_existing_rating(self):

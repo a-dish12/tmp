@@ -1,7 +1,7 @@
 """Tests for comment views."""
 from django.test import TestCase
 from django.urls import reverse
-from recipes.models import User, Recipe, Comment
+from recipes.models import User, Recipe, Comment, Notification
 from recipes.tests.helpers import LogInTester
 
 
@@ -47,6 +47,47 @@ class AddCommentViewTestCase(TestCase, LogInTester):
         
         self.assertTrue(Comment.objects.filter(recipe=self.recipe, user=self.user, text=comment_text).exists())
         self.assertRedirects(response, self.redirect_url, status_code=302, target_status_code=200)
+    
+    def test_comment_creates_notification_for_recipe_author(self):
+        """Test that adding a comment creates a notification for the recipe author."""
+        self.client.login(username=self.user.username, password='Password123')
+        
+        # Initially no notifications
+        self.assertEqual(Notification.objects.filter(recipient=self.other_user).count(), 0)
+        
+        comment_text = 'Great recipe!'
+        response = self.client.post(self.url, {'text': comment_text})
+        
+        # Check notification was created
+        self.assertEqual(Notification.objects.filter(recipient=self.other_user).count(), 1)
+        notification = Notification.objects.get(recipient=self.other_user)
+        self.assertEqual(notification.notification_type, 'comment_reply')
+        self.assertIn(self.user.username, notification.message)
+        self.assertIn(self.recipe.title, notification.message)
+    
+    def test_comment_on_own_recipe_no_notification(self):
+        """Test that commenting on your own recipe doesn't create a notification."""
+        # Create recipe by the commenter
+        own_recipe = Recipe.objects.create(
+            author=self.user,
+            title="My Recipe",
+            description="My test recipe",
+            ingredients="Test ingredients",
+            time=30,
+            meal_type="dinner"
+        )
+        
+        self.client.login(username=self.user.username, password='Password123')
+        url = reverse('add_comment', kwargs={'recipe_pk': own_recipe.pk})
+        
+        # Initially no notifications
+        initial_count = Notification.objects.filter(recipient=self.user).count()
+        
+        comment_text = 'Commenting on my own recipe!'
+        response = self.client.post(url, {'text': comment_text})
+        
+        # Should not create notification
+        self.assertEqual(Notification.objects.filter(recipient=self.user).count(), initial_count)
 
     def test_add_comment_requires_text(self):
         """Test that comment requires text field."""

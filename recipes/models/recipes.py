@@ -101,20 +101,19 @@ class Recipe(models.Model):
             return "Vegan"
     
     def get_image_url(self):
-        """Return image URL, prioritizing uploaded image over URL field."""
         if self.image:
             return self.image.url
         return self.image_url
     
     def get_active_viewers(self):
-        """Get count of users currently viewing this recipe."""
+
         from django.core.cache import cache
         cache_key = f'recipe_viewers_{self.pk}'
         viewers = cache.get(cache_key, set())
         return len(viewers)
     
     def add_viewer(self, user_id):
-        """Add a user to active viewers and increment total views."""
+        # track user view and increment total views
         from django.core.cache import cache
         from django.utils import timezone
         

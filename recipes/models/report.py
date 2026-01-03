@@ -1,4 +1,3 @@
-"""Report model for content moderation."""
 from django.db import models
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -6,7 +5,6 @@ from django.contrib.contenttypes.models import ContentType
 
 
 class Report(models.Model):
-    """Model for user-submitted reports of inappropriate content."""
     
     REASON_CHOICES = [
         ('spam', 'Spam or Advertising'),
@@ -74,7 +72,7 @@ class Report(models.Model):
         return f"Report #{self.id} - {self.get_reason_display()} by {self.reported_by.username}"
     
     def get_content_title(self):
-        """Get a displayable title for the reported content."""
+
         if not self.content_object:
             return f"[Deleted {self.content_type.model}]"
         if hasattr(self.content_object, 'title'):
@@ -84,7 +82,7 @@ class Report(models.Model):
         return str(self.content_object)
     
     def get_content_author(self):
-        """Get the author of the reported content."""
+
         if not self.content_object:
             return None
         if hasattr(self.content_object, 'author'):
