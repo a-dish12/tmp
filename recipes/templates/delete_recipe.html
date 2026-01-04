@@ -1,20 +1,66 @@
 {% extends 'base_content.html' %}
+{% load static %}
+
+{% block body_class %}dashboard-bg{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'navbar.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'delete_recipe.css' %}?v=1000">
+{% endblock %}
+
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-12">
-      <h1>Delete Recipe</h1>
-      <div class="alert alert-danger">
-        <h4>Are you sure you want to delete this recipe?</h4>
-        <p><strong>{{ recipe.title }}</strong></p>
-        <p>This action cannot be undone. All ratings, comments, and planned meals associated with this recipe will also be deleted.</p>
+
+<div class="dashboard-particles">
+  {% for _ in "123456789012345678901234567890" %}
+    <span></span>
+  {% endfor %}
+</div>
+
+<div class="dashboard-wrapper">
+  <div class="delete-container">
+    <h1 class="delete-title">
+      Delete <span class="accent-red">Recipe</span>
+    </h1>
+
+    <div class="delete-warning-card">
+      <div class="warning-icon">⚠️</div>
+      
+      <h2 class="warning-heading">
+        Are you sure you want to delete this recipe?
+      </h2>
+
+      <div class="recipe-name-display">
+        <strong>{{ recipe.title }}</strong>
       </div>
-      <form action="{% url 'delete_recipe' pk=recipe.pk %}" method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Yes, Delete Recipe</button>
-        <a href="{% url 'recipe_detail' pk=recipe.pk %}" class="btn btn-secondary">Cancel</a>
-      </form>
+
+      <p class="warning-text">
+        This action cannot be undone.
+      </p>
+
+      <div class="consequences-list">
+        <h5>The following will be permanently deleted:</h5>
+        <ul>
+          <li>This recipe and all its details</li>
+          <li>All ratings and reviews</li>
+          <li>All comments and discussions</li>
+          <li>Planned meals using this recipe</li>
+        </ul>
+      </div>
     </div>
+
+    <form action="{% url 'delete_recipe' pk=recipe.pk %}" method="post">
+      {% csrf_token %}
+      <div class="delete-actions">
+        <button type="submit" class="btn-delete-confirm">
+          Yes, Delete Recipe
+        </button>
+        <a href="{% url 'recipe_detail' pk=recipe.pk %}" class="btn-cancel">
+          Cancel
+        </a>
+      </div>
+    </form>
   </div>
 </div>
+
 {% endblock %}

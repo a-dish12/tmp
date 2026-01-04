@@ -1,0 +1,255 @@
+/* Delete Recipe Page - Matching Website Theme */
+
+/* Container */
+.delete-container {
+  max-width: 700px;
+  margin: 0 auto 4rem;
+  position: relative;
+  z-index: 1;
+  padding-top: 2rem;
+}
+
+/* Page Title */
+.delete-title {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 2rem;
+  text-align: center;
+  letter-spacing: -0.02em;
+}
+
+.delete-title .accent-red {
+  background: linear-gradient(135deg, #ef5350, #d32f2f);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Warning Card */
+.delete-warning-card {
+  background: linear-gradient(135deg, rgba(239, 83, 80, 0.15), rgba(211, 47, 47, 0.1));
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1.5px solid rgba(239, 83, 80, 0.4);
+  border-radius: 20px;
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 32px rgba(239, 83, 80, 0.2);
+  transition: all 0.3s ease;
+}
+
+.delete-warning-card:hover {
+  border-color: rgba(239, 83, 80, 0.6);
+  box-shadow: 0 12px 48px rgba(239, 83, 80, 0.3);
+}
+
+/* Warning Icon */
+.warning-icon {
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Warning Heading */
+.warning-heading {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #ef5350;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+
+/* Recipe Name Display */
+.recipe-name-display {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.recipe-name-display strong {
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+/* Warning Text */
+.warning-text {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1rem;
+  line-height: 1.6;
+  text-align: center;
+  margin: 0;
+}
+
+/* Consequences List */
+.consequences-list {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(239, 83, 80, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.consequences-list h5 {
+  color: #ef5350;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.consequences-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.consequences-list li {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.9rem;
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.consequences-list li::before {
+  content: "×";
+  position: absolute;
+  left: 0;
+  color: #ef5350;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Action Buttons */
+.delete-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+
+.btn-delete-confirm {
+  padding: 1.1rem 2rem;
+  background: linear-gradient(135deg, #ef5350, #d32f2f);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(239, 83, 80, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.btn-delete-confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(239, 83, 80, 0.5);
+  color: #fff;
+}
+
+.btn-delete-confirm:active {
+  transform: translateY(0);
+}
+
+.btn-cancel {
+  padding: 1.1rem 2rem;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .delete-container {
+    padding: 1rem 15px 2rem;
+  }
+
+  .delete-title {
+    font-size: 2rem;
+  }
+
+  .delete-warning-card {
+    padding: 1.75rem;
+  }
+
+  .warning-heading {
+    font-size: 1.25rem;
+  }
+
+  .recipe-name-display strong {
+    font-size: 1.1rem;
+  }
+
+  .delete-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .delete-container {
+    padding: 1rem 10px 2rem;
+  }
+
+  .delete-title {
+    font-size: 1.75rem;
+  }
+
+  .delete-warning-card {
+    padding: 1.5rem;
+  }
+
+  .warning-icon {
+    font-size: 2.5rem;
+  }
+
+  .btn-delete-confirm,
+  .btn-cancel {
+    padding: 1rem 1.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .delete-title {
+    font-size: 1.5rem;
+  }
+
+  .delete-warning-card {
+    padding: 1.25rem;
+  }
+
+  .btn-delete-confirm,
+  .btn-cancel {
+    padding: 0.9rem 1.25rem;
+    font-size: 0.9rem;
+  }
+}

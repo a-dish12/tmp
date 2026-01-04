@@ -150,31 +150,67 @@
   color: #ff8a65;
 }
 
-/* Form Controls */
+/* Form Controls - AGGRESSIVE WHITE TEXT ENFORCEMENT */
+textarea,
+input[type="text"],
+input[type="email"],
+select {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
 .report-form select,
-.report-form textarea {
+.report-form textarea,
+.report-form input[type="text"],
+.report-form input[type="email"] {
   width: 100%;
   padding: 1rem 1.25rem;
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  color: #ffffff;
+  color: #ffffff !important;
   font-size: 0.95rem;
   transition: all 0.2s ease;
+  font-family: inherit;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 .report-form select:focus,
-.report-form textarea:focus {
+.report-form textarea:focus,
+.report-form input:focus {
   background: rgba(0, 0, 0, 0.6);
   border-color: #ff8a65;
   outline: none;
   box-shadow: 0 0 0 3px rgba(255, 138, 101, 0.1);
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 .report-form textarea {
   min-height: 150px;
   resize: vertical;
-  font-family: inherit;
+  line-height: 1.6;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.report-form textarea::placeholder,
+.report-form input::placeholder,
+.report-form select::placeholder {
+  color: rgba(255, 255, 255, 0.35) !important;
+  font-style: italic;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.35) !important;
+  opacity: 1;
+}
+
+/* Ultra specific targeting */
+textarea#id_description,
+textarea[name="description"],
+#id_description,
+input#id_reason,
+select#id_reason {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 /* Field Help */
@@ -246,11 +282,45 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  .report-container {
+    padding: 0 15px;
+  }
+
   .report-card {
     padding: 1.75rem;
   }
   
   .form-actions {
     grid-template-columns: 1fr;
+  }
+
+  .dashboard-particles span:nth-child(n+16) {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .report-card {
+    padding: 1.5rem;
+  }
+
+  .dashboard-hero .dashboard-title {
+    font-size: 2rem;
+  }
+
+  .btn-submit,
+  .btn-cancel {
+    padding: 0.9rem 1.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .report-card {
+    padding: 1.25rem;
+  }
+
+  .dashboard-hero .dashboard-title {
+    font-size: 1.75rem;
   }
 }

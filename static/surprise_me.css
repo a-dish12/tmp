@@ -93,7 +93,7 @@ body.surprise-bg::after {
   }
 }
 
-/* Main content container - NOT navbar */
+/* Main content container */
 .surprise-bg .container:not(.navbar .container) {
   position: relative;
   z-index: 1;
@@ -127,22 +127,23 @@ body.surprise-bg::after {
 }
 
 /* =========================
-   SURPRISE FORM CARD
+   SURPRISE FORM CARD - MATCHING CREATE RECIPE STYLE
    ========================= */
 
 .surprise-card {
-  background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));
-  backdrop-filter: blur(35px);
-  -webkit-backdrop-filter: blur(35px);
-  border: 2px solid rgba(255,255,255,0.15);
-  border-radius: 28px;
-  box-shadow: 0 16px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
-  padding: 2.5rem 3rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 138, 101, 0.25);
+  border-radius: 20px;
+  padding: 2.5rem;
   transition: all 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .surprise-card:hover {
-  box-shadow: 0 20px 70px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08);
+  border-color: rgba(255, 138, 101, 0.4);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
 }
 
 /* =========================
@@ -158,12 +159,13 @@ body.surprise-bg::after {
 }
 
 .section-label {
-  font-size: 1.08rem;
+  font-size: 1rem;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.95);
   margin-bottom: 1rem;
   display: block;
   letter-spacing: 0.02em;
+  font-family: inherit;
 }
 
 /* =========================
@@ -179,53 +181,47 @@ body.surprise-bg::after {
 .checkbox-item {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
-  padding: 0.95rem 1.3rem;
-  background: rgba(0, 0, 0, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   position: relative;
-  backdrop-filter: blur(10px);
 }
 
 .checkbox-item:hover {
   background: rgba(0, 0, 0, 0.3);
-  border-color: rgba(255, 138, 101, 0.5);
-  transform: translateY(-3px) scale(1.01);
-  box-shadow: 0 8px 24px rgba(255, 138, 101, 0.25);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .checkbox-item input[type="checkbox"],
 .checkbox-item input[type="radio"] {
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
   cursor: pointer;
   accent-color: #ff8a65;
   flex-shrink: 0;
 }
 
 .checkbox-item label {
-  color: rgba(255, 255, 255, 0.95);
-  font-weight: 600;
-  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+  font-size: 0.9rem;
   cursor: pointer;
   margin: 0;
   flex-grow: 1;
-  letter-spacing: 0.01em;
+  user-select: none;
 }
 
 .checkbox-item:has(input:checked) {
-  background: linear-gradient(135deg, rgba(255, 138, 101, 0.25), rgba(236, 64, 122, 0.2));
-  border-color: #ff8a65;
-  box-shadow: 0 6px 28px rgba(255, 138, 101, 0.4), 
-              inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px) scale(1.02);
+  background: rgba(255, 138, 101, 0.1);
+  border-color: rgba(255, 138, 101, 0.3);
 }
 
 .checkbox-item:has(input:checked) label {
-  color: #fff;
+  color: #ff8a65;
   font-weight: 700;
 }
 
@@ -242,57 +238,51 @@ body.surprise-bg::after {
 .radio-item {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
-  padding: 0.95rem 1.3rem;
-  background: rgba(0, 0, 0, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   position: relative;
-  backdrop-filter: blur(10px);
 }
 
 .radio-item:hover {
   background: rgba(0, 0, 0, 0.3);
-  border-color: rgba(255, 138, 101, 0.5);
-  transform: translateY(-3px) scale(1.01);
-  box-shadow: 0 8px 24px rgba(255, 138, 101, 0.25);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .radio-item input[type="radio"] {
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
   cursor: pointer;
   accent-color: #ff8a65;
   flex-shrink: 0;
 }
 
 .radio-item label {
-  color: rgba(255, 255, 255, 0.95);
-  font-weight: 600;
-  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+  font-size: 0.9rem;
   cursor: pointer;
   margin: 0;
   flex-grow: 1;
-  letter-spacing: 0.01em;
+  user-select: none;
 }
 
 .radio-item:has(input:checked) {
-  background: linear-gradient(135deg, rgba(255, 138, 101, 0.25), rgba(236, 64, 122, 0.2));
-  border-color: #ff8a65;
-  box-shadow: 0 6px 28px rgba(255, 138, 101, 0.4), 
-              inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px) scale(1.02);
+  background: rgba(255, 138, 101, 0.1);
+  border-color: rgba(255, 138, 101, 0.3);
 }
 
 .radio-item:has(input:checked) label {
-  color: #fff;
+  color: #ff8a65;
   font-weight: 700;
 }
 
 /* =========================
-   SURPRISE BUTTON
+   SURPRISE BUTTON - MATCHING CREATE RECIPE STYLE
    ========================= */
 
 .button-group {
@@ -303,89 +293,53 @@ body.surprise-bg::after {
 
 .btn-clear {
   flex: 1;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.9);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 18px;
-  padding: 1.15rem 1.75rem;
-  font-size: 1.05rem;
+  background: transparent;
+  color: #ff8a65;
+  border: 1.5px solid #ff8a65;
+  border-radius: 12px;
+  padding: 1.1rem 2rem;
+  font-size: 1rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.65rem;
-  backdrop-filter: blur(10px);
+  gap: 0.5rem;
   text-decoration: none;
+  text-align: center;
 }
 
 .btn-clear:hover {
-  background: rgba(77, 218, 225, 0.15);
-  border-color: #4ddae1;
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(77, 218, 225, 0.3);
-  color: #4ddae1;
-}
-
-.btn-clear:active {
-  transform: translateY(-1px);
+  background: rgba(255, 138, 101, 0.1);
+  text-decoration: none;
 }
 
 .btn-surprise {
   flex: 2;
-  background: linear-gradient(135deg, #ff8a65 0%, #ec407a 100%);
+  background: linear-gradient(135deg, #ff8a65, #ec407a);
   color: #000;
   border: none;
-  border-radius: 18px;
-  padding: 1.15rem 2.25rem;
-  font-size: 1.15rem;
+  border-radius: 12px;
+  padding: 1.1rem 2rem;
+  font-size: 1rem;
   font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.13em;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 8px 32px rgba(255, 138, 101, 0.45), 
-              inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  position: relative;
-  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(236, 64, 122, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.65rem;
-}
-
-.btn-surprise::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  gap: 0.5rem;
 }
 
 .btn-surprise:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 16px 60px rgba(255, 138, 101, 0.6), 
-              inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  background: transparent;
-  border: 2px solid;
-  border-image: linear-gradient(135deg, #ff8a65 0%, #ec407a 100%) 1;
-  color: #fff;
-}
-
-.btn-surprise:hover::before {
-  opacity: 1;
-}
-
-.btn-surprise:active {
-  transform: translateY(-3px) scale(1.01);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 138, 101, 0.4);
 }
 
 .btn-icon {
-  font-size: 1.35rem;
+  font-size: 1.2rem;
 }
 
 .btn-text {
@@ -398,22 +352,97 @@ body.surprise-bg::after {
    ========================= */
 
 @media (max-width: 768px) {
+  .surprise-bg .container:not(.navbar .container) {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
   .surprise-header h1 {
-    font-size: 2.25rem;
+    font-size: 2rem;
   }
-  
+
+  .surprise-subtitle {
+    font-size: 1rem;
+  }
+
   .surprise-card {
-    padding: 2rem 1.5rem;
+    padding: 1.75rem;
   }
-  
+
+  .checkbox-group,
+  .radio-group {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .checkbox-item,
+  .radio-item {
+    padding: 1rem 1.5rem;
+  }
+
+  .checkbox-item label,
+  .radio-item label {
+    font-size: 1rem;
+  }
+
   .button-group {
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   .btn-surprise,
   .btn-clear {
-    font-size: 1.05rem;
-    padding: 1.2rem 2rem;
+    font-size: 0.95rem;
+    padding: 1rem 1.5rem;
+  }
+
+  .surprise-particles span:nth-child(n+16) {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .surprise-card {
+    padding: 1.5rem;
+  }
+
+  .surprise-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .checkbox-item,
+  .radio-item {
+    padding: 0.85rem 1.25rem;
+  }
+
+  .checkbox-item label,
+  .radio-item label {
+    font-size: 0.95rem;
+  }
+
+  .btn-surprise,
+  .btn-clear {
+    padding: 0.9rem 1.25rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .surprise-card {
+    padding: 1.25rem;
+  }
+
+  .surprise-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .checkbox-item,
+  .radio-item {
+    padding: 0.75rem 1rem;
+  }
+
+  .checkbox-item label,
+  .radio-item label {
+    font-size: 0.9rem;
   }
 }

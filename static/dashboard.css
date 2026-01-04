@@ -185,6 +185,25 @@
    FILTER PANE - PREMIUM DESIGN
    ========================= */
 
+/* HIDE CHECKBOX ON DESKTOP ONLY */
+@media (min-width: 769px) {
+  #filtersToggle {
+    display: none !important;
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  .filters-pane label[for="filtersToggle"] {
+    cursor: default;
+    pointer-events: none;
+  }
+  
+  .filters-pane h5::after {
+    display: none;
+  }
+}
+
 .filters-pane {
   margin-top: 1.5rem;
   padding: 0 0 1rem 0;
@@ -206,10 +225,33 @@
   letter-spacing: -0.01em;
   margin: 0;
   padding: 1rem 1.25rem;
-  background: linear-gradient(135deg, rgba(255, 138, 101, 0.08), rgba(236, 64, 122, 0.08));
-  border-bottom: 1px solid rgba(255, 138, 101, 0.2);
-  text-shadow: 0 0 20px rgba(255, 138, 101, 0.3);
+  background: linear-gradient(135deg, rgba(255, 138, 101, 0.15), rgba(236, 64, 122, 0.1));
+  border-bottom: 1px solid rgba(255, 138, 101, 0.25);
+  text-shadow: 0 2px 10px rgba(255, 138, 101, 0.4);
   border-radius: 20px 20px 0 0;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Desktop-specific header styling - FULL WIDTH */
+@media (min-width: 769px) {
+  .filters-pane h5 {
+    background: linear-gradient(135deg, rgba(255, 138, 101, 0.12), rgba(236, 64, 122, 0.08));
+    border-bottom: 1px solid rgba(255, 138, 101, 0.3);
+    padding: 1.1rem 1.5rem;
+    font-size: 1.35rem;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Remove label wrapper constraints */
+  .filters-pane label[for="filtersToggle"] {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
 }
 
 /* Filter Card Form */
@@ -672,4 +714,488 @@
   transform: none;
   background: rgba(255, 255, 255, 0.02);
   border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* =========================
+   MOBILE RESPONSIVE ADDITIONS
+   ========================= */
+
+/* Tablet (768px - 1199px) */
+@media (max-width: 1199px) {
+  .dashboard-wrapper {
+    padding: 1.5rem 20px 0;
+  }
+
+  .dashboard-title {
+    font-size: 2.5rem;
+  }
+
+  .dashboard-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .recipe-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .filters-pane {
+    margin-top: 1rem;
+  }
+}
+
+/* Mobile (max 767px) */
+@media (max-width: 767px) {
+  .dashboard-wrapper {
+    padding: 1rem 15px 0;
+  }
+
+  /* Stack filters and recipes vertically on mobile */
+  .dashboard-row {
+    flex-direction: column;
+  }
+
+  .filters-col {
+    width: 100%;
+    padding: 0;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+  }
+
+  .recipes-col {
+    width: 100%;
+    padding: 0;
+    margin-top: 0;
+  }
+
+  /* Hero section */
+  .dashboard-hero {
+    margin-bottom: 1.5rem;
+  }
+
+  .dashboard-title {
+    font-size: 2rem;
+    line-height: 1.2;
+  }
+
+  .dashboard-subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .list-subtitle {
+    font-size: 0.9rem;
+  }
+
+  /* Search */
+  .dashboard-search input {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
+  }
+
+  /* Tabs */
+  .dashboard-tabs {
+    border-radius: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .dashboard-tab {
+    padding: 0.65rem 1.2rem;
+    font-size: 0.85rem;
+  }
+
+  /* =========================
+     COLLAPSIBLE FILTERS - NO JAVASCRIPT
+     ========================= */
+
+  /* Hide the checkbox */
+  #filtersToggle {
+    display: none;
+  }
+
+  /* Filters Pane - Collapsible on Mobile */
+  .filters-pane {
+    border-radius: 16px;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+
+  /* Filter Header - Clickable Label */
+  .filters-pane label[for="filtersToggle"] {
+    display: block;
+    cursor: pointer;
+    margin: 0;
+  }
+
+  .filters-pane h5 {
+    font-size: 1.1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 14px 14px 0 0;
+    margin: 0;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+
+  /* Dropdown Arrow Icon */
+  .filters-pane h5::after {
+    content: '▼';
+    font-size: 0.75rem;
+    transition: transform 0.3s ease;
+    opacity: 0.7;
+  }
+
+  /* When collapsed (checkbox NOT checked) */
+  #filtersToggle:not(:checked) ~ .filters-pane label[for="filtersToggle"] h5 {
+    border-radius: 14px;
+  }
+
+  #filtersToggle:not(:checked) ~ .filters-pane label[for="filtersToggle"] h5::after {
+    transform: rotate(-90deg);
+  }
+
+  /* Filter Card - FIXED PADDING */
+  .filters-card {
+    padding: 0.85rem 1rem 0.5rem 1rem !important;
+    max-height: 2000px;
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
+    opacity: 1;
+  }
+
+  /* Hide when checkbox is NOT checked */
+  #filtersToggle:not(:checked) ~ .filters-pane .filters-card {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  /* Tighter spacing for mobile filters */
+  .filters-card .form-label {
+    font-size: 0.7rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.3rem;
+  }
+
+  .filters-card .mb-3 {
+    margin-bottom: 0.85rem !important;
+    padding-bottom: 0.6rem;
+  }
+
+  .filters-card .mb-3:last-of-type {
+    margin-bottom: 0.4rem !important;
+  }
+
+  /* Compact checkboxes and radios - PROPER ALIGNMENT */
+  .filters-card .form-check {
+    margin-bottom: 0.35rem;
+    padding-left: 0 !important;
+    display: flex;
+    align-items: center;
+  }
+
+  .filters-card .form-check-input {
+    width: 16px !important;
+    height: 16px !important;
+    margin-right: 0.6rem !important;
+    margin-left: 0 !important;
+    flex-shrink: 0;
+  }
+
+  .filters-card .form-check-label {
+    font-size: 0.8rem;
+  }
+
+  /* Rating Dial - More compact on mobile */
+  .rating-dial {
+    padding: 1.25rem 0.15rem 0.85rem 0.15rem;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .rating-dial::before {
+    top: 1.75rem;
+    left: 8%;
+    right: 8%;
+  }
+
+  .rating-circle {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 0.4rem;
+  }
+
+  .rating-label {
+    font-size: 0.65rem;
+  }
+
+  /* Compact buttons */
+  .filters-apply-btn {
+    padding: 0.65rem 1rem;
+    font-size: 0.8rem;
+    border-radius: 10px;
+    margin-top: 0.5rem;
+  }
+
+  .filters-clear-link {
+    font-size: 0.7rem;
+  }
+
+  /* Recipe Grid */
+  .recipe-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .recipe-card {
+    border-radius: 18px;
+  }
+
+  .recipe-image {
+    height: 200px;
+  }
+
+  .recipe-title {
+    font-size: 1.1rem;
+  }
+
+  .recipe-desc {
+    font-size: 0.9rem;
+  }
+
+  .recipe-meta {
+    font-size: 0.75rem;
+    flex-direction: column;
+    gap: 0.35rem;
+    align-items: flex-start;
+  }
+
+  /* Active Filters Pills */
+  .active-filters {
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .filter-pill {
+    font-size: 0.8rem;
+    padding: 0.35rem 0.85rem;
+  }
+
+  /* Pagination - SINGLE LINE WITH 8 NUMBERS */
+  .dashboard-pagination {
+    flex-wrap: nowrap !important;
+    gap: 0.25rem;
+    margin-top: 2rem;
+    justify-content: center;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 0.5rem 0;
+  }
+
+  .dashboard-pagination::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide all page items by default */
+  .dashboard-pagination .page-item {
+    display: none;
+  }
+
+  /* Always show arrows (first and last) */
+  .dashboard-pagination .page-item:first-child,
+  .dashboard-pagination .page-item:last-child {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  /* Show exactly 8 page numbers (nth-child 2-9) */
+  .dashboard-pagination .page-item:nth-child(2),
+  .dashboard-pagination .page-item:nth-child(3),
+  .dashboard-pagination .page-item:nth-child(4),
+  .dashboard-pagination .page-item:nth-child(5),
+  .dashboard-pagination .page-item:nth-child(6),
+  .dashboard-pagination .page-item:nth-child(7),
+  .dashboard-pagination .page-item:nth-child(8),
+  .dashboard-pagination .page-item:nth-child(9) {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .dashboard-pagination .page-link {
+    padding: 0.5rem 0.65rem;
+    font-size: 0.8rem;
+    min-width: 36px;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+
+  /* Arrow buttons slightly wider */
+  .dashboard-pagination .page-item:first-child .page-link,
+  .dashboard-pagination .page-item:last-child .page-link {
+    padding: 0.5rem 0.75rem;
+  }
+
+  /* Reduce particles on mobile */
+  .dashboard-particles span:nth-child(n+16) {
+    display: none;
+  }
+}
+
+/* Small Mobile (max 480px) */
+@media (max-width: 480px) {
+  .dashboard-title {
+    font-size: 1.75rem;
+  }
+
+  .dashboard-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .dashboard-tab {
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .recipe-image {
+    height: 180px;
+  }
+
+  /* Stack recipe meta vertically */
+  .recipe-rating {
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+  }
+
+  /* Filters - Even more compact */
+  .filters-card {
+    padding: 0.75rem 0.85rem 0.4rem 0.85rem !important;
+  }
+
+  .filters-card .form-label {
+    font-size: 0.65rem;
+  }
+
+  .filters-card .form-check-label {
+    font-size: 0.75rem;
+  }
+
+  .filters-card .form-check-input {
+    width: 15px !important;
+    height: 15px !important;
+    margin-right: 0.5rem !important;
+  }
+
+  .rating-dial {
+    padding: 1rem 0.1rem 0.7rem 0.1rem;
+  }
+
+  .rating-dial::before {
+    left: 6%;
+    right: 6%;
+  }
+
+  .rating-circle {
+    width: 18px;
+    height: 18px;
+  }
+
+  .rating-label {
+    font-size: 0.6rem;
+  }
+
+  .filters-apply-btn {
+    padding: 0.6rem 0.9rem;
+    font-size: 0.75rem;
+  }
+
+  /* Pagination - show 6 numbers */
+  .dashboard-pagination {
+    gap: 0.2rem;
+  }
+
+  .dashboard-pagination .page-link {
+    padding: 0.45rem 0.55rem;
+    font-size: 0.75rem;
+    min-width: 32px;
+  }
+
+  /* Show only 6 page numbers */
+  .dashboard-pagination .page-item:nth-child(8),
+  .dashboard-pagination .page-item:nth-child(9) {
+    display: none;
+  }
+}
+
+/* Very Small Mobile (max 360px) */
+@media (max-width: 360px) {
+  .dashboard-wrapper {
+    padding: 1rem 10px 0;
+  }
+
+  .dashboard-title {
+    font-size: 1.5rem;
+  }
+
+  .recipe-grid {
+    gap: 1rem;
+  }
+
+  /* Filters - Ultra compact */
+  .filters-pane h5 {
+    font-size: 1rem;
+    padding: 0.75rem 0.85rem;
+  }
+
+  .filters-card {
+    padding: 0.65rem 0.75rem 0.35rem 0.75rem !important;
+  }
+
+  .filters-card .form-check-input {
+    width: 14px !important;
+    height: 14px !important;
+    margin-right: 0.45rem !important;
+  }
+
+  .rating-dial {
+    padding: 0.85rem 0.05rem 0.6rem 0.05rem;
+  }
+
+  .rating-dial::before {
+    left: 4%;
+    right: 4%;
+  }
+
+  .rating-circle {
+    width: 16px;
+    height: 16px;
+  }
+
+  .rating-label {
+    font-size: 0.55rem;
+  }
+
+  /* Pagination - show 4 numbers */
+  .dashboard-pagination {
+    gap: 0.15rem;
+  }
+
+  .dashboard-pagination .page-link {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.7rem;
+    min-width: 30px;
+  }
+
+  /* Show only 4 page numbers */
+  .dashboard-pagination .page-item:nth-child(6),
+  .dashboard-pagination .page-item:nth-child(7),
+  .dashboard-pagination .page-item:nth-child(8),
+  .dashboard-pagination .page-item:nth-child(9) {
+    display: none;
+  }
 }
