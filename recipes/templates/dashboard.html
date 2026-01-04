@@ -4,8 +4,8 @@
 {% block body_class %}dashboard-bg{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'navbar.css' %}">
-<link rel="stylesheet" href="{% static 'dashboard.css' %}?v=2">
+<link rel="stylesheet" href="{% static 'navbar.css' %}?v=1001">
+<link rel="stylesheet" href="{% static 'dashboard.css' %}?v=3000">
 {% endblock %}
 
 {% block content %}
@@ -35,9 +35,16 @@
     <div class="row dashboard-row">
 
       <div class="col-md-3 filters-col">
+        
+        <!-- Checkbox for collapsible filter (hidden) -->
+        <input type="checkbox" id="filtersToggle" checked>
+        
         <div class="filters-pane">
           
-          <h5>Filters</h5>
+          <!-- Clickable label for collapse toggle -->
+          <label for="filtersToggle">
+            <h5>Filters</h5>
+          </label>
           
           <form method="get" class="filters-card">
 

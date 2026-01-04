@@ -384,11 +384,110 @@ body.find-users-bg::after {
   .user-name {
     font-size: 1rem;
   }
+
+  /* Reduce particles on mobile */
+  .find-users-particles span:nth-child(n+16) {
+    display: none;
+  }
+
+  /* Pagination - SINGLE LINE WITH 8 NUMBERS */
+  .dashboard-pagination {
+    flex-wrap: nowrap !important;
+    gap: 0.25rem;
+    margin-top: 2rem;
+    justify-content: center;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 0.5rem 0;
+  }
+
+  .dashboard-pagination::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide all page items by default */
+  .dashboard-pagination .page-item {
+    display: none;
+  }
+
+  /* Always show arrows (first and last) */
+  .dashboard-pagination .page-item:first-child,
+  .dashboard-pagination .page-item:last-child {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  /* Show exactly 8 page numbers (nth-child 2-9) */
+  .dashboard-pagination .page-item:nth-child(2),
+  .dashboard-pagination .page-item:nth-child(3),
+  .dashboard-pagination .page-item:nth-child(4),
+  .dashboard-pagination .page-item:nth-child(5),
+  .dashboard-pagination .page-item:nth-child(6),
+  .dashboard-pagination .page-item:nth-child(7),
+  .dashboard-pagination .page-item:nth-child(8),
+  .dashboard-pagination .page-item:nth-child(9) {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .dashboard-pagination .page-link {
+    padding: 0.5rem 0.65rem;
+    font-size: 0.8rem;
+    min-width: 36px;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+
+  /* Arrow buttons slightly wider */
+  .dashboard-pagination .page-item:first-child .page-link,
+  .dashboard-pagination .page-item:last-child .page-link {
+    padding: 0.5rem 0.75rem;
+  }
 }
 
 @media (max-width: 576px) {
   .filters-apply-btn {
     padding: 0.4rem 0.9rem;
     font-size: 0.8rem;
+  }
+
+  /* Pagination - show 6 numbers */
+  .dashboard-pagination {
+    gap: 0.2rem;
+  }
+
+  .dashboard-pagination .page-link {
+    padding: 0.45rem 0.55rem;
+    font-size: 0.75rem;
+    min-width: 32px;
+  }
+
+  /* Show only 6 page numbers */
+  .dashboard-pagination .page-item:nth-child(8),
+  .dashboard-pagination .page-item:nth-child(9) {
+    display: none;
+  }
+}
+
+@media (max-width: 360px) {
+  /* Pagination - show 4 numbers */
+  .dashboard-pagination {
+    gap: 0.15rem;
+  }
+
+  .dashboard-pagination .page-link {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.7rem;
+    min-width: 30px;
+  }
+
+  /* Show only 4 page numbers */
+  .dashboard-pagination .page-item:nth-child(6),
+  .dashboard-pagination .page-item:nth-child(7),
+  .dashboard-pagination .page-item:nth-child(8),
+  .dashboard-pagination .page-item:nth-child(9) {
+    display: none;
   }
 }

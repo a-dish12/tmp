@@ -284,7 +284,6 @@ input[type="number"].form-control {
 }
 
 .btn-primary::before {
-  content: "🍳";
   font-size: 1.2rem;
 }
 
@@ -339,7 +338,10 @@ input[type="number"].form-control {
   margin-bottom: 1.5rem;
 }
 
-/* Responsive */
+/* =========================
+   RESPONSIVE
+   ========================= */
+
 @media (max-width: 768px) {
   .recipe-form-container {
     padding: 0 1rem;
@@ -353,8 +355,16 @@ input[type="number"].form-control {
     grid-template-columns: 1fr;
   }
   
+  /* MEAL TYPE BUTTONS - FULL WIDTH ON MOBILE */
   .meal-types-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .meal-types-grid label {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
   }
   
   .instruction-field-item {
@@ -363,5 +373,43 @@ input[type="number"].form-control {
   
   .step-label {
     width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .recipe-form-container {
+    padding: 0 0.5rem;
+  }
+
+  .form-group {
+    padding: 1.5rem;
+  }
+
+  .meal-types-grid label {
+    padding: 0.85rem 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 1rem 1.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .form-group {
+    padding: 1.25rem;
+  }
+
+  .meal-types-grid label {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.9rem 1.25rem;
+    font-size: 0.9rem;
   }
 }
