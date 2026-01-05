@@ -91,3 +91,58 @@ class CommentModelTestCase(TestCase):
     def _assert_comment_is_invalid(self):
         with self.assertRaises(ValidationError):
             self.comment.full_clean()
+    
+    def test_is_reply_false_for_root_comment(self):
+        """Root comments should not be replies"""
+        self.assertFalse(self.comment.is_reply())
+    
+    def test_is_reply_true_for_child_comment(self):
+        """Child comments should be recognised as replies"""
+        reply = Comment.objects.create(
+            recipe=self.recipe,
+            user = self.other_user,
+            text="Reply comment",
+            parent=self.comment
+        )
+        self.assertTrue(reply.is_reply())
+    
+    def test_get_depth_for_root_comment(self):
+        """Root comments should have depth 0"""
+        self.assertEqual(self.comment.get_depth(), 0)
+
+    def test_get_depth_for_single_reply(self):
+        """Direct replies should have depth 1"""
+        reply = Comment.objects.create(
+            recipe=self.recipe,
+            user=self.other_user,
+            text="Reply",
+            parent=self.comment
+        )
+        self.assertEqual(reply.get_depth(),1)
+    
+    def test_get_depth_for_nested_reply(self):
+        """Replies to replies should increase depth correctly"""
+        reply = Comment.objects.create(
+            recipe=self.recipe,
+            user= self.other_user,
+            text="Reply",
+            parent=self.comment
+        )
+        reply2 = Comment.objects.create(
+            recipe=self.recipe,
+            user = self.user,
+            text="Reply to reply",
+            parent=reply
+        )
+        self.assertEqual(reply2.get_depth(),2)
+    
+    def test_comment_is_hidden_default_false(self):
+        """Comments should not be hidden by default"""
+        self.assertFalse(self.comment.is_hidden)
+    
+    def test_comment_can_be_hidden(self):
+        """Comments can be marked as hidden"""
+        self.comment.is_hidden = True
+        self.comment.save()
+        self.assertTrue(self.comment.is_hidden)
+
