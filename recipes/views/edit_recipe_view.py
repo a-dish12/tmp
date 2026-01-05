@@ -8,12 +8,14 @@ from recipes.forms import RecipeForm
 
 
 class EditRecipeView(LoginRequiredMixin, UserPassesTestMixin, View):
+    """view for editing existing recipes - only author can edit"""
     template_name = 'edit_recipe.html'
 
     def get_object(self):
         return get_object_or_404(Recipe, pk=self.kwargs['pk'])
     
     def test_func(self):
+        """only recipe author can edit"""
         recipe = self.get_object()
         return self.request.user == recipe.author
     
@@ -81,11 +83,12 @@ class EditRecipeView(LoginRequiredMixin, UserPassesTestMixin, View):
 
 
 class DeleteRecipeView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """view for deleting recipes - only author can delete"""
     model = Recipe
     template_name = 'delete_recipe.html'
     success_url = reverse_lazy('user_recipes')
     
     def test_func(self):
-        """Check that the current user is the recipe author."""
+        """only recipe author can delete"""
         recipe = self.get_object()
         return self.request.user == recipe.author
