@@ -3,8 +3,8 @@ from django.contrib import messages
 from django.test import TestCase
 from django.urls import reverse
 from recipes.forms import UserForm
-from recipes.models import User
-from recipes.tests.helpers import reverse_with_next
+from recipes.models import User, Follow, FollowRequest
+from recipes.tests.test_helpers import reverse_with_next
 
 class ProfileViewTest(TestCase):
     """Test suite for the profile view."""
@@ -99,3 +99,34 @@ class ProfileViewTest(TestCase):
         redirect_url = reverse_with_next('log_in', self.url)
         response = self.client.post(self.url, self.form_input)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+
+    def test_get_object_returns_logged_in_user(self):
+        self.client.login(username=self.user.username, password='Password123')
+        response = self.client.get(self.url)
+        self.assertEqual(response.context['form'].instance, self.user)
+    
+    def test_profile_update_redirects_to_dashboard(self):
+        self.client.login(username=self.user.username, password='Password123')
+
+        response = self.client.post(self.url, {
+            'first_name': self.user.first_name,
+            'last_name': self.user.last_name,
+            'username': self.user.username,
+            'email': self.user.email,
+            'is_private': self.user.is_private,
+        })
+        self.assertRedirects(response, reverse('dashboard'))
+    
+    def test_profile_update_with_same_privacy_setting(self):
+        self.client.login(username=self.user.username, password='Password123')
+        self.user.is_private = False
+        self.user.save()
+
+        response = self.client.post(self.url,{
+            'first_name': self.user.first_name,
+            'last_name': self.user.last_name,
+            'username': self.user.username,
+            'email': self.user.email,
+            'is_private': False,
+        })
+        self.assertEqual(response.status_code,302)

@@ -18,3 +18,4 @@ from .surprise_quiz_view import *
 from .search_users_view import *
 from .report_view import *
 from .notification_view import *
+from .planner_view import add_to_calendar, remove_from_planner
