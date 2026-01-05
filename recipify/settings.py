@@ -41,8 +41,7 @@ else:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = ENVIRONMENT == 'development'
-
-ALLOWED_HOSTS = ['recipifyJet6.pythonanywhere.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['recipifyJet6.pythonanywhere.com', 'localhost','127.0.0.1' ]
 
 
 # Application definition
