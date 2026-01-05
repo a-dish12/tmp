@@ -74,16 +74,9 @@
 .dashboard-particles span:nth-child(29) { top: 68%; left: 88%; animation-duration: 6s; }
 .dashboard-particles span:nth-child(30) { top: 95%; left: 55%; animation-duration: 8s; }
 
-/* Keyframes for particle animation */
-@keyframes dashboardFloatDust {
-  0%, 100% {
-    transform: translate(0, 0);
-    opacity: 0.25;
-  }
-  50% {
-    transform: translate(28px, -42px);
-    opacity: 0.6;
-  }
+/* Add animation to dashboard particles */
+.dashboard-particles span {
+  animation: floatDust 2s ease-in-out infinite;
 }
 
 /* Hero section */

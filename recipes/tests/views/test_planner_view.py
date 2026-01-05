@@ -1,13 +1,13 @@
-"""Tests for planner/planner meal views."""
+"""Tests for planner/calendar meal views."""
 from django.test import TestCase
 from django.urls import reverse
 from datetime import date, timedelta
 from recipes.models import User, Recipe, PlannedDay, PlannedMeal
-from recipes.tests.helpers import LogInTester
+from recipes.tests.test_helpers import LogInTester
 
 
 class AddToPlannerViewTestCase(TestCase, LogInTester):
-    """Tests for the add to planner view."""
+    """Tests for the add to Planner view."""
 
     fixtures = [
         'recipes/tests/fixtures/default_user.json',
@@ -265,6 +265,50 @@ class PlannerDayViewTestCase(TestCase, LogInTester):
         
         self.assertContains(response, self.recipe.title)
         self.assertContains(response, 'breakfast')
+    
+    def test_planner_day_invalid_date_returns_404(self):
+        """Test that accessing planner day view with an invalid date format results in a 404 error"""
+        self.client.login(username=self.user.username, password='Password123')
+        url = reverse('planner_day', kwargs={'date': 'invalid-date'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_planner_day_with_no_plan(self):
+        """Test that the planner day view renders correctly when user has no planned meals for that date"""
+        self.client.login(username=self.user.username, password='Password123')
+        response=self.client.get(self.url)
+        self.assertEqual(response.status_code,200)
+        self.assertContains(response, "No meals planned")
+    
+    def test_planner_day_post_invalid_recipe(self):
+        """Test that submitting an invalid recipe ID doesn't creeate a PlannedMeal and does not crash the view"""
+        self.client.login(username=self.user.username, password='Password123')
+
+        before = PlannedMeal.objects.count()
+
+        response = self.client.post(self.url,{
+            'meal_type': 'lunch',
+            'recipe': 99999
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(PlannedMeal.objects.count(), before)
+    
+    def test_planner_day_post_missing_meal_type(self):
+        """Test that submitting the planner form without a meal type doesn't create a PlannedMeal"""
+        self.client.login(username=self.user.username, password='Password123')
+        before = PlannedMeal.objects.count()
+        self.client.post(self.url, {
+            'recipe': self.recipe.id
+        })
+        self.assertEqual(PlannedMeal.objects.count(), before)
+    
+    def test_planner_day_post_missing_recipe(self):
+        self.client.login(username=self.user.username, password='Password123')
+        before = PlannedMeal.objects.count()
+        self.client.post(self.url, {
+            'meal_type': 'dinner'
+        })
+        self.assertEqual(PlannedMeal.objects.count(), before)
 
     def test_planner_day_can_add_meal(self):
         """Test that users can add meals from the day view."""

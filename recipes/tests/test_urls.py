@@ -61,7 +61,7 @@ class RecipeURLTest(TestCase):
             reverse('edit_recipe', args=[1]),
             reverse('delete_recipe', args=[1]),
             reverse('rate_recipe', args=[1]),
-            reverse('add_to_calendar', args=[1]),
+            reverse('add_to_planner', args=[1]),
             reverse('report_recipe', args=[1]),
         ]
         for url in urls:

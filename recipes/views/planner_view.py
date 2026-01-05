@@ -21,7 +21,7 @@ __all__ = [
     'add_to_planner',
     'remove_from_planner',
     'planner_range',
-    'ingredients_list'
+    'ingredients_list',
 ]
 
 
@@ -100,7 +100,7 @@ def planner_day(request, date):
         form = PlannedMealForm(request.POST, user=request.user)
 
         # Ensure the recipe dropdown only contains (filtered) visible recipes
-        form.fields["recipe"].queryset = recipes_qs
+        form.fields["recipe"].queryset = Recipe.objects.all()
 
         if form.is_valid():
             meal_type = form.cleaned_data["meal_type"]
@@ -435,7 +435,7 @@ def ingredients_list(request):
         .filter(planned_day__user=request.user, planned_day__date__range=[start, end])
         .select_related("recipe", "planned_day")
         .order_by("planned_day__date", "meal_type")
-    )
+    ) 
 
     # Collect ingredients line-by-line (no quantity parsing here)
     ingredients_lines = []
