@@ -46,10 +46,6 @@ urlpatterns = [
     path("planner/range/", views.planner_range, name="planner_range"),
     path("planner/events/", views.planner_events, name="planner_events"),
     path('planner/<str:date>/', views.planner_day, name='planner_day'),
-    path('recipes/<int:recipe_pk>/add-to-calendar/', views.add_to_calendar, name = 'add_to_calendar'),
-    path('planned-meals/<int:meal_pk>/remove/', views.remove_from_calendar, name='remove_from_calendar'),
-    
-
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
