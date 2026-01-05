@@ -44,7 +44,11 @@ urlpatterns = [
     path('notifications/<int:notification_id>/read/', views.mark_notification_read, name='mark_notification_read'),
     path('notifications/mark-all-read/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
     path("planner/range/", views.planner_range, name="planner_range"),
+    path("planner/events/", views.planner_events, name="planner_events"),
     path('planner/<str:date>/', views.planner_day, name='planner_day'),
+    path('recipes/<int:recipe_pk>/add-to-calendar/', views.add_to_calendar, name = 'add_to_calendar'),
+    path('planned-meals/<int:meal_pk>/remove/', views.remove_from_calendar, name='remove_from_calendar'),
+    
 
 ]
 

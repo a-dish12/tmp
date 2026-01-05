@@ -3,9 +3,9 @@ from recipes.models import Recipe
 
 
 class RecipeForm(forms.ModelForm):
-    meal_types = forms.ChoiceField(
+    meal_types = forms.MultipleChoiceField(
         choices=Recipe.MEAL_TYPE_CHOICES,
-        widget=forms.RadioSelect,
+        widget=forms.CheckboxSelectMultiple,
         required=True,
         label='Meal Types'
     )
@@ -47,7 +47,8 @@ class RecipeForm(forms.ModelForm):
         if self.instance and self.instance.pk and self.instance.meal_type:
             # Take the first meal type since we now only allow one
             meal_types_list = [mt.strip() for mt in self.instance.meal_type.split(',')]
-            self.fields['meal_types'].initial = meal_types_list[0] if meal_types_list else None
+            #self.fields['meal_types'].initial = [meal_types_list[0] if meal_types_list else None]
+            self.fields['meal_types'].initial = meal_types_list
         
         # Get number of fields from POST data or instance
         if self.data:
@@ -102,10 +103,10 @@ class RecipeForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         
-        # Convert meal_types single choice to meal_type
+        # Convert meal_types (list) into comma-separated meal_type
         meal_type = cleaned_data.get('meal_types', '')
         if meal_type:
-            cleaned_data['meal_type'] = meal_type
+            cleaned_data['meal_type'] = ",".join(meal_type)
         
         # Collect ingredients
         ingredient_count = int(self.data.get('ingredient_count', 1))

@@ -2,6 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from recipes.models import Recipe
+from unittest.mock import patch
 
 User = get_user_model()
 
@@ -77,4 +78,33 @@ class SurpriseMeTests(TestCase):
                                    {"meal_type": ["dinner"]})
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "surprise-quiz.html")
+
+    def test_surprise_queryset_none(self):
+        with patch(
+            "recipes.views.surprise_recipe_view.DashboardView.get_queryset",
+            return_vale=None
+        ):
+            response = self.client.get(reverse("surprise-result"))
+            self.assertEqual(response.status_code,200)
+            self.assertTemplateUsed(response, "surprise-quiz.html")
+        
+    def test_surprise_recipe_without_pk(self):
+        class FakeRecipe:
+            pass
+        with patch(
+            "recipes.views.surprise_recipe_view.DashboardView.get_queryset",
+            return_value=[FakeRecipe()]
+        ):
+            response = self.client.get(reverse("surprise-result"))
+            self.assertEqual(response.status_code,200)
+            self.assertTemplateUsed(response, "surprise-quiz.html")
+    
+    def test_surprise_exception_handled(self):
+         with patch(
+            "recipes.views.surprise_recipe_view.DashboardView.get_queryset",
+            side_effect=Exception("Boom")
+        ):
+            response = self.client.get(reverse("surprise-result"))
+            self.assertEqual(response.status_code,200)
+            self.assertTemplateUsed(response, "surprise-quiz.html")
        

@@ -38,9 +38,9 @@ class LogInView(LoginProhibitedMixin, View):
             login(request, user)
             return redirect(self.next)
         
-        messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
+        messages.error(request, "The credentials provided were invalid!")
         # Return the form WITH errors, not a blank form
-        return render(request, 'log_in.html', {'form': form, 'next': self.next})
+        return render(request, 'log_in.html', {'form': LogInForm(), 'next': self.next})
 
     def render(self):
         """
