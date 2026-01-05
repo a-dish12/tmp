@@ -10,7 +10,6 @@
   <a href="{% url 'dashboard' %}" class="btn btn-secondary btn-sm">← Back to Dashboard</a>
 </div>
 
-{# Create new recipe and come back here #}
 <p>
   <a href="{% url 'create_recipe' %}?next={% url 'planner_day' day_date|date:'Y-m-d' %}">
     + Create a new recipe

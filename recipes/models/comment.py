@@ -33,7 +33,6 @@ class Comment(models.Model):
         return f"Comment by {self.user.username} on {self.recipe.title}"
     
     def get_depth(self):
-        """Calculate the depth of this comment in the thread."""
         depth = 0
         current = self.parent
         while current is not None:

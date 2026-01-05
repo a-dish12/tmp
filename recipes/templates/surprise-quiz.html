@@ -4,7 +4,7 @@
 {% block body_class %}surprise-bg{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'surprise_me.css' %}">
+<link rel="stylesheet" href="{% static 'surprise_me.css' %}?v=1000">
 <link rel="stylesheet" href="{% static 'navbar.css' %}">
 {% endblock %}
 
@@ -21,7 +21,7 @@
   
   <!-- Header -->
   <div class="surprise-header">
-    <h1>🎲 Surprise me</h1>
+    <h1>Surprise me</h1>
     <p class="surprise-subtitle">Select your preferences and discover something delicious</p>
   </div>
   
@@ -31,7 +31,7 @@
       
       <!-- Meal Type Section -->
       <div class="form-section">
-        <span class="section-label">🍽️ Meal type</span>
+        <span class="section-label">Meal type</span>
         <div class="checkbox-group">
           {% for code, label in meal_type_filters %}
             <div class="checkbox-item">
@@ -47,7 +47,7 @@
       
       <!-- Diet Type Section -->
       <div class="form-section">
-        <span class="section-label">🥗 Diet type</span>
+        <span class="section-label">Diet type</span>
         <div class="radio-group">
           {% for code, label in diet_filters %}
             <div class="radio-item">
@@ -63,7 +63,7 @@
       
       <!-- Time Filter Section -->
       <div class="form-section">
-        <span class="section-label">⏱️ Preparation time</span>
+        <span class="section-label">Preparation time</span>
         <div class="radio-group">
           {% for filter in time_filters %}
             <div class="radio-item">
@@ -84,7 +84,6 @@
           <span class="btn-text">Clear selection</span>
         </a>
         <button type="submit" class="btn-surprise">
-          <span class="btn-icon">🎲</span>
           <span class="btn-text">Surprise me</span>
         </button>
       </div>

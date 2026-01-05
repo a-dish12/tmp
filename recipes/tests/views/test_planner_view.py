@@ -1,4 +1,4 @@
-"""Tests for planner/calendar meal views."""
+"""Tests for planner/planner meal views."""
 from django.test import TestCase
 from django.urls import reverse
 from datetime import date, timedelta
@@ -6,8 +6,8 @@ from recipes.models import User, Recipe, PlannedDay, PlannedMeal
 from recipes.tests.helpers import LogInTester
 
 
-class AddToCalendarViewTestCase(TestCase, LogInTester):
-    """Tests for the add to calendar view."""
+class AddToPlannerViewTestCase(TestCase, LogInTester):
+    """Tests for the add to planner view."""
 
     fixtures = [
         'recipes/tests/fixtures/default_user.json',
@@ -27,14 +27,14 @@ class AddToCalendarViewTestCase(TestCase, LogInTester):
             meal_type="lunch"
         )
         
-        self.url = reverse('add_to_calendar', kwargs={'recipe_pk': self.recipe.pk})
+        self.url = reverse('add_to_planner', kwargs={'recipe_pk': self.recipe.pk})
         self.redirect_url = reverse('recipe_detail', kwargs={'pk': self.recipe.pk})
         self.today = date.today()
 
-    def test_add_to_calendar_url(self):
-        self.assertEqual(self.url, f'/recipes/{self.recipe.pk}/add-to-calendar/')
+    def test_add_to_planner_url(self):
+        self.assertEqual(self.url, f'/recipes/{self.recipe.pk}/add-to-planner/')
 
-    def test_add_to_calendar_redirects_when_not_logged_in(self):
+    def test_add_to_planner_redirects_when_not_logged_in(self):
         """Test that non-authenticated users are redirected to login."""
         response = self.client.post(self.url, {
             'date': self.today.isoformat(),
@@ -43,8 +43,8 @@ class AddToCalendarViewTestCase(TestCase, LogInTester):
         redirect_url = f"{reverse('log_in')}?next={self.url}"
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
-    def test_successful_add_to_calendar(self):
-        """Test that a user can successfully add a recipe to calendar."""
+    def test_successful_add_to_planner(self):
+        """Test that a user can successfully add a recipe to planner."""
         self.client.login(username=self.user.username, password='Password123')
         
         response = self.client.post(self.url, {
@@ -61,8 +61,8 @@ class AddToCalendarViewTestCase(TestCase, LogInTester):
         ).exists())
         self.assertRedirects(response, self.redirect_url, status_code=302, target_status_code=200)
 
-    def test_add_to_calendar_requires_date(self):
-        """Test that adding to calendar requires a date."""
+    def test_add_to_planner_requires_date(self):
+        """Test that adding to planner requires a date."""
         self.client.login(username=self.user.username, password='Password123')
         before_count = PlannedMeal.objects.count()
         
@@ -72,8 +72,8 @@ class AddToCalendarViewTestCase(TestCase, LogInTester):
         
         self.assertEqual(PlannedMeal.objects.count(), before_count)
 
-    def test_add_to_calendar_requires_meal_type(self):
-        """Test that adding to calendar requires a meal type."""
+    def test_add_to_planner_requires_meal_type(self):
+        """Test that adding to planner requires a meal type."""
         self.client.login(username=self.user.username, password='Password123')
         before_count = PlannedMeal.objects.count()
         
@@ -137,8 +137,8 @@ class AddToCalendarViewTestCase(TestCase, LogInTester):
         self.assertEqual(PlannedMeal.objects.count(), before_count)
 
 
-class RemoveFromCalendarViewTestCase(TestCase, LogInTester):
-    """Tests for the remove from calendar view."""
+class RemoveFromPlannerViewTestCase(TestCase, LogInTester):
+    """Tests for the remove from planner view."""
 
     fixtures = [
         'recipes/tests/fixtures/default_user.json',
@@ -166,19 +166,19 @@ class RemoveFromCalendarViewTestCase(TestCase, LogInTester):
             recipe=self.recipe
         )
         
-        self.url = reverse('remove_from_calendar', kwargs={'meal_pk': self.planned_meal.pk})
+        self.url = reverse('remove_from_planner', kwargs={'meal_pk': self.planned_meal.pk})
 
-    def test_remove_from_calendar_url(self):
+    def test_remove_from_planner_url(self):
         self.assertEqual(self.url, f'/planned-meals/{self.planned_meal.pk}/remove/')
 
-    def test_remove_from_calendar_redirects_when_not_logged_in(self):
+    def test_remove_from_planner_redirects_when_not_logged_in(self):
         """Test that non-authenticated users are redirected to login."""
         response = self.client.post(self.url, follow=True)
         redirect_url = f"{reverse('log_in')}?next={self.url}"
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
-    def test_successful_remove_from_calendar(self):
-        """Test that a user can successfully remove a meal from calendar."""
+    def test_successful_remove_from_planner(self):
+        """Test that a user can successfully remove a meal from planner."""
         self.client.login(username=self.user.username, password='Password123')
         meal_id = self.planned_meal.pk
         
@@ -187,7 +187,7 @@ class RemoveFromCalendarViewTestCase(TestCase, LogInTester):
         self.assertFalse(PlannedMeal.objects.filter(pk=meal_id).exists())
 
     def test_cannot_remove_other_users_meal(self):
-        """Test that users cannot remove meals from other users' calendars."""
+        """Test that users cannot remove meals from other users' planners."""
         self.client.login(username=self.other_user.username, password='Password123')
         meal_id = self.planned_meal.pk
         
@@ -296,7 +296,7 @@ class PlannerDayViewTestCase(TestCase, LogInTester):
         response = self.client.get(self.url)
         
         self.assertContains(response, 'Remove')
-        self.assertContains(response, reverse('remove_from_calendar', kwargs={'meal_pk': meal.pk}))
+        self.assertContains(response, reverse('remove_from_planner', kwargs={'meal_pk': meal.pk}))
 
 
 class RecipeDetailPlannedMealsDisplayTestCase(TestCase, LogInTester):
@@ -323,8 +323,8 @@ class RecipeDetailPlannedMealsDisplayTestCase(TestCase, LogInTester):
         self.url = reverse('recipe_detail', kwargs={'pk': self.recipe.pk})
         self.today = date.today()
 
-    def test_recipe_detail_shows_add_to_calendar_form(self):
-        """Test that recipe detail shows add to calendar form when logged in."""
+    def test_recipe_detail_shows_add_to_planner_form(self):
+        """Test that recipe detail shows add to planner form when logged in."""
         self.client.login(username=self.user.username, password='Password123')
         
         response = self.client.get(self.url)
@@ -362,5 +362,5 @@ class RecipeDetailPlannedMealsDisplayTestCase(TestCase, LogInTester):
         
         response = self.client.get(self.url)
         
-        remove_url = reverse('remove_from_calendar', kwargs={'meal_pk': meal.pk})
+        remove_url = reverse('remove_from_planner', kwargs={'meal_pk': meal.pk})
         self.assertContains(response, remove_url)

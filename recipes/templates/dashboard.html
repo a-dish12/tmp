@@ -4,14 +4,12 @@
 {% block body_class %}dashboard-bg{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'navbar.css' %}">
-<link rel="stylesheet" href="{% static 'dashboard.css' %}?v=2">
+<link rel="stylesheet" href="{% static 'navbar.css' %}?v=1001">
+<link rel="stylesheet" href="{% static 'dashboard.css' %}?v=3000">
 {% endblock %}
 
 {% block content %}
 
-<!-- Dust particles -->
- 
 <div class="dashboard-particles">
   {% for _ in "123456789012345678901234567890" %}
     <span></span>
@@ -20,7 +18,6 @@
 
 <div class="dashboard-wrapper">
 
-  <!-- HERO -->
   <div class="dashboard-hero mb-5">
     <h1 class="dashboard-title">
       Discover <span class="accent-orange">Recipes</span>
@@ -33,21 +30,24 @@
     {% include "partials/search_function.html" %}
   </div>
 
-  <!-- WIDE CONTENT CONTAINER -->
   <div class="dashboard-container">
 
-    <!-- FILTERS + CONTENT -->
     <div class="row dashboard-row">
 
-      <!-- FILTERS (LEFT) -->
       <div class="col-md-3 filters-col">
+        
+        <!-- Checkbox for collapsible filter (hidden) -->
+        <input type="checkbox" id="filtersToggle" checked>
+        
         <div class="filters-pane">
           
-          <h5>Filters</h5>
+          <!-- Clickable label for collapse toggle -->
+          <label for="filtersToggle">
+            <h5>Filters</h5>
+          </label>
           
           <form method="get" class="filters-card">
 
-          <!-- Meal Type -->
           <div class="mb-3">
             <span class="form-label fw-bold d-block">Meal type</span>
             {% for value, label in meal_type_filters %}
@@ -65,7 +65,6 @@
             {% endfor %}
           </div>
 
-          <!-- Prep Time -->
           <div class="mb-3">
             <span class="form-label fw-bold d-block">Prep time</span>
 

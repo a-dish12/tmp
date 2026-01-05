@@ -1,6 +1,4 @@
-/* =========================================================
-   LOGIN PAGE – FULL SCREEN SPLIT LAYOUT
-   ========================================================= */
+/* Login page - full screen split layout */
 
 .login-page {
   min-height: 100vh;
@@ -17,10 +15,7 @@
   width: 100%;
 }
 
-/* =========================================================
-   LEFT: LOGIN FORM SECTION
-   ========================================================= */
-
+/* Login form section */
 .login-form-section {
   flex: 1;
   padding: 4rem;
@@ -70,10 +65,7 @@
   z-index: 3;
 }
 
-/* =========================================================
-   INPUTS
-   ========================================================= */
-
+/* Form inputs */
 .input-group-custom {
   position: relative;
   margin-bottom: 1.6rem;
@@ -93,7 +85,7 @@
 .login-form-section input[type="password"] {
   width: 100%;
   padding: 0.95rem 1rem 0.95rem 3.2rem;
-  border-radius: 14px; /* same as Sign In button */
+  border-radius: 14px;
 
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -103,7 +95,6 @@
 
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
-
 
 .login-form-section input::placeholder {
   color: rgba(245, 245, 245, 0.4);
@@ -116,10 +107,7 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
-/* =========================================================
-   BUTTON
-   ========================================================= */
-
+/* Login button */
 .login-btn {
   width: 100%;
   padding: 1rem;
@@ -142,10 +130,7 @@
   box-shadow: 0 15px 40px rgba(236, 64, 122, 0.45);
 }
 
-/* =========================================================
-   ERROR MESSAGES
-   ========================================================= */
-
+/* Error messages */
 .login-form-section .errorlist {
   margin-bottom: 1rem;
   color: #ff8a65;
@@ -297,7 +282,7 @@
     opacity: 0.25;
   }
   50% {
-    transform: translate(28px, -42px); /* 🔥 wider + higher */
+    transform: translate(28px, -42px);
     opacity: 0.6;
   }
   100% {
@@ -361,8 +346,216 @@
   color: rgba(245, 245, 245, 0.6);
 }
 
+/* =========================
+   MOBILE RESPONSIVE
+   ========================= */
 
+/* Tablet (768px - 1199px) */
+@media (max-width: 1199px) {
+  .login-form-section {
+    padding: 3rem 2.5rem;
+  }
 
+  .login-content {
+    max-width: 420px;
+  }
 
+  .login-form-section h1 {
+    font-size: 2.2rem;
+  }
 
+  .login-visual-content h2 {
+    font-size: 2.5rem;
+  }
 
+  .login-visual-content p {
+    font-size: 1.1rem;
+  }
+}
+
+/* Mobile (max 991px) - Stack vertically */
+@media (max-width: 991px) {
+  .login-container {
+    flex-direction: column;
+  }
+
+  /* Form section - now on top, full screen */
+  .login-form-section {
+    flex: none;
+    width: 100%;
+    min-height: 100vh;
+    padding: 3rem 2rem;
+    box-shadow: none;
+  }
+
+  .login-content {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .login-form-section h1 {
+    font-size: 2rem;
+  }
+
+  .login-subtext {
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .input-group-custom {
+    margin-bottom: 1.25rem;
+  }
+
+  .login-form-section input[type="text"],
+  .login-form-section input[type="password"] {
+    padding: 0.85rem 1rem 0.85rem 3rem;
+    font-size: 0.95rem;
+  }
+
+  .input-icon {
+    left: 1rem;
+    font-size: 1rem;
+  }
+
+  .login-btn {
+    padding: 0.95rem;
+    font-size: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .signup-text {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+  }
+
+  /* Hide visual section completely on mobile */
+  .login-visual-section {
+    display: none;
+  }
+
+  /* Reduce particles on mobile */
+  .login-particles span:nth-child(n+6) {
+    display: none;
+  }
+}
+
+/* Small Mobile (max 767px) */
+@media (max-width: 767px) {
+  .login-form-section {
+    padding: 2.5rem 1.5rem;
+    min-height: 100vh;
+  }
+
+  .login-form-section h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .login-subtext {
+    font-size: 0.9rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .login-form-section form {
+    margin-top: 1.5rem;
+  }
+
+  .input-group-custom {
+    margin-bottom: 1rem;
+  }
+
+  .login-form-section input[type="text"],
+  .login-form-section input[type="password"] {
+    padding: 0.8rem 1rem 0.8rem 2.75rem;
+    font-size: 0.9rem;
+    border-radius: 12px;
+  }
+
+  .input-icon {
+    left: 0.9rem;
+    font-size: 0.95rem;
+  }
+
+  .login-btn {
+    padding: 0.9rem;
+    font-size: 0.95rem;
+    border-radius: 12px;
+    margin-top: 1.25rem;
+  }
+
+  .signup-text {
+    font-size: 0.85rem;
+  }
+}
+
+/* Small Mobile (max 480px) */
+@media (max-width: 480px) {
+  .login-form-section {
+    padding: 2rem 1.25rem;
+    min-height: 100vh;
+  }
+
+  .login-form-section h1 {
+    font-size: 1.6rem;
+  }
+
+  .login-subtext {
+    font-size: 0.85rem;
+  }
+
+  .login-form-section input[type="text"],
+  .login-form-section input[type="password"] {
+    padding: 0.75rem 0.9rem 0.75rem 2.5rem;
+    font-size: 0.85rem;
+  }
+
+  .input-icon {
+    left: 0.85rem;
+    font-size: 0.9rem;
+  }
+
+  .login-btn {
+    padding: 0.85rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Very Small Mobile (max 360px) */
+@media (max-width: 360px) {
+  .login-form-section {
+    padding: 1.75rem 1rem;
+    min-height: 100vh;
+  }
+
+  .login-form-section h1 {
+    font-size: 1.5rem;
+  }
+
+  .login-subtext {
+    font-size: 0.8rem;
+  }
+
+  .login-form-section input[type="text"],
+  .login-form-section input[type="password"] {
+    font-size: 0.8rem;
+  }
+
+  .login-btn {
+    font-size: 0.85rem;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .glide-in-left,
+  .fade-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .login-particles span {
+    animation: none;
+    opacity: 0.3;
+  }
+}

@@ -1,63 +1,86 @@
 {% extends 'base_content.html' %}
 {% load static %}
 
+{% block body_class %}dashboard-bg{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'navbar.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'report.css' %}?v=1001">
+{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-  <div class="row justify-content-center">
-    <div class="col-md-8">
-      <div class="card">
-        <div class="card-header bg-danger text-white">
-          <h4 class="mb-0">🚩 Report {{ content_type|title }}</h4>
-        </div>
-        <div class="card-body">
-          <div class="alert alert-info">
-            <strong>Before you report:</strong>
-            <ul class="mb-0 mt-2">
-              <li>Make sure the content violates our community guidelines</li>
-              <li>Provide specific details to help our moderation team</li>
-              <li>False reports may result in account restrictions</li>
-            </ul>
-          </div>
 
-          {% if content_preview %}
-          <div class="mb-4">
-            <h6>Content being reported:</h6>
-            <div class="bg-light p-3 rounded border">
-              {{ content_preview|truncatewords:50 }}
-            </div>
-          </div>
-          {% endif %}
+<div class="dashboard-particles">
+  {% for _ in "123456789012345678901234567890" %}
+    <span></span>
+  {% endfor %}
+</div>
 
-          <form method="post">
-            {% csrf_token %}
-            
-            <div class="mb-3">
-              <label for="{{ form.reason.id_for_label }}" class="form-label">{{ form.reason.label }} <span class="text-danger">*</span></label>
-              {{ form.reason }}
-              {% if form.reason.errors %}
-                <div class="text-danger small mt-1">{{ form.reason.errors }}</div>
-              {% endif %}
-            </div>
-            
-            <div class="mb-3">
-              <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }} <span class="text-danger">*</span></label>
-              {{ form.description }}
-              {% if form.description.help_text %}
-                <div class="form-text">{{ form.description.help_text }}</div>
-              {% endif %}
-              {% if form.description.errors %}
-                <div class="text-danger small mt-1">{{ form.description.errors }}</div>
-              {% endif %}
-            </div>
-            
-            <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-danger">Submit Report</button>
-              <a href="{{ cancel_url }}" class="btn btn-secondary">Cancel</a>
-            </div>
-          </form>
+<div class="dashboard-wrapper">
+  
+  <div class="dashboard-hero mb-4">
+    <h1 class="dashboard-title">
+      Report <span class="accent-orange">{{ content_type|title }}</span>
+    </h1>
+  </div>
+
+  <div class="report-container">
+    <div class="report-card">
+      
+      <div class="alert-info-box">
+        <strong>Before you report:</strong>
+        <ul>
+          <li>Make sure the content violates our community guidelines</li>
+          <li>Provide specific details to help our moderation team</li>
+          <li>False reports may result in account restrictions</li>
+        </ul>
+      </div>
+
+      {% if content_preview %}
+      <div class="content-preview-box">
+        <h6>Content being reported:</h6>
+        <div class="preview-content">
+          {{ content_preview|truncatewords:50 }}
         </div>
       </div>
+      {% endif %}
+
+      <form method="post" class="report-form">
+        {% csrf_token %}
+        
+        <div class="form-group">
+          <label for="{{ form.reason.id_for_label }}" class="form-label">
+            {{ form.reason.label }} <span class="required">*</span>
+          </label>
+          {{ form.reason }}
+          {% if form.reason.errors %}
+            <div class="field-error">{{ form.reason.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.description.id_for_label }}" class="form-label">
+            {{ form.description.label }} <span class="required">*</span>
+          </label>
+          {{ form.description }}
+          {% if form.description.help_text %}
+            <small class="field-help">{{ form.description.help_text }}</small>
+          {% endif %}
+          {% if form.description.errors %}
+            <div class="field-error">{{ form.description.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">Submit Report</button>
+          <a href="{{ cancel_url }}" class="btn-cancel">Cancel</a>
+        </div>
+      </form>
+
     </div>
   </div>
+
 </div>
+
 {% endblock %}

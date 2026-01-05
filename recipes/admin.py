@@ -72,7 +72,6 @@ class ReportAdmin(admin.ModelAdmin):
     )
     
     def get_readonly_fields(self, request, obj=None):
-        """Lock all fields if report is already resolved or dismissed."""
         readonly = list(super().get_readonly_fields(request, obj))
         if obj and obj.status in ['resolved', 'dismissed']:
             # Report is locked - make everything read-only
@@ -80,12 +79,10 @@ class ReportAdmin(admin.ModelAdmin):
         return readonly
     
     def report_description(self, obj):
-        """Display report description without help text."""
         return obj.description
     report_description.short_description = 'Description'
     
     def bulk_dismiss_reports(self, request, queryset):
-        """Bulk action to dismiss multiple reports."""
         pending_reports = queryset.filter(status='pending')
         count = 0
         for report in pending_reports:
@@ -106,7 +103,6 @@ class ReportAdmin(admin.ModelAdmin):
     bulk_dismiss_reports.short_description = "Dismiss selected reports"
     
     def bulk_hide_content(self, request, queryset):
-        """Bulk action to hide content from multiple reports."""
         pending_reports = queryset.filter(status='pending')
         count = 0
         for report in pending_reports:
@@ -143,7 +139,6 @@ class ReportAdmin(admin.ModelAdmin):
     bulk_hide_content.short_description = "Hide content from selected reports"
     
     def bulk_delete_content(self, request, queryset):
-        """Bulk action to delete content from multiple reports."""
         pending_reports = queryset.filter(status='pending')
         count = 0
         for report in pending_reports:

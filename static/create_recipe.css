@@ -1,7 +1,4 @@
-/* =========================
-   RECIPE FORM CONTAINER
-   ========================= */
-
+/* Recipe form container */
 .recipe-form-container {
   max-width: 900px;
   margin: 0 auto 4rem;
@@ -15,23 +12,15 @@
   gap: 2rem;
 }
 
-/* Center the hero title and subtitle on create recipe page */
-.dashboard-hero .dashboard-title {
-  text-align: center;
-  margin-left: auto;
-  margin-right: auto;
-}
-
+/* Center hero title and subtitle */
+.dashboard-hero .dashboard-title,
 .dashboard-hero .dashboard-subtitle {
   text-align: center;
   margin-left: auto;
   margin-right: auto;
 }
 
-/* =========================
-   FORM SECTIONS (CARDS)
-   ========================= */
-
+/* Form sections (cards) */
 .form-group {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
   backdrop-filter: blur(30px);
@@ -61,10 +50,7 @@
   color: #ff8a65;
 }
 
-/* =========================
-   FORM CONTROLS
-   ========================= */
-
+/* Form controls */
 .form-control {
   width: 100%;
   padding: 1rem 1.25rem;
@@ -109,24 +95,7 @@
   cursor: pointer;
 }
 
-.custom-file-input::file-selector-button {
-  padding: 0.7rem 1.4rem;
-  margin-right: 1rem;
-  background: transparent;
-  border: 1.5px solid #ff8a65;
-  border-radius: 10px;
-  color: #ff8a65;
-  font-weight: 600;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.custom-file-input::file-selector-button:hover {
-  background: rgba(255, 138, 101, 0.1);
-}
-
-/* Webkit browsers */
+.custom-file-input::file-selector-button,
 .custom-file-input::-webkit-file-upload-button {
   padding: 0.7rem 1.4rem;
   margin-right: 1rem;
@@ -140,18 +109,18 @@
   transition: background 0.2s ease;
 }
 
+.custom-file-input::file-selector-button:hover,
 .custom-file-input::-webkit-file-upload-button:hover {
   background: rgba(255, 138, 101, 0.1);
 }
 
 /* Number inputs */
 input[type="number"].form-control {
+  appearance: textfield;
   -moz-appearance: textfield;
 }
 
-/* =========================
-   MEAL TYPES - PILL GRID
-   ========================= */
+/* Meal types - Pill grid */
 
 .meal-types-grid {
   display: grid;
@@ -181,21 +150,8 @@ input[type="number"].form-control {
   margin: 0;
 }
 
-.meal-types-grid label:hover {
-  background: rgba(255, 138, 101, 0.1);
-  border-color: rgba(255, 138, 101, 0.3);
-  color: #ff8a65;
-}
-
-/* Style label when radio button after it is checked */
-.meal-types-grid input[type="radio"]:checked + label {
-  background: rgba(255, 138, 101, 0.1);
-  border-color: rgba(255, 138, 101, 0.3);
-  color: #ff8a65;
-  font-weight: 700;
-}
-
-/* Style label when it contains a checked radio button */
+.meal-types-grid label:hover,
+.meal-types-grid input[type="radio"]:checked + label,
 .meal-types-grid label:has(input[type="radio"]:checked) {
   background: rgba(255, 138, 101, 0.1);
   border-color: rgba(255, 138, 101, 0.3);
@@ -203,10 +159,7 @@ input[type="number"].form-control {
   font-weight: 700;
 }
 
-/* =========================
-   DYNAMIC FIELDS
-   ========================= */
-
+/* Dynamic fields */
 .dynamic-fields {
   display: flex;
   flex-direction: column;
@@ -225,12 +178,7 @@ input[type="number"].form-control {
   align-items: start;
 }
 
-/* Hide the first instruction if it just says "Step" without a number */
-.instruction-field-item:first-child .step-label:only-of-type:not([class*="1"]) {
-  display: none;
-}
-
-/* Better approach: hide entire first instruction item if it contains just "Step" */
+/* Hide the first instruction item if it contains just "Step" without a number */
 .dynamic-fields .instruction-field-item:first-child {
   display: none;
 }
@@ -254,10 +202,7 @@ input[type="number"].form-control {
   min-height: 100px;
 }
 
-/* =========================
-   BUTTONS
-   ========================= */
-
+/* Buttons */
 .dynamic-buttons {
   display: flex;
   gap: 0.85rem;
@@ -284,6 +229,12 @@ input[type="number"].form-control {
   font-weight: 700;
 }
 
+.btn-remove::before {
+  content: "−";
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
 .btn-add {
   background: transparent;
   color: #ff8a65;
@@ -292,12 +243,6 @@ input[type="number"].form-control {
 
 .btn-add:hover {
   background: rgba(255, 138, 101, 0.1);
-}
-
-.btn-remove::before {
-  content: "−";
-  font-size: 1.2rem;
-  font-weight: 700;
 }
 
 .btn-remove {
@@ -339,7 +284,6 @@ input[type="number"].form-control {
 }
 
 .btn-primary::before {
-  content: "🍳";
   font-size: 1.2rem;
 }
 
@@ -370,10 +314,7 @@ input[type="number"].form-control {
   text-decoration: none;
 }
 
-/* =========================
-   MESSAGES
-   ========================= */
-
+/* Messages */
 .field-error {
   color: #ef5350;
   font-size: 0.85rem;
@@ -414,8 +355,16 @@ input[type="number"].form-control {
     grid-template-columns: 1fr;
   }
   
+  /* MEAL TYPE BUTTONS - FULL WIDTH ON MOBILE */
   .meal-types-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .meal-types-grid label {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
   }
   
   .instruction-field-item {
@@ -424,5 +373,43 @@ input[type="number"].form-control {
   
   .step-label {
     width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .recipe-form-container {
+    padding: 0 0.5rem;
+  }
+
+  .form-group {
+    padding: 1.5rem;
+  }
+
+  .meal-types-grid label {
+    padding: 0.85rem 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 1rem 1.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .form-group {
+    padding: 1.25rem;
+  }
+
+  .meal-types-grid label {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.9rem 1.25rem;
+    font-size: 0.9rem;
   }
 }

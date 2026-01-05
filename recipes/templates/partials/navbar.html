@@ -1,29 +1,87 @@
 <nav class="navbar navbar-expand-lg dashboard-nav">
   <div class="container">
-
-    <!-- Logo (left-aligned) -->
-    <a class="navbar-brand dashboard-logo" href="{% url 'dashboard' %}">
-      <span class="logo-icon">👨‍🍳</span>
-      <span class="logo-text">Recipify</span>
-    </a>
-
-
-    <!-- Mobile toggle (kept for Bootstrap compatibility) -->
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
+    
+    <!-- LEFT: Hamburger (mobile) + Logo -->
+    <div class="d-flex align-items-center">
+      <!-- CSS-only Hamburger Toggle (mobile only) -->
+      <input type="checkbox" id="navbarToggle" class="navbar-toggle-checkbox">
+      <label for="navbarToggle" class="navbar-toggler">
+        <span class="navbar-toggler-icon">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </label>
+      
+      <!-- Logo (always on left) -->
+      <a class="navbar-brand dashboard-logo" href="{% url 'dashboard' %}">
+        <span class="dashboard-logo-icon">👨‍🍳</span>
+        <span>Recipify</span>
+      </a>
+    </div>
+    
     {% if user.is_authenticated %}
-      {% include 'partials/menu.html' %}
+      <!-- CENTER/RIGHT: Desktop nav items (includes logout & notifications) -->
+      <div class="navbar-collapse">
+        {% include 'partials/menu.html' %}
+      </div>
     {% endif %}
-
+    
   </div>
 </nav>
+
+{% if user.is_authenticated %}
+<!-- Mobile Sidebar Overlay (closes menu when clicked) -->
+<label for="navbarToggle" class="mobile-sidebar-overlay"></label>
+
+<!-- Mobile Sidebar Menu -->
+<div class="mobile-sidebar">
+  <div class="mobile-sidebar-header">
+    <div class="mobile-sidebar-logo">
+      <span>👨‍🍳</span>
+      <span>Recipify</span>
+    </div>
+    <label for="navbarToggle" class="mobile-sidebar-close">
+      <i class="bi bi-x"></i>
+    </label>
+  </div>
+  
+  <nav class="mobile-sidebar-nav">
+    <!-- Home -->
+    <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+      <span class="nav-icon"><i class="bi bi-house-fill"></i></span>
+      <span>Home</span>
+    </a>
+    
+    <!-- Find Users -->
+    <a href="{% url 'search_users' %}" class="nav-link {% if request.resolver_match.url_name == 'search_users' %}active{% endif %}">
+      <span class="nav-icon"><i class="bi bi-search"></i></span>
+      <span>Find Users</span>
+    </a>
+    
+    <!-- My Profile -->
+    <a href="{% url 'user_profile' user.id %}" class="nav-link {% if request.resolver_match.url_name == 'user_profile' %}active{% endif %}">
+      <span class="nav-icon"><i class="bi bi-person-fill"></i></span>
+      <span>My Profile</span>
+    </a>
+    
+    <!-- Meal Plan -->
+    <a href="{% url 'planner_range' %}" class="nav-link {% if request.resolver_match.url_name == 'planner_range' or request.resolver_match.url_name == 'planner_day' %}active{% endif %}">
+      <span class="nav-icon"><i class="bi bi-calendar3"></i></span>
+      <span>Meal Plan</span>
+    </a>
+    
+    <!-- Create Recipe -->
+    <a href="{% url 'create_recipe' %}" class="nav-link {% if request.resolver_match.url_name == 'create_recipe' %}active{% endif %}">
+      <span class="nav-icon"><i class="bi bi-plus-circle-fill"></i></span>
+      <span>Create</span>
+    </a>
+    
+    <!-- Surprise Me -->
+    <a href="{% url 'dashboard-surprise' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard-surprise' or request.resolver_match.url_name == 'surprise-result' %}active{% endif %}">
+      <span class="nav-icon"><i class="bi bi-shuffle"></i></span>
+      <span>Surprise Me</span>
+    </a>
+  </nav>
+</div>
+{% endif %}

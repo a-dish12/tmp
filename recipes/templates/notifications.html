@@ -1,41 +1,62 @@
 {% extends 'base_content.html' %}
+{% load static %}
+
+{% block body_class %}dashboard-bg{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'navbar.css' %}">
+<link rel="stylesheet" href="{% static 'notifications.css' %}">
+{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
+
+<!-- Floating Dust Particles (same as dashboard) -->
+<div class="dashboard-particles">
+  {% for _ in "123456789012345678901234567890" %}
+    <span></span>
+  {% endfor %}
+</div>
+
+<div class="notifications-container">
+  <div class="notifications-header">
     <h2>Notifications</h2>
     {% if unread_count > 0 %}
-    <a href="{% url 'mark_all_notifications_read' %}" class="btn btn-sm btn-outline-primary">
+    <a href="{% url 'mark_all_notifications_read' %}" class="mark-all-btn">
+      <i class="bi bi-check2-all"></i>
       Mark All as Read
     </a>
     {% endif %}
   </div>
-
+  
   {% if notifications %}
-    <div class="list-group">
+    <ul class="notifications-list">
       {% for notification in notifications %}
-        <a href="{% if notification.action_url %}{% url 'mark_notification_read' notification.id %}{% else %}#{% endif %}" 
-           class="list-group-item list-group-item-action {% if not notification.is_read %}list-group-item-light{% endif %}">
-          <div class="d-flex w-100 justify-content-between">
-            <h6 class="mb-1">
-              {% if not notification.is_read %}
-                <span class="badge bg-primary">New</span>
-              {% endif %}
-              {{ notification.title }}
-            </h6>
-            <small class="text-muted">{{ notification.created_at|timesince }} ago</small>
-          </div>
-          <p class="mb-1">{{ notification.message }}</p>
-          <small class="text-muted">
-            <span class="badge bg-secondary">{{ notification.get_notification_type_display }}</span>
-          </small>
-        </a>
+        <li>
+          <a href="{% if notification.action_url %}{% url 'mark_notification_read' notification.id %}{% else %}#{% endif %}" 
+             class="notification-card {% if not notification.is_read %}unread{% endif %}">
+            <div class="notification-header">
+              <div class="notification-title">
+                <h6>
+                  {% if not notification.is_read %}
+                    <span class="badge-new">New</span>
+                  {% endif %}
+                  {{ notification.title }}
+                </h6>
+              </div>
+              <small class="notification-time">{{ notification.created_at|timesince }} ago</small>
+            </div>
+            <p class="notification-message">{{ notification.message }}</p>
+            <div class="notification-type">
+              <span class="badge-type">{{ notification.get_notification_type_display }}</span>
+            </div>
+          </a>
+        </li>
       {% endfor %}
-    </div>
-
+    </ul>
+    
     {% if is_paginated %}
-      <nav aria-label="Notifications pagination" class="mt-4">
-        <ul class="pagination justify-content-center">
+      <nav aria-label="Notifications pagination">
+        <ul class="pagination notifications-pagination">
           {% if page_obj.has_previous %}
             <li class="page-item">
               <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
@@ -47,7 +68,7 @@
               <span class="page-link" aria-hidden="true">&laquo;</span>
             </li>
           {% endif %}
-
+          
           {% for num in page_obj.paginator.page_range %}
             {% if num == page_obj.number %}
               <li class="page-item active" aria-current="page">
@@ -59,7 +80,7 @@
               </li>
             {% endif %}
           {% endfor %}
-
+          
           {% if page_obj.has_next %}
             <li class="page-item">
               <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
@@ -75,8 +96,9 @@
       </nav>
     {% endif %}
   {% else %}
-    <div class="alert alert-info">
-      <i class="bi bi-bell"></i> No notifications yet.
+    <div class="notifications-empty">
+      <i class="bi bi-bell"></i>
+      <p>No notifications yet.</p>
     </div>
   {% endif %}
 </div>

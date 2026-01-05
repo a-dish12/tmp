@@ -4,8 +4,8 @@
 {% block body_class %}find-users-bg{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'find_users.css' %}">
-<link rel="stylesheet" href="{% static 'navbar.css' %}">
+<link rel="stylesheet" href="{% static 'find_users.css' %}?v=1000">
+<link rel="stylesheet" href="{% static 'navbar.css' %}?v=1000">
 <link rel="stylesheet" href="{% static 'dashboard.css' %}">
 {% endblock %}
 
@@ -67,7 +67,7 @@
             <p class="user-username">{{ user.username }}</p>
           </div>
           <div class="user-actions">
-            <a href="{% url 'user_profile' user.id %}" class="btn-view-profile">
+            <a href="{% url 'user_profile' user.id %}" class="filters-apply-btn">
               View Profile
             </a>
           </div>

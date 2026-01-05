@@ -1,6 +1,4 @@
-/* =========================
-   FIND USERS PAGE
-   ========================= */
+/* Find users page */
 
 /* Background matching dashboard */
 body.find-users-bg {
@@ -255,23 +253,46 @@ body.find-users-bg::after {
   flex-shrink: 0;
 }
 
-.btn-view-profile {
+/* Apply Button Enhanced - EXACT COPY FROM DASHBOARD */
+.filters-apply-btn {
   background: linear-gradient(135deg, #ff8a65, #ec407a);
-  border: none;
-  color: #000;
-  font-weight: 600;
-  padding: 0.5rem 1.2rem;
+  padding: 0.5rem 1rem;
   border-radius: 10px;
-  font-size: 0.85rem;
-  transition: all 0.2s ease;
-  text-decoration: none;
-  display: inline-block;
+  color: #000;
+  font-weight: 800;
+  font-size: 0.8rem;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-bottom: 0;
+  margin-top: 0;
+  box-shadow: 0 6px 20px rgba(236, 64, 122, 0.35);
+  transition: background 0.18s ease, color 0.18s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none !important;
 }
 
-.btn-view-profile:hover {
+.filters-apply-btn:hover {
+  background: transparent;
+  border-image: linear-gradient(135deg, #ff8a65, #ec407a) 1;
+  color: #ff8a65;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 138, 101, 0.4);
-  color: #000;
+  box-shadow: 0 12px 35px rgba(236, 64, 122, 0.55);
+  text-decoration: none !important;
+}
+
+.filters-apply-btn:active {
+  transform: translateY(0);
+  text-decoration: none !important;
+}
+
+.filters-apply-btn:focus,
+.filters-apply-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 138, 101, 0.3);
+  text-decoration: none !important;
 }
 
 /* =========================
@@ -363,11 +384,110 @@ body.find-users-bg::after {
   .user-name {
     font-size: 1rem;
   }
+
+  /* Reduce particles on mobile */
+  .find-users-particles span:nth-child(n+16) {
+    display: none;
+  }
+
+  /* Pagination - SINGLE LINE WITH 8 NUMBERS */
+  .dashboard-pagination {
+    flex-wrap: nowrap !important;
+    gap: 0.25rem;
+    margin-top: 2rem;
+    justify-content: center;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 0.5rem 0;
+  }
+
+  .dashboard-pagination::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide all page items by default */
+  .dashboard-pagination .page-item {
+    display: none;
+  }
+
+  /* Always show arrows (first and last) */
+  .dashboard-pagination .page-item:first-child,
+  .dashboard-pagination .page-item:last-child {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  /* Show exactly 8 page numbers (nth-child 2-9) */
+  .dashboard-pagination .page-item:nth-child(2),
+  .dashboard-pagination .page-item:nth-child(3),
+  .dashboard-pagination .page-item:nth-child(4),
+  .dashboard-pagination .page-item:nth-child(5),
+  .dashboard-pagination .page-item:nth-child(6),
+  .dashboard-pagination .page-item:nth-child(7),
+  .dashboard-pagination .page-item:nth-child(8),
+  .dashboard-pagination .page-item:nth-child(9) {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .dashboard-pagination .page-link {
+    padding: 0.5rem 0.65rem;
+    font-size: 0.8rem;
+    min-width: 36px;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+
+  /* Arrow buttons slightly wider */
+  .dashboard-pagination .page-item:first-child .page-link,
+  .dashboard-pagination .page-item:last-child .page-link {
+    padding: 0.5rem 0.75rem;
+  }
 }
 
 @media (max-width: 576px) {
-  .btn-view-profile {
+  .filters-apply-btn {
     padding: 0.4rem 0.9rem;
     font-size: 0.8rem;
+  }
+
+  /* Pagination - show 6 numbers */
+  .dashboard-pagination {
+    gap: 0.2rem;
+  }
+
+  .dashboard-pagination .page-link {
+    padding: 0.45rem 0.55rem;
+    font-size: 0.75rem;
+    min-width: 32px;
+  }
+
+  /* Show only 6 page numbers */
+  .dashboard-pagination .page-item:nth-child(8),
+  .dashboard-pagination .page-item:nth-child(9) {
+    display: none;
+  }
+}
+
+@media (max-width: 360px) {
+  /* Pagination - show 4 numbers */
+  .dashboard-pagination {
+    gap: 0.15rem;
+  }
+
+  .dashboard-pagination .page-link {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.7rem;
+    min-width: 30px;
+  }
+
+  /* Show only 4 page numbers */
+  .dashboard-pagination .page-item:nth-child(6),
+  .dashboard-pagination .page-item:nth-child(7),
+  .dashboard-pagination .page-item:nth-child(8),
+  .dashboard-pagination .page-item:nth-child(9) {
+    display: none;
   }
 }

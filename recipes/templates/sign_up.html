@@ -3,7 +3,7 @@
 {% load widget_tweaks %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'signup.css' %}">
+<link rel="stylesheet" href="{% static 'signup.css' %}?v=1000">
 {% endblock %}
 
 {% block body %}
@@ -11,7 +11,6 @@
 
   <div class="signup-container">
 
-    <!-- LEFT: IMAGE -->
     <div class="signup-visual">
       <div class="signup-visual-overlay signup-fade-up">
         <h2>Cook. Share. Connect.</h2>
@@ -21,7 +20,6 @@
       </div>
     </div>
 
-    <!-- RIGHT: FORM -->
     <div class="signup-form-section">
       <div class="signup-particles">
         <span></span><span></span><span></span><span></span><span></span>
