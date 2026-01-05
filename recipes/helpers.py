@@ -1,6 +1,5 @@
 ### Helper function and classes go here.
 from django.db.models import Q
-from django.contrib.auth.decorators import login_required
 
 def visible_recipes_for(user):
     """
@@ -14,7 +13,7 @@ def visible_recipes_for(user):
     from recipes.models.follow import Follow
 
     # Anonymous user
-    if not user or not user.is_authenticated:
+    if not user or not user.is_authenticated or user.pk is None:
         return Recipe.objects.filter(author__is_private=False).distinct()
 
     following_ids = Follow.objects.filter(
