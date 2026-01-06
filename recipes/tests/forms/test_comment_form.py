@@ -1,5 +1,7 @@
 """Unit tests for the CommentForm."""
+
 from django.test import TestCase
+
 from recipes.forms.comment_form import CommentForm
 from recipes.models import User, Recipe
 
@@ -7,9 +9,7 @@ from recipes.models import User, Recipe
 class CommentFormTestCase(TestCase):
     """Unit tests for the CommentForm."""
 
-    fixtures = [
-        'recipes/tests/fixtures/default_user.json'
-    ]
+    fixtures = ['recipes/tests/fixtures/default_user.json']
 
     def setUp(self):
         self.user = User.objects.get(username='@johndoe')
@@ -21,37 +21,36 @@ class CommentFormTestCase(TestCase):
             time=30,
             meal_type="lunch"
         )
-        
-        self.form_input = {
+
+        self.valid_data = {
             'text': 'This is a great recipe!'
         }
 
-    def test_form_has_necessary_fields(self):
+    def test_form_has_text_field(self):
         form = CommentForm()
         self.assertIn('text', form.fields)
 
     def test_valid_comment_form(self):
-        form = CommentForm(data=self.form_input)
+        form = CommentForm(data=self.valid_data)
         self.assertTrue(form.is_valid())
 
     def test_form_rejects_blank_text(self):
-        self.form_input['text'] = ''
-        form = CommentForm(data=self.form_input)
+        form = CommentForm(data={'text': ''})
         self.assertFalse(form.is_valid())
 
     def test_form_accepts_long_text(self):
-        self.form_input['text'] = 'x' * 1000
-        form = CommentForm(data=self.form_input)
+        form = CommentForm(data={'text': 'x' * 1000})
         self.assertTrue(form.is_valid())
 
-    def test_form_saves_correctly(self):
-        form = CommentForm(data=self.form_input)
+    def test_form_saves_comment_correctly(self):
+        form = CommentForm(data=self.valid_data)
         self.assertTrue(form.is_valid())
+
         comment = form.save(commit=False)
         comment.recipe = self.recipe
         comment.user = self.user
         comment.save()
-        self.assertEqual(comment.text, self.form_input['text'])
+
+        self.assertEqual(comment.text, self.valid_data['text'])
         self.assertEqual(comment.recipe, self.recipe)
         self.assertEqual(comment.user, self.user)
-
