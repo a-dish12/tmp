@@ -7,6 +7,7 @@ from recipes.models import Recipe
 from recipes.forms.recipe_form import RecipeForm
 
 class CreateRecipeView(LoginRequiredMixin, View):
+    """view for creating new recipes with dynamic ingredient/instruction fields"""
     template_name = 'create_recipe.html'
 
     def get(self, request):
@@ -14,13 +15,13 @@ class CreateRecipeView(LoginRequiredMixin, View):
         return render(request, self.template_name, {'form': form})
 
     def post(self, request):
-        # Check if user wants to add more fields
+        # handle dynamic field addition/removal before validation
+        # these buttons shouldn't trigger form validation
         if 'add_ingredient' in request.POST:
             data = request.POST.copy()
             data['ingredient_count'] = int(data.get('ingredient_count', 1)) + 1
             form = RecipeForm(data=data, files=request.FILES)
-            # Mark as not validated to prevent error display
-            form._errors = None
+            form._errors = None  # skip validation for field count changes
             return render(request, self.template_name, {'form': form, 'skip_validation': True})
 
         if 'add_instruction' in request.POST:

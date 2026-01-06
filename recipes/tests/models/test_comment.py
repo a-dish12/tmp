@@ -15,7 +15,7 @@ class CommentModelTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.get(username='@johndoe')
         self.other_user = User.objects.get(username='@janedoe')
-        
+
         self.recipe = Recipe.objects.create(
             author=self.other_user,
             title="Test Recipe",
@@ -24,7 +24,7 @@ class CommentModelTestCase(TestCase):
             time=30,
             meal_type="lunch"
         )
-        
+
         self.comment = Comment.objects.create(
             recipe=self.recipe,
             user=self.user,
@@ -32,23 +32,37 @@ class CommentModelTestCase(TestCase):
         )
 
     def test_valid_comment(self):
-        self._assert_comment_is_valid()
+        """A correctly constructed comment should be valid."""
+        try:
+            self.comment.full_clean()
+        except ValidationError:
+            self.fail("Test comment should be valid")
 
     def test_comment_requires_recipe(self):
+        """A comment must be linked to a recipe."""
         self.comment.recipe = None
-        self._assert_comment_is_invalid()
+        with self.assertRaises(ValidationError):
+            self.comment.full_clean()
 
     def test_comment_requires_user(self):
+        """A comment must have a user."""
         self.comment.user = None
-        self._assert_comment_is_invalid()
+        with self.assertRaises(ValidationError):
+            self.comment.full_clean()
 
     def test_comment_requires_text(self):
+        """A comment must contain text."""
         self.comment.text = ''
-        self._assert_comment_is_invalid()
+        with self.assertRaises(ValidationError):
+            self.comment.full_clean()
 
     def test_comment_text_can_be_long(self):
+        """Long comment text should be allowed."""
         self.comment.text = 'x' * 1000
-        self._assert_comment_is_valid()
+        try:
+            self.comment.full_clean()
+        except ValidationError:
+            self.fail("Long comment text should be valid")
 
     def test_comment_string_representation(self):
         """Test the string representation of a comment."""
@@ -56,7 +70,7 @@ class CommentModelTestCase(TestCase):
         self.assertEqual(str(self.comment), expected)
 
     def test_recipe_can_have_multiple_comments(self):
-        """Test that a recipe can have multiple comments."""
+        """A recipe can have multiple comments."""
         Comment.objects.create(
             recipe=self.recipe,
             user=self.other_user,
@@ -65,7 +79,7 @@ class CommentModelTestCase(TestCase):
         self.assertEqual(self.recipe.comments.count(), 2)
 
     def test_comment_ordering(self):
-        """Test that comments are ordered by creation time."""
+        """Comments should be ordered by creation time."""
         comment2 = Comment.objects.create(
             recipe=self.recipe,
             user=self.other_user,
@@ -76,73 +90,59 @@ class CommentModelTestCase(TestCase):
             user=self.user,
             text="Third comment"
         )
-        
+
         comments = list(self.recipe.comments.all())
-        self.assertEqual(comments[0], self.comment)
-        self.assertEqual(comments[1], comment2)
-        self.assertEqual(comments[2], comment3)
+        self.assertEqual(comments, [self.comment, comment2, comment3])
 
-    def _assert_comment_is_valid(self):
-        try:
-            self.comment.full_clean()
-        except ValidationError:
-            self.fail('Test comment should be valid')
-
-    def _assert_comment_is_invalid(self):
-        with self.assertRaises(ValidationError):
-            self.comment.full_clean()
-    
     def test_is_reply_false_for_root_comment(self):
-        """Root comments should not be replies"""
+        """Root comments should not be replies."""
         self.assertFalse(self.comment.is_reply())
-    
+
     def test_is_reply_true_for_child_comment(self):
-        """Child comments should be recognised as replies"""
+        """Child comments should be recognised as replies."""
         reply = Comment.objects.create(
             recipe=self.recipe,
-            user = self.other_user,
+            user=self.other_user,
             text="Reply comment",
             parent=self.comment
         )
         self.assertTrue(reply.is_reply())
-    
+
     def test_get_depth_for_root_comment(self):
-        """Root comments should have depth 0"""
+        """Root comments should have depth 0."""
         self.assertEqual(self.comment.get_depth(), 0)
 
     def test_get_depth_for_single_reply(self):
-        """Direct replies should have depth 1"""
+        """Direct replies should have depth 1."""
         reply = Comment.objects.create(
             recipe=self.recipe,
             user=self.other_user,
             text="Reply",
             parent=self.comment
         )
-        self.assertEqual(reply.get_depth(),1)
-    
+        self.assertEqual(reply.get_depth(), 1)
+
     def test_get_depth_for_nested_reply(self):
-        """Replies to replies should increase depth correctly"""
+        """Replies to replies should increase depth correctly."""
         reply = Comment.objects.create(
             recipe=self.recipe,
-            user= self.other_user,
+            user=self.other_user,
             text="Reply",
             parent=self.comment
         )
         reply2 = Comment.objects.create(
             recipe=self.recipe,
-            user = self.user,
+            user=self.user,
             text="Reply to reply",
             parent=reply
         )
-        self.assertEqual(reply2.get_depth(),2)
-    
+        self.assertEqual(reply2.get_depth(), 2)
+
     def test_comment_is_hidden_default_false(self):
-        """Comments should not be hidden by default"""
+        """Comments should not be hidden by default."""
         self.assertFalse(self.comment.is_hidden)
-    
+
     def test_comment_can_be_hidden(self):
-        """Comments can be marked as hidden"""
+        """Comments can be marked as hidden."""
         self.comment.is_hidden = True
         self.comment.save()
-        self.assertTrue(self.comment.is_hidden)
-

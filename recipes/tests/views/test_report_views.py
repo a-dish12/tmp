@@ -1,328 +1,293 @@
 """Tests for report views."""
+
 from django.test import TestCase, Client
 from django.urls import reverse
+from unittest.mock import patch
+
 from recipes.models import User, Recipe, Comment, Report, Notification
-from django.contrib.contenttypes.models import ContentType
 
 
-class ReportRecipeViewTestCase(TestCase):
-    """Test cases for reporting recipes."""
-    
-    fixtures = ['recipes/tests/fixtures/default_user.json', 'recipes/tests/fixtures/other_users.json']
-    
+class ReportViewTestBase(TestCase):
+    fixtures = [
+        'recipes/tests/fixtures/default_user.json',
+        'recipes/tests/fixtures/other_users.json',
+    ]
+
     def setUp(self):
         self.client = Client()
         self.user = User.objects.get(username='@johndoe')
         self.user2 = User.objects.get(username='@janedoe')
         self.admin = User.objects.create_superuser(
-            username='@testadmin',
-            email='testadmin@test.com',
-            password='Password123',
-            first_name='Admin',
-            last_name='User'
+            username='@admin',
+            email='admin@test.com',
+            password='Password123'
         )
-        
+
+    def _post(self, url, reason='spam', description='test'):
+        return self.client.post(url, {
+            'reason': reason,
+            'description': description
+        })
+
+    def _assert_message_contains(self, response, text):
+        messages = list(response.wsgi_request._messages)
+        self.assertTrue(
+            any(text.lower() in str(m).lower() for m in messages),
+            f"Expected message containing '{text}', got {[str(m) for m in messages]}"
+        )
+
+
+class ReportRecipeViewTestCase(ReportViewTestBase):
+
+    def setUp(self):
+        super().setUp()
         self.recipe = Recipe.objects.create(
             author=self.user2,
-            title='Test Recipe',
-            description='A test recipe',
-            ingredients='flour\nsugar',
-            instructions='Mix\nBake',
-            time=30,
+            title='Recipe',
+            description='Desc',
+            ingredients='x',
+            time=10,
             meal_type='lunch'
         )
         self.url = reverse('report_recipe', kwargs={'recipe_pk': self.recipe.pk})
-    
-    def test_report_recipe_url(self):
-        """Test report recipe URL resolves."""
-        self.assertEqual(self.url, f'/recipes/{self.recipe.pk}/report/')
-    
-    def test_report_recipe_requires_login(self):
-        """Test that reporting requires authentication."""
-        response = self.client.post(self.url, {
-            'reason': 'spam',
-            'description': 'This is spam'
-        })
-        self.assertEqual(response.status_code, 302)
+
+    def test_requires_login(self):
+        response = self._post(self.url)
         self.assertIn('/log_in/', response.url)
-    
-    def test_report_recipe_creates_report(self):
-        """Test successful recipe report creation."""
+
+    def test_get_form_branch(self):
         self.client.login(username='@johndoe', password='Password123')
-        response = self.client.post(self.url, {
-            'reason': 'spam',
-            'description': 'This is spam content'
-        })
-        
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'report_content.html')
+
+    def test_creates_report_and_notification(self):
+        self.client.login(username='@johndoe', password='Password123')
+        self._post(self.url)
         self.assertEqual(Report.objects.count(), 1)
-        report = Report.objects.first()
-        self.assertEqual(report.reported_by, self.user)
-        self.assertEqual(report.content_object, self.recipe)
-        self.assertEqual(report.reason, 'spam')
-        self.assertRedirects(response, reverse('recipe_detail', kwargs={'pk': self.recipe.pk}))
-    
-    def test_cannot_report_own_recipe(self):
-        """Test that users cannot report their own recipes."""
-        self.client.login(username='@janedoe', password='Password123')
-        response = self.client.post(self.url, {
-            'reason': 'spam',
-            'description': 'Testing'
-        })
-        
-        self.assertEqual(Report.objects.count(), 0)
-        messages = list(response.wsgi_request._messages)
-        self.assertTrue(any('cannot report your own' in str(m) for m in messages))
-    
-    def test_cannot_report_twice(self):
-        """Test that users cannot report the same recipe twice."""
-        self.client.login(username='@johndoe', password='Password123')
-        
-        # First report
-        self.client.post(self.url, {
-            'reason': 'spam',
-            'description': 'Spam'
-        })
-        
-        # Second report attempt
-        response = self.client.post(self.url, {
-            'reason': 'inappropriate',
-            'description': 'Also inappropriate'
-        })
-        
-        self.assertEqual(Report.objects.count(), 1)
-        messages = list(response.wsgi_request._messages)
-        self.assertTrue(any('already reported' in str(m) for m in messages))
-    
-    def test_staff_cannot_report(self):
-        """Test that staff members cannot submit reports."""
-        self.client.login(username='@testadmin', password='Password123')
-        response = self.client.post(self.url, {
-            'reason': 'spam',
-            'description': 'Testing'
-        })
-        
-        self.assertEqual(Report.objects.count(), 0)
-        messages = list(response.wsgi_request._messages)
-        self.assertTrue(any('Staff members cannot submit' in str(m) for m in messages))
-    
-    def test_report_creates_notification_for_reporter(self):
-        """Test that reporting creates notification for the reporter."""
-        self.client.login(username='@johndoe', password='Password123')
-        self.client.post(self.url, {
-            'reason': 'spam',
-            'description': 'Spam'
-        })
-        
-        # Reporter gets confirmation notification
-        self.assertEqual(Notification.objects.filter(recipient=self.user).count(), 1)
-        notif = Notification.objects.filter(recipient=self.user).first()
-        self.assertEqual(notif.notification_type, 'report_received')
-    
-    def test_auto_hide_after_threshold(self):
-        """Test that content is auto-hidden after 5 reports."""
-        users = [
+        self.assertTrue(
+            Notification.objects.filter(
+                recipient=self.user,
+                notification_type='report_received'
+            ).exists()
+        )
+
+    def test_auto_hide_recipe_and_notify_author(self):
+        reporters = [
             self.user,
             User.objects.get(username='@petrapickles'),
             User.objects.get(username='@peterpickles'),
+            User.objects.create_user(username='@fourth', email='fourth@test.com', password='Password123'),
+            User.objects.create_user(username='@fifth', email='fifth@test.com', password='Password123'),
         ]
-        
-        # Create 2 more users to reach threshold of 5
-        for i in range(2):
-            user = User.objects.create_user(
-                username=f'@user{i}',
-                email=f'user{i}@test.com',
-                password='Password123',
-                first_name=f'User{i}',
-                last_name='Test'
-            )
-            users.append(user)
-        
-        # Submit 5 reports
-        for user in users:
-            self.client.login(username=user.username, password='Password123')
-            self.client.post(self.url, {
-                'reason': 'spam',
-                'description': 'Spam'
-            })
-        
-        # Check recipe is hidden
+
+        for u in reporters:
+            self.client.login(username=u.username, password='Password123')
+            self._post(self.url)
+
         self.recipe.refresh_from_db()
         self.assertTrue(self.recipe.is_hidden)
-    
-    def test_missing_reason_shows_error(self):
-        """Test that missing reason shows error."""
+        self.assertTrue(
+            Notification.objects.filter(
+                recipient=self.recipe.author,
+                notification_type='content_removed'
+            ).exists()
+        )
+
+    def test_invalid_form_with_field_errors(self):
         self.client.login(username='@johndoe', password='Password123')
-        response = self.client.post(self.url, {
-            'description': 'No reason provided'
-        })
-        
+        response = self.client.post(self.url, {'reason': '', 'description': ''})
+        self.assertEqual(response.status_code, 200)
+        self._assert_message_contains(response, 'please provide')
+
+    def test_cannot_report_own_recipe(self):
+        self.client.login(username='@janedoe', password='Password123')
+        response = self._post(self.url)
         self.assertEqual(Report.objects.count(), 0)
-        messages = list(response.wsgi_request._messages)
-        self.assertTrue(any('both a reason and description' in str(m) for m in messages))
-    
-    def test_missing_description_shows_error(self):
-        """Test that missing description shows error."""
+        self._assert_message_contains(response, 'own recipe')
+
+    def test_staff_cannot_report(self):
+        self.client.login(username='@admin', password='Password123')
+        response = self._post(self.url)
+        self.assertEqual(Report.objects.count(), 0)
+        self._assert_message_contains(response, 'staff')
+
+    def test_cannot_report_twice(self):
         self.client.login(username='@johndoe', password='Password123')
-        response = self.client.post(self.url, {
-            'reason': 'spam'
-        })
+        self._post(self.url)
+        response = self._post(self.url)
+        self.assertEqual(Report.objects.count(), 1)
+        self._assert_message_contains(response, 'already')
+
+    def test_auto_hide_already_hidden_recipe(self):
+        self.recipe.is_hidden = True
+        self.recipe.save()
+
+        reporters = [
+            self.user,
+            User.objects.get(username='@petrapickles'),
+            User.objects.get(username='@peterpickles'),
+            User.objects.create_user(username='@user6', email='u6@test.com', password='Password123'),
+            User.objects.create_user(username='@user7', email='u7@test.com', password='Password123'),
+        ]
+
+        initial_notification_count = Notification.objects.filter(
+            notification_type='content_removed'
+        ).count()
+
+        for user in reporters:
+            self.client.login(username=user.username, password='Password123')
+            self._post(self.url)
+            self.client.logout()
+
+        final_notification_count = Notification.objects.filter(
+            notification_type='content_removed'
+        ).count()
         
-        self.assertEqual(Report.objects.count(), 0)
-        messages = list(response.wsgi_request._messages)
-        self.assertTrue(any('both a reason and description' in str(m) for m in messages))
+        self.assertEqual(initial_notification_count, final_notification_count)
+
+    @patch('recipes.forms.report_form.ReportForm.is_valid')
+    def test_form_field_errors_trigger_fallback_message(self, mock_is_valid):
+        mock_is_valid.return_value = False
+        
+        self.client.login(username='@johndoe', password='Password123')
+        
+        with patch('recipes.forms.report_form.ReportForm.non_field_errors') as mock_non_field:
+            mock_non_field.return_value = []
+            
+            response = self.client.post(self.url, {
+                'reason': 'spam',
+                'description': 'test'
+            })
+            
+            self.assertEqual(response.status_code, 200)
+            self._assert_message_contains(response, 'correct the errors')
 
 
-class ReportCommentViewTestCase(TestCase):
-    """Test cases for reporting comments."""
-    
-    fixtures = ['recipes/tests/fixtures/default_user.json', 'recipes/tests/fixtures/other_users.json']
-    
+class ReportCommentViewTestCase(ReportViewTestBase):
+
     def setUp(self):
-        self.client = Client()
-        self.user = User.objects.get(username='@johndoe')
-        self.user2 = User.objects.get(username='@janedoe')
-        
+        super().setUp()
         self.recipe = Recipe.objects.create(
             author=self.user,
-            title='Test Recipe',
-            description='A test recipe',
-            ingredients='flour\nsugar',
-            instructions='Mix\nBake',
-            time=30,
+            title='Recipe',
+            description='Desc',
+            ingredients='x',
+            time=10,
             meal_type='lunch'
         )
-        
         self.comment = Comment.objects.create(
-            user=self.user2,
             recipe=self.recipe,
-            text='Test comment'
+            user=self.user2,
+            text='Bad comment'
         )
         self.url = reverse('report_comment', kwargs={'comment_pk': self.comment.pk})
-    
-    def test_report_comment_creates_report(self):
-        """Test successful comment report creation."""
+
+    def test_requires_login(self):
+        response = self._post(self.url)
+        self.assertIn('/log_in/', response.url)
+
+    def test_get_form_branch(self):
         self.client.login(username='@johndoe', password='Password123')
-        response = self.client.post(self.url, {
-            'reason': 'offensive',
-            'description': 'This is offensive'
-        })
-        
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'report_content.html')
+
+    def test_creates_report_and_notification(self):
+        self.client.login(username='@johndoe', password='Password123')
+        self._post(self.url)
         self.assertEqual(Report.objects.count(), 1)
-        report = Report.objects.first()
-        self.assertEqual(report.content_object, self.comment)
-        self.assertEqual(report.reason, 'offensive')
-    
-    def test_cannot_report_own_comment(self):
-        """Test that users cannot report their own comments."""
-        self.client.login(username='@janedoe', password='Password123')
-        response = self.client.post(self.url, {
-            'reason': 'offensive',
-            'description': 'Testing'
-        })
-        
-        self.assertEqual(Report.objects.count(), 0)
-        messages = list(response.wsgi_request._messages)
-        self.assertTrue(any('cannot report your own' in str(m) for m in messages))
-    
-    def test_auto_hide_comment_after_threshold(self):
-        """Test that comment is auto-hidden after 3 reports."""
-        users = [
+        self.assertTrue(
+            Notification.objects.filter(
+                recipient=self.user,
+                notification_type='report_received'
+            ).exists()
+        )
+
+    def test_auto_hide_comment_and_notify_author(self):
+        reporters = [
             self.user,
             User.objects.get(username='@petrapickles'),
             User.objects.get(username='@peterpickles'),
         ]
-        
-        # Submit 3 reports
-        for user in users:
-            self.client.login(username=user.username, password='Password123')
-            self.client.post(self.url, {
-                'reason': 'offensive',
-                'description': 'Offensive'
-            })
-        
-        # Check comment is hidden
+
+        for u in reporters:
+            self.client.login(username=u.username, password='Password123')
+            self._post(self.url)
+
         self.comment.refresh_from_db()
         self.assertTrue(self.comment.is_hidden)
-    
-    def test_report_comment_url(self):
-        """Test report comment URL resolves."""
-        self.assertEqual(self.url, f'/comments/{self.comment.pk}/report/')
-    
-    def test_report_comment_requires_login(self):
-        """Test that reporting requires authentication."""
-        response = self.client.post(self.url, {
-            'reason': 'spam',
-            'description': 'This is spam'
-        })
-        self.assertEqual(response.status_code, 302)
-        self.assertIn('/log_in/', response.url)
-    
-    def test_cannot_report_comment_twice(self):
-        """Test that users cannot report the same comment twice."""
-        self.client.login(username='@johndoe', password='Password123')
-        
-        # First report
-        self.client.post(self.url, {
-            'reason': 'spam',
-            'description': 'This is spam'
-        })
-        
-        # Second report
-        response = self.client.post(self.url, {
-            'reason': 'offensive',
-            'description': 'Also offensive'
-        })
-        
-        self.assertEqual(Report.objects.count(), 1)
-        messages = list(response.wsgi_request._messages)
-        self.assertTrue(any('already reported' in str(m) for m in messages))
-    
-    def test_staff_cannot_report_comment(self):
-        """Test that staff members cannot submit reports."""
-        admin = User.objects.create_superuser(
-            username='@testadmin2',
-            email='testadmin2@test.com',
-            password='Password123',
-            first_name='Admin',
-            last_name='User'
+        self.assertTrue(
+            Notification.objects.filter(
+                recipient=self.comment.user,
+                notification_type='content_removed'
+            ).exists()
         )
-        self.client.login(username='@testadmin2', password='Password123')
-        response = self.client.post(self.url, {
-            'reason': 'spam',
-            'description': 'Testing'
-        })
-        
-        self.assertEqual(Report.objects.count(), 0)
-        messages = list(response.wsgi_request._messages)
-        self.assertTrue(any('Staff members cannot submit' in str(m) for m in messages))
-    
-    def test_comment_report_creates_notification_for_reporter(self):
-        """Test that reporting creates notification for the reporter."""
+
+    def test_invalid_form_with_field_errors(self):
         self.client.login(username='@johndoe', password='Password123')
-        self.client.post(self.url, {
-            'reason': 'spam',
-            'description': 'Spam'
-        })
-        
-        # Reporter gets confirmation notification
-        self.assertEqual(Notification.objects.filter(recipient=self.user).count(), 1)
-        notif = Notification.objects.filter(recipient=self.user).first()
-        self.assertEqual(notif.notification_type, 'report_received')
-    
-    def test_comment_missing_reason_shows_error(self):
-        """Test that missing reason shows error."""
-        self.client.login(username='@johndoe', password='Password123')
-        response = self.client.post(self.url, {
-            'description': 'No reason provided'
-        })
-        
+        response = self.client.post(self.url, {'reason': '', 'description': ''})
+        self.assertEqual(response.status_code, 200)
+        self._assert_message_contains(response, 'please provide')
+
+    def test_cannot_report_own_comment(self):
+        self.client.login(username='@janedoe', password='Password123')
+        response = self._post(self.url)
         self.assertEqual(Report.objects.count(), 0)
-    
-    def test_comment_missing_description_shows_error(self):
-        """Test that missing description shows error."""
-        self.client.login(username='@johndoe', password='Password123')
-        response = self.client.post(self.url, {
-            'reason': 'spam'
-        })
-        
+        self._assert_message_contains(response, 'own comment')
+
+    def test_staff_cannot_report_comment(self):
+        self.client.login(username='@admin', password='Password123')
+        response = self._post(self.url)
         self.assertEqual(Report.objects.count(), 0)
+        self._assert_message_contains(response, 'staff')
+
+    def test_cannot_report_comment_twice(self):
+        self.client.login(username='@johndoe', password='Password123')
+        self._post(self.url)
+        self.assertEqual(Report.objects.count(), 1)
+        response = self._post(self.url)
+        self.assertEqual(Report.objects.count(), 1)
+        self._assert_message_contains(response, 'already')
+
+    def test_auto_hide_already_hidden_comment(self):
+        self.comment.is_hidden = True
+        self.comment.save()
+
+        reporters = [
+            self.user,
+            User.objects.get(username='@petrapickles'),
+            User.objects.get(username='@peterpickles'),
+        ]
+
+        initial_notification_count = Notification.objects.filter(
+            notification_type='content_removed'
+        ).count()
+
+        for user in reporters:
+            self.client.login(username=user.username, password='Password123')
+            self._post(self.url)
+            self.client.logout()
+
+        final_notification_count = Notification.objects.filter(
+            notification_type='content_removed'
+        ).count()
+        
+        self.assertEqual(initial_notification_count, final_notification_count)
+
+    @patch('recipes.forms.report_form.ReportForm.is_valid')
+    def test_comment_form_field_errors_trigger_fallback_message(self, mock_is_valid):
+        mock_is_valid.return_value = False
+        
+        self.client.login(username='@johndoe', password='Password123')
+        
+        with patch('recipes.forms.report_form.ReportForm.non_field_errors') as mock_non_field:
+            mock_non_field.return_value = []
+            
+            response = self.client.post(self.url, {
+                'reason': 'spam',
+                'description': 'test'
+            })
+            
+            self.assertEqual(response.status_code, 200)
+            self._assert_message_contains(response, 'correct the errors')

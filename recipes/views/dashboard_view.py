@@ -6,6 +6,7 @@ from recipes.models import Recipe, Follow, User
 
 
 class DashboardView(LoginRequiredMixin, ListView):
+    """main recipe browsing view with filtering, search, sorting and pagination"""
     model = Recipe
     template_name = "dashboard.html"
     context_object_name = "recipes"
@@ -53,24 +54,25 @@ class DashboardView(LoginRequiredMixin, ListView):
     # ------------------------
 
     def get_queryset(self):
+        # exclude own recipes and hidden/reported ones
         queryset = (
             Recipe.objects
             .exclude(author=self.request.user)
-            .exclude(is_hidden=True)  # Hide reported/moderated recipes
+            .exclude(is_hidden=True)
             .annotate(
                 avg_rating=Avg("ratings__stars"),
                 rating_count=Count("ratings"),
             )
         )
 
+        # apply filters in order - diet filter must be last since it returns a list
         queryset = self.filter_by_meal_types(queryset)
         queryset = self.filter_by_time(queryset)
         queryset = self.filter_by_rating(queryset)
         queryset = self.search_feature(queryset)
         queryset = self.following_only(queryset)
         queryset = self.apply_sorting(queryset)
-        #Must be last, as it returns a list:
-        queryset = self.filter_by_diet(queryset)
+        queryset = self.filter_by_diet(queryset)  # returns list, must be last
 
         return queryset
 
@@ -111,6 +113,7 @@ class DashboardView(LoginRequiredMixin, ListView):
         return context
 
     def get_selected_meal_types(self):
+        """extracts meal type filters from query params and removes duplicates"""
         meal_types = [
             m.strip().lower()
             for m in self.request.GET.getlist("meal_types")
@@ -121,6 +124,7 @@ class DashboardView(LoginRequiredMixin, ListView):
         if single_meal_type:
             meal_types.append(single_meal_type.strip().lower())
 
+        # deduplicate while preserving order
         seen = set()
         unique = []
         for m in meal_types:
@@ -163,6 +167,7 @@ class DashboardView(LoginRequiredMixin, ListView):
         return queryset.filter(time__range=(min_time, max_time))
     
     def filter_by_diet(self, queryset):
+        """filters by diet type - returns list so must be applied last"""
         selected_diet = self.get_selected_diet()
         if not selected_diet:
             return queryset
@@ -198,6 +203,7 @@ class DashboardView(LoginRequiredMixin, ListView):
         return queryset
 
     def following_only(self, queryset):
+        """filters recipes based on following relationships and privacy settings"""
         following_page = self.request.path == reverse('following_dashboard')
         followed_users = Follow.objects.filter(follower=self.request.user).values_list('following')
         followed_recipes = queryset.filter(author__in=followed_users)
@@ -205,7 +211,7 @@ class DashboardView(LoginRequiredMixin, ListView):
         if following_page:
             queryset = followed_recipes
         else:
-            #Include only public and followed recipes
+            # show public recipes plus recipes from followed users
             public_users = User.objects.filter(is_private=False)
             queryset = queryset.filter(author__in=public_users)
 
@@ -214,6 +220,7 @@ class DashboardView(LoginRequiredMixin, ListView):
         return queryset
     
     def apply_sorting(self, queryset):
+        """applies sorting - trending returns list so needs special handling"""
         sort_by = self.request.GET.get("sort", "time")
 
         if sort_by == "popular":

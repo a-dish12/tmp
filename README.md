@@ -5,7 +5,7 @@ The members of the team are:
 - Sabah Abdullah Abdulkarem Al-Aswadi
 - Moyondafoluwa Bliss Modupe Akinwande
 - Aniekan Essen-Kolo
-- *enter full name 4 here*
+- Yakshdevsing Boodhun
 - *enter full name 5 here (or delete if not applicable)*
 
 ## Project structure
@@ -76,4 +76,5 @@ $ python3 manage.py createsuperuser
 ## Sources
 The packages used by this application are specified in `requirements.txt`
 
-ChatGPT was used for seeding, specifically to generate the data fixtures in `recipes/management/RecipeFixtures`
+ChatGPT was used for seeding half of the recipes, specifically to generate the data fixtures in `recipes/management/RecipeFixtures`
+The other half used information (titles, ingredients, instructions and images) sourced from `themealdb.com` API

@@ -13,6 +13,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 class RecipeDetailView(DetailView):
+    """displays recipe details with ratings, comments, view tracking and meal planning"""
     model = Recipe
     template_name = 'recipe_detail.html'
     context_object_name = 'recipe'
@@ -20,7 +21,7 @@ class RecipeDetailView(DetailView):
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
         
-        # Track view for authenticated or anonymous users (exclude staff/superusers)
+        # track views for regular users, skip staff/superusers to avoid inflating metrics
         if not (self.request.user.is_authenticated and (self.request.user.is_staff or self.request.user.is_superuser)):
             user_id = self.request.user.id if self.request.user.is_authenticated else f"anon_{self.request.session.session_key}"
             obj.add_viewer(user_id)
@@ -62,7 +63,7 @@ class RecipeDetailView(DetailView):
             context['user_rating'] = None
             context['planned_meals'] = []
             
-        # Get all comments for this recipe, excluding hidden comments
+        # paginate comments (10 per page), hide reported/moderated ones
         all_comments = self.object.comments.filter(is_hidden=False).select_related('user').order_by('-created_at')
         comment_count = all_comments.count()
 
@@ -85,13 +86,14 @@ class RecipeDetailView(DetailView):
 
 
 class RateRecipeView(LoginRequiredMixin, CreateView):
+    """handles recipe rating - creates new or updates existing rating"""
     model = Rating
     form_class = RatingForm
     
     def dispatch(self, request, *args, **kwargs):
         self.recipe = get_object_or_404(Recipe, pk=kwargs['recipe_pk'])
         
-        # Prevent rating own recipe
+        # can't rate your own recipe
         if self.recipe.author == request.user:
             messages.error(request, "You cannot rate your own recipe.")
             return redirect('recipe_detail', pk=self.recipe.pk)
@@ -99,14 +101,14 @@ class RateRecipeView(LoginRequiredMixin, CreateView):
         return super().dispatch(request, *args, **kwargs)
     
     def form_valid(self, form):
-        # Check if user already rated - update instead of create
+        # update existing rating or create new one
         rating, created = Rating.objects.update_or_create(
             recipe=self.recipe,
             user=self.request.user,
             defaults={'stars': form.cleaned_data['stars']}
         )
         
-        # Send notification to recipe author (only for new ratings, not updates)
+        # only notify author for new ratings, not updates
         if created and self.recipe.author != self.request.user:
             Notification.create_rating_notification(
                 self.request.user,

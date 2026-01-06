@@ -74,7 +74,7 @@ class ReportAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         readonly = list(super().get_readonly_fields(request, obj))
         if obj and obj.status in ['resolved', 'dismissed']:
-            # Report is locked - make everything read-only
+            # lock resolved reports to prevent tampering with decisions
             return readonly + ['status', 'admin_action', 'resolution_notes']
         return readonly
     
@@ -103,6 +103,7 @@ class ReportAdmin(admin.ModelAdmin):
     bulk_dismiss_reports.short_description = "Dismiss selected reports"
     
     def bulk_hide_content(self, request, queryset):
+        """bulk action to hide content and notify both reporter and author"""
         pending_reports = queryset.filter(status='pending')
         count = 0
         for report in pending_reports:
@@ -116,7 +117,7 @@ class ReportAdmin(admin.ModelAdmin):
             report.reviewed_at = timezone.now()
             report.save()
             
-            # Hide the content
+            # set is_hidden flag on the content
             if content_object:
                 content_object.is_hidden = True
                 content_object.save()
@@ -139,6 +140,7 @@ class ReportAdmin(admin.ModelAdmin):
     bulk_hide_content.short_description = "Hide content from selected reports"
     
     def bulk_delete_content(self, request, queryset):
+        """bulk action to permanently delete content and notify both parties"""
         pending_reports = queryset.filter(status='pending')
         count = 0
         for report in pending_reports:
@@ -152,7 +154,7 @@ class ReportAdmin(admin.ModelAdmin):
             report.reviewed_at = timezone.now()
             report.save()
             
-            # Delete the content
+            # permanently remove the content
             if content_object:
                 content_object.delete()
             
@@ -216,32 +218,32 @@ class ReportAdmin(admin.ModelAdmin):
     content_details.short_description = 'Content Details'
     
     def save_model(self, request, obj, form, change):
-        """Handle admin actions and send notifications when report is resolved."""
-        if change:  # Only for updates, not new reports
+        """handles report resolution, sends notifications and executes admin actions"""
+        if change:
             old_status = Report.objects.get(pk=obj.pk).status
             
-            # If status changed to resolved/dismissed, handle notifications
+            # when report moves from pending to resolved/dismissed
             if old_status == 'pending' and obj.status in ['resolved', 'dismissed']:
                 obj.reviewed_by = request.user
                 obj.reviewed_at = timezone.now()
                 
-                # Get content info before any deletion
+                # grab content details before possible deletion
                 content_title = obj.get_content_title()
                 content_author = obj.get_content_author()
                 content_type_str = obj.content_type.model
                 content_object = obj.content_object
                 
-                # Save the report first BEFORE deleting content
+                # save report before deleting content to preserve report record
                 super().save_model(request, obj, form, change)
                 
-                # Send notification to reporter
+                # let reporter know their report was handled
                 Notification.create_report_resolved_notification(
                     obj.reported_by,
                     obj.admin_action,
                     content_title
                 )
                 
-                # If content was removed/hidden, notify author
+                # notify author if their content was hidden or deleted
                 if content_author and obj.admin_action in ['hidden', 'deleted']:
                     Notification.create_content_removed_notification(
                         content_author,
