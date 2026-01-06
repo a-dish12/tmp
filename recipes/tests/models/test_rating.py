@@ -1,6 +1,8 @@
 """Unit tests for the Rating model."""
 from django.core.exceptions import ValidationError
+from django.db.utils import IntegrityError
 from django.test import TestCase
+
 from recipes.models import User, Recipe, Rating
 
 
@@ -15,7 +17,7 @@ class RatingModelTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.get(username='@johndoe')
         self.other_user = User.objects.get(username='@janedoe')
-        
+
         self.recipe = Recipe.objects.create(
             author=self.other_user,
             title="Test Recipe",
@@ -24,7 +26,7 @@ class RatingModelTestCase(TestCase):
             time=30,
             meal_type="lunch"
         )
-        
+
         self.rating = Rating.objects.create(
             recipe=self.recipe,
             user=self.user,
@@ -59,8 +61,8 @@ class RatingModelTestCase(TestCase):
         self._assert_rating_is_invalid()
 
     def test_unique_rating_per_user_per_recipe(self):
-        """Test that a user can only rate a recipe once."""
-        with self.assertRaises(Exception):
+        """A user can only rate a recipe once."""
+        with self.assertRaises(IntegrityError):
             Rating.objects.create(
                 recipe=self.recipe,
                 user=self.user,
@@ -68,27 +70,26 @@ class RatingModelTestCase(TestCase):
             )
 
     def test_different_users_can_rate_same_recipe(self):
-        """Test that different users can rate the same recipe."""
         third_user = User.objects.get(username='@petrapickles')
-        rating2 = Rating.objects.create(
+        Rating.objects.create(
             recipe=self.recipe,
             user=third_user,
             stars=5
         )
-        self.assertEqual(Rating.objects.filter(recipe=self.recipe).count(), 2)
+        self.assertEqual(
+            Rating.objects.filter(recipe=self.recipe).count(),
+            2
+        )
 
     def test_recipe_average_rating_calculation(self):
-        """Test that recipe calculates average rating correctly."""
         Rating.objects.create(
             recipe=self.recipe,
             user=User.objects.get(username='@petrapickles'),
             stars=2
         )
-        # Average of 4 and 2 should be 3.0
         self.assertEqual(self.recipe.average_rating(), 3.0)
 
     def test_recipe_rating_count(self):
-        """Test that recipe counts ratings correctly."""
         self.assertEqual(self.recipe.rating_count(), 1)
         Rating.objects.create(
             recipe=self.recipe,
@@ -98,7 +99,6 @@ class RatingModelTestCase(TestCase):
         self.assertEqual(self.recipe.rating_count(), 2)
 
     def test_rating_string_representation(self):
-        """Test the string representation of a rating."""
         expected = f"{self.user.username} rated {self.recipe.title}: 4 stars"
         self.assertEqual(str(self.rating), expected)
 
