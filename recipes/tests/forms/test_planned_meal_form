@@ -1,0 +1,110 @@
+"""Unit tests for the PlannedMealForm."""
+
+from django.test import TestCase
+
+from recipes.forms.planned_meal_form import PlannedMealForm
+from recipes.models import User, Recipe
+
+
+class PlannedMealFormTestCase(TestCase):
+    """Unit tests for the PlannedMealForm."""
+
+    fixtures = [
+        'recipes/tests/fixtures/default_user.json',
+        'recipes/tests/fixtures/other_users.json'
+    ]
+
+    def setUp(self):
+        self.user = User.objects.get(username='@johndoe')
+        self.other_user = User.objects.get(username='@janedoe')
+
+        self.recipe = Recipe.objects.create(
+            author=self.user,
+            title="Test Recipe",
+            description="A test recipe",
+            ingredients="Test ingredients",
+            time=30,
+            meal_type="lunch"
+        )
+
+        self.valid_data = {
+            'meal_type': 'breakfast',
+            'recipe': self.recipe.id
+        }
+
+    # ---------- Field presence ----------
+
+    def test_form_has_required_fields(self):
+        form = PlannedMealForm(user=self.user)
+        self.assertIn('meal_type', form.fields)
+        self.assertIn('recipe', form.fields)
+        self.assertIn('date', form.fields)
+
+    # ---------- Meal type validation ----------
+
+    def test_valid_planned_meal_form(self):
+        form = PlannedMealForm(data=self.valid_data, user=self.user)
+        self.assertTrue(form.is_valid())
+
+    def test_form_rejects_invalid_meal_type(self):
+        form = PlannedMealForm(
+            data={'meal_type': 'invalid', 'recipe': self.recipe.id},
+            user=self.user
+        )
+        self.assertFalse(form.is_valid())
+
+    def test_form_accepts_all_valid_meal_types(self):
+        for meal_type in ['breakfast', 'lunch', 'dinner', 'snack']:
+            form = PlannedMealForm(
+                data={'meal_type': meal_type, 'recipe': self.recipe.id},
+                user=self.user
+            )
+            self.assertTrue(form.is_valid(), f"{meal_type} should be valid")
+
+    # ---------- Recipe queryset behaviour ----------
+
+    def test_form_sets_recipe_queryset_when_user_provided(self):
+        form = PlannedMealForm(user=self.user)
+        self.assertIsNotNone(form.fields['recipe'].queryset)
+
+    def test_form_queryset_filters_out_private_user_recipes(self):
+        private_user = User.objects.get(username='@petrapickles')
+        private_user.is_private = True
+        private_user.save()
+
+        private_recipe = Recipe.objects.create(
+            author=private_user,
+            title="Private Recipe",
+            description="Private",
+            ingredients="Secret",
+            time=20,
+            meal_type="dinner"
+        )
+
+        form = PlannedMealForm(user=self.other_user)
+        recipe_ids = list(form.fields['recipe'].queryset.values_list('id', flat=True))
+
+        self.assertNotIn(private_recipe.id, recipe_ids)
+
+    # ---------- Initial recipe handling ----------
+
+    def test_form_sets_initial_recipe_when_provided(self):
+        form = PlannedMealForm(user=self.user, recipe=self.recipe)
+        self.assertEqual(form.fields['recipe'].initial, self.recipe)
+        self.assertIn(self.recipe, form.fields['recipe'].queryset)
+
+    def test_form_without_recipe_parameter_has_no_initial(self):
+        form = PlannedMealForm(user=self.user)
+        self.assertIsNone(form.fields['recipe'].initial)
+
+    def test_form_with_explicit_none_recipe(self):
+        form = PlannedMealForm(data=self.valid_data, user=self.user, recipe=None)
+        self.assertTrue(form.is_valid())
+        self.assertIsNone(form.fields['recipe'].initial)
+
+    # ---------- Defensive instantiation ----------
+
+    def test_form_without_user_or_recipe(self):
+        form = PlannedMealForm()
+        self.assertIsNone(form.fields['recipe'].queryset)
+        self.assertIsNone(form.fields['recipe'].initial)
