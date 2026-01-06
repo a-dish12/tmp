@@ -1,7 +1,10 @@
 """Unit tests for the User model."""
+
 from django.core.exceptions import ValidationError
 from django.test import TestCase
+
 from recipes.models import User
+
 
 class UserModelTestCase(TestCase):
     """Unit tests for the User model."""
@@ -15,6 +18,8 @@ class UserModelTestCase(TestCase):
 
     def setUp(self):
         self.user = User.objects.get(username='@johndoe')
+
+    # ---------- Username tests ----------
 
     def test_valid_user(self):
         self._assert_user_is_valid()
@@ -56,6 +61,7 @@ class UserModelTestCase(TestCase):
         self.user.username = '@@johndoe'
         self._assert_user_is_invalid()
 
+    # ---------- First name tests ----------
 
     def test_first_name_must_not_be_blank(self):
         self.user.first_name = ''
@@ -74,6 +80,7 @@ class UserModelTestCase(TestCase):
         self.user.first_name = 'x' * 51
         self._assert_user_is_invalid()
 
+    # ---------- Last name tests ----------
 
     def test_last_name_must_not_be_blank(self):
         self.user.last_name = ''
@@ -92,6 +99,7 @@ class UserModelTestCase(TestCase):
         self.user.last_name = 'x' * 51
         self._assert_user_is_invalid()
 
+    # ---------- Email tests ----------
 
     def test_email_must_not_be_blank(self):
         self.user.email = ''
@@ -122,36 +130,86 @@ class UserModelTestCase(TestCase):
         self.user.email = 'johndoe@@example.org'
         self._assert_user_is_invalid()
 
+    # ---------- Utility methods ----------
 
     def test_full_name_must_be_correct(self):
-        full_name = self.user.full_name()
-        self.assertEqual(full_name, "John Doe")
-
+        self.assertEqual(self.user.full_name(), "John Doe")
 
     def test_default_gravatar(self):
-        actual_gravatar_url = self.user.gravatar()
-        expected_gravatar_url = self._gravatar_url(size=120)
-        self.assertEqual(actual_gravatar_url, expected_gravatar_url)
+        self.assertEqual(
+            self.user.gravatar(),
+            self._gravatar_url(size=120)
+        )
 
     def test_custom_gravatar(self):
-        actual_gravatar_url = self.user.gravatar(size=100)
-        expected_gravatar_url = self._gravatar_url(size=100)
-        self.assertEqual(actual_gravatar_url, expected_gravatar_url)
+        self.assertEqual(
+            self.user.gravatar(size=100),
+            self._gravatar_url(size=100)
+        )
 
     def test_mini_gravatar(self):
-        actual_gravatar_url = self.user.mini_gravatar()
-        expected_gravatar_url = self._gravatar_url(size=60)
-        self.assertEqual(actual_gravatar_url, expected_gravatar_url)
+        self.assertEqual(
+            self.user.mini_gravatar(),
+            self._gravatar_url(size=60)
+        )
+
+    # ---------- Following logic ----------
+
+    def test_follow_user(self):
+        second_user = User.objects.get(username='@janedoe')
+        self.assertFalse(self.user.is_following(second_user))
+
+        self.user.follow(second_user)
+
+        self.assertTrue(self.user.is_following(second_user))
+        self.assertTrue(second_user.is_followed_by(self.user))
+
+    def test_unfollow_user(self):
+        second_user = User.objects.get(username='@janedoe')
+
+        self.user.follow(second_user)
+        self.assertTrue(self.user.is_following(second_user))
+
+        self.user.unfollow(second_user)
+
+        self.assertFalse(self.user.is_following(second_user))
+        self.assertFalse(second_user.is_followed_by(self.user))
+
+    def test_follow_multiple_users(self):
+        jane = User.objects.get(username='@janedoe')
+        petra = User.objects.get(username='@petrapickles')
+
+        self.user.follow(jane)
+        self.user.follow(petra)
+
+        self.assertTrue(self.user.is_following(jane))
+        self.assertTrue(self.user.is_following(petra))
+
+    def test_mutual_following(self):
+        second_user = User.objects.get(username='@janedoe')
+
+        self.user.follow(second_user)
+        second_user.follow(self.user)
+
+        self.assertTrue(self.user.is_following(second_user))
+        self.assertTrue(second_user.is_following(self.user))
+        self.assertTrue(self.user.is_followed_by(second_user))
+        self.assertTrue(second_user.is_followed_by(self.user))
+
+    # ---------- Notifications ----------
+
+    def test_unread_notifications_count_with_no_notifications(self):
+        self.assertEqual(self.user.unread_notifications_count(), 0)
+
+    # ---------- Helpers ----------
 
     def _gravatar_url(self, size):
-        gravatar_url = f"{UserModelTestCase.GRAVATAR_URL}?size={size}&default=mp"
-        return gravatar_url
-
+        return f"{self.GRAVATAR_URL}?size={size}&default=mp"
 
     def _assert_user_is_valid(self):
         try:
             self.user.full_clean()
-        except (ValidationError):
+        except ValidationError:
             self.fail('Test user should be valid')
 
     def _assert_user_is_invalid(self):

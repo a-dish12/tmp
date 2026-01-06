@@ -41,5 +41,7 @@ def delete_comment(request, comment_pk):
         messages.success(request, "Comment deleted successfully!")
     else:
         messages.error(request, "You don't have permission to delete this comment.")
-    
+
     return redirect('recipe_detail', pk=recipe_pk)
+
+

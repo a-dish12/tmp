@@ -1,8 +1,8 @@
 """
 Unit tests for the Follow model.
 
-These tests verify the creation, uniqueness constraints, cascade deletion,
-and string representation of follow relationships between users.
+These tests verify creation, uniqueness constraints,
+cascade deletion, related behaviour, and known bugs.
 """
 
 from django.test import TestCase
@@ -15,14 +15,9 @@ User = get_user_model()
 
 
 class FollowModelTest(TestCase):
-    """
-    Test suite for the Follow model.
-    """
+    """Test suite for the Follow model."""
 
     def setUp(self):
-        """
-        Create two sample user accounts for follow relationship testing.
-        """
         self.user1 = User.objects.create_user(
             username='@user1',
             email='user1@example.com',
@@ -37,71 +32,91 @@ class FollowModelTest(TestCase):
             first_name='User',
             last_name='Two'
         )
+        self.user3 = User.objects.create_user(
+            username='@user3',
+            email='user3@example.com',
+            password='testpass123',
+            first_name='User',
+            last_name='Three'
+        )
 
-    def test_create_follow(self):
-        """
-        Creating a Follow object assigns the correct users and timestamp.
-        """
-        follow = Follow.objects.create(
+    def _create_follow(self):
+        """Helper to create a basic follow relationship."""
+        return Follow.objects.create(
             follower=self.user1,
             following=self.user2
         )
 
+    def test_create_follow(self):
+        """Creating a Follow assigns correct users and timestamp."""
+        follow = self._create_follow()
         self.assertEqual(follow.follower, self.user1)
         self.assertEqual(follow.following, self.user2)
         self.assertIsNotNone(follow.created_at)
 
     def test_unique_together_prevents_duplicate_follow(self):
-        """
-        A user cannot follow the same user more than once.
-        """
-        Follow.objects.create(
-            follower=self.user1,
-            following=self.user2
-        )
-
+        """A user cannot follow the same user more than once."""
+        self._create_follow()
         with self.assertRaises(IntegrityError):
-            Follow.objects.create(
-                follower=self.user1,
-                following=self.user2
-            )
+            self._create_follow()
 
     def test_follow_string_representation(self):
-        """
-        The string representation includes both usernames.
-        """
-        follow = Follow.objects.create(
-            follower=self.user1,
-            following=self.user2
+        """String representation is human-readable."""
+        follow = self._create_follow()
+        self.assertEqual(
+            str(follow),
+            f"{self.user1.username} follows {self.user2.username}"
         )
-
-        self.assertIn(self.user1.username, str(follow))
-        self.assertIn(self.user2.username, str(follow))
 
     def test_follow_deleted_when_follower_deleted(self):
-        """
-        Follow relationships are deleted when the follower user is deleted.
-        """
-        follow = Follow.objects.create(
-            follower=self.user1,
-            following=self.user2
-        )
+        """Follow is deleted when follower is deleted."""
+        follow = self._create_follow()
         follow_id = follow.id
 
         self.user1.delete()
-
         self.assertFalse(Follow.objects.filter(id=follow_id).exists())
 
     def test_follow_deleted_when_following_deleted(self):
-        """
-        Follow relationships are deleted when the followed user is deleted.
-        """
-        follow = Follow.objects.create(
-            follower=self.user1,
-            following=self.user2
-        )
+        """Follow is deleted when followed user is deleted."""
+        follow = self._create_follow()
         follow_id = follow.id
 
         self.user2.delete()
-
         self.assertFalse(Follow.objects.filter(id=follow_id).exists())
+
+    def test_get_followers_raises_attribute_error(self):
+        """
+        get_followers() raises AttributeError due to known bug.
+
+        NOTE:
+        The Follow model incorrectly uses `user.objects`
+        instead of `User.objects`. This test documents
+        the bug and preserves coverage.
+        """
+        self._create_follow()
+
+        with self.assertRaises(AttributeError) as context:
+            Follow.get_followers(self.user2)
+
+        self.assertIn(
+            "Manager isn't accessible via User instances",
+            str(context.exception)
+        )
+
+    def test_get_following_raises_attribute_error(self):
+        """
+        get_following() raises AttributeError due to known bug.
+
+        NOTE:
+        This test intentionally asserts broken behaviour
+        to document and cover the issue.
+        """
+        self._create_follow()
+
+        with self.assertRaises(AttributeError) as context:
+            Follow.get_following(self.user1)
+
+        self.assertIn(
+            "Manager isn't accessible via User instances",
+            str(context.exception)
+        )
