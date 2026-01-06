@@ -76,6 +76,5 @@ $ python3 manage.py createsuperuser
 ## Sources
 The packages used by this application are specified in `requirements.txt`
 
-
 ChatGPT was used for seeding half of the recipes, specifically to generate the data fixtures in `recipes/management/RecipeFixtures`
 The other half used information (titles, ingredients, instructions and images) sourced from `themealdb.com` API
