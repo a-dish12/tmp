@@ -1,72 +1,88 @@
 from django.contrib.auth.hashers import check_password
 from django.test import TestCase
+
 from recipes.models import User
 from recipes.forms import PasswordForm
 
+
 class PasswordFormTestCase(TestCase):
+    """Unit tests for the PasswordForm."""
 
     fixtures = ['recipes/tests/fixtures/default_user.json']
 
     def setUp(self):
         self.user = User.objects.get(username='@johndoe')
-        self.form_input = {
+        self.valid_input = {
             'password': 'Password123',
             'new_password': 'NewPassword123',
             'password_confirmation': 'NewPassword123',
         }
 
-    def test_form_has_necessary_fields(self):
+    # ---------- Field presence ----------
+
+    def test_form_has_required_fields(self):
         form = PasswordForm(user=self.user)
         self.assertIn('password', form.fields)
         self.assertIn('new_password', form.fields)
         self.assertIn('password_confirmation', form.fields)
 
-    def test_valid_form(self):
-        form = PasswordForm(user=self.user, data=self.form_input)
+    # ---------- Valid form ----------
+
+    def test_form_accepts_valid_input(self):
+        form = PasswordForm(user=self.user, data=self.valid_input)
         self.assertTrue(form.is_valid())
 
-    def test_password_must_contain_uppercase_character(self):
-        self.form_input['new_password'] = 'password123'
-        self.form_input['password_confirmation'] = 'password123'
-        form = PasswordForm(user=self.user, data=self.form_input)
+    # ---------- Password validation ----------
+
+    def test_new_password_requires_uppercase_letter(self):
+        self._assert_invalid_new_password('password123')
+
+    def test_new_password_requires_lowercase_letter(self):
+        self._assert_invalid_new_password('PASSWORD123')
+
+    def test_new_password_requires_number(self):
+        self._assert_invalid_new_password('PasswordABC')
+
+    def test_password_confirmation_must_match(self):
+        data = self.valid_input.copy()
+        data['password_confirmation'] = 'WrongPassword123'
+        form = PasswordForm(user=self.user, data=data)
         self.assertFalse(form.is_valid())
 
-    def test_password_must_contain_lowercase_character(self):
-        self.form_input['new_password'] = 'PASSWORD123'
-        self.form_input['password_confirmation'] = 'PASSWORD123'
-        form = PasswordForm(user=self.user, data=self.form_input)
+    # ---------- Current password validation ----------
+
+    def test_current_password_must_be_correct(self):
+        data = self.valid_input.copy()
+        data['password'] = 'WrongPassword123'
+        form = PasswordForm(user=self.user, data=data)
         self.assertFalse(form.is_valid())
 
-    def test_password_must_contain_number(self):
-        self.form_input['new_password'] = 'PasswordABC'
-        self.form_input['password_confirmation'] = 'PasswordABC'
-        form = PasswordForm(user=self.user, data=self.form_input)
+    def test_form_requires_user(self):
+        form = PasswordForm(data=self.valid_input)
         self.assertFalse(form.is_valid())
 
-    def test_new_password_and_password_confirmation_are_identical(self):
-        self.form_input['password_confirmation'] = 'WrongPassword123'
-        form = PasswordForm(user=self.user, data=self.form_input)
-        self.assertFalse(form.is_valid())
+    # ---------- Saving ----------
 
-    def test_password_must_be_valid(self):
-        self.form_input['password'] = 'WrongPassword123'
-        form = PasswordForm(user=self.user, data=self.form_input)
-        self.assertFalse(form.is_valid())
-
-    def test_form_must_contain_user(self):
-        form = PasswordForm(data=self.form_input)
-        self.assertFalse(form.is_valid())
-
-    def test_save_form_changes_password(self):
-        form = PasswordForm(user=self.user, data=self.form_input)
-        form.full_clean()
+    def test_save_updates_user_password(self):
+        form = PasswordForm(user=self.user, data=self.valid_input)
+        self.assertTrue(form.is_valid())
         form.save()
-        self.user.refresh_from_db()
-        self.assertFalse(check_password('Password123', self.user.password))
-        self.assertTrue(check_password('NewPassword123', self.user.password))
 
-    def test_save_userless_form(self):
-        form = PasswordForm(user=None, data=self.form_input)
+        self.user.refresh_from_db()
+        self.assertTrue(check_password('NewPassword123', self.user.password))
+        self.assertFalse(check_password('Password123', self.user.password))
+
+    def test_save_returns_false_when_no_user(self):
+        form = PasswordForm(user=None, data=self.valid_input)
         form.full_clean()
         result = form.save()
         self.assertFalse(result)
+
+    # ---------- Helpers ----------
+
+    def _assert_invalid_new_password(self, new_password):
+        data = self.valid_input.copy()
+        data['new_password'] = new_password
+        data['password_confirmation'] = new_password
+        form = PasswordForm(user=self.user, data=data)
+        self.assertFalse(form.is_valid())

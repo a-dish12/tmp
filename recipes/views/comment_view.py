@@ -32,23 +32,12 @@ def add_comment(request, recipe_pk):
 def delete_comment(request, comment_pk):
     comment = get_object_or_404(Comment, pk=comment_pk)
     recipe_pk = comment.recipe.pk
-    
+
     if comment.user == request.user or request.user.is_staff:
         comment.delete()
         messages.success(request, "Comment deleted successfully!")
     else:
         messages.error(request, "You don't have permission to delete this comment.")
-    
+
     return redirect('recipe_detail', pk=recipe_pk)
 
-    
-    # Check if user is the comment author
-    if comment.user != request.user:
-        messages.error(request, "You can only delete your own comments.")
-        return redirect('recipe_detail', pk=comment.recipe.pk)
-    
-    recipe_pk = comment.recipe.pk
-    comment.delete()
-    messages.success(request, "Comment deleted successfully!")
-    
-    return redirect('recipe_detail', pk=recipe_pk)

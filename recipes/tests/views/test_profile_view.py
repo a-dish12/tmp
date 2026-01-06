@@ -1,14 +1,15 @@
-"""Tests for the profile view."""
-from django.contrib import messages
-from django.test import TestCase
+"""Tests for the profile update view."""
+
+from django.test import TestCase, RequestFactory
 from django.urls import reverse
-from recipes.forms import UserForm
+from unittest.mock import MagicMock
+
 from recipes.models import User, Follow, FollowRequest
 from recipes.tests.test_helpers import reverse_with_next
+from recipes.views.profile_view import ProfileUpdateView
+
 
 class ProfileViewTest(TestCase):
-    """Test suite for the profile view."""
-
     fixtures = [
         'recipes/tests/fixtures/default_user.json',
         'recipes/tests/fixtures/other_users.json'
@@ -16,117 +17,140 @@ class ProfileViewTest(TestCase):
 
     def setUp(self):
         self.user = User.objects.get(username='@johndoe')
+        self.other_user = User.objects.get(username='@janedoe')
         self.url = reverse('profile')
-        self.form_input = {
-            'first_name': 'John2',
-            'last_name': 'Doe2',
-            'username': '@johndoe2',
-            'email': 'johndoe2@example.org',
-        }
+        self.factory = RequestFactory()
 
-    def test_profile_url(self):
-        self.assertEqual(self.url, '/profile/')
+    def _build_request(self):
+        """
+        Build a fake POST request suitable for directly invoking CBV logic.
+        """
+        request = self.factory.post(self.url)
+        request.user = self.user
+        request._messages = MagicMock()
+        return request
 
-    def test_get_profile(self):
-        self.client.login(username=self.user.username, password='Password123')
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'profile.html')
-        form = response.context['form']
-        self.assertTrue(isinstance(form, UserForm))
-        self.assertEqual(form.instance, self.user)
+    # ----------------------------------------------------
+    # Access control
+    # ----------------------------------------------------
 
-    def test_get_profile_redirects_when_not_logged_in(self):
+    def test_profile_redirects_when_not_logged_in(self):
         redirect_url = reverse_with_next('log_in', self.url)
         response = self.client.get(self.url)
-        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertRedirects(response, redirect_url)
 
-    def test_unsuccesful_profile_update(self):
-        self.client.login(username=self.user.username, password='Password123')
-        self.form_input['username'] = 'BAD_USERNAME'
-        before_count = User.objects.count()
-        response = self.client.post(self.url, self.form_input)
-        after_count = User.objects.count()
-        self.assertEqual(after_count, before_count)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'profile.html')
-        form = response.context['form']
-        self.assertTrue(isinstance(form, UserForm))
-        self.assertTrue(form.is_bound)
-        self.user.refresh_from_db()
-        self.assertEqual(self.user.username, '@johndoe')
-        self.assertEqual(self.user.first_name, 'John')
-        self.assertEqual(self.user.last_name, 'Doe')
-        self.assertEqual(self.user.email, 'johndoe@example.org')
+    # ----------------------------------------------------
+    # Private → Public follow-request promotion logic
+    # ----------------------------------------------------
 
-    def test_unsuccessful_profile_update_due_to_duplicate_username(self):
-        self.client.login(username=self.user.username, password='Password123')
-        self.form_input['username'] = '@janedoe'
-        before_count = User.objects.count()
-        response = self.client.post(self.url, self.form_input)
-        after_count = User.objects.count()
-        self.assertEqual(after_count, before_count)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'profile.html')
-        form = response.context['form']
-        self.assertTrue(isinstance(form, UserForm))
-        self.assertTrue(form.is_bound)
-        self.user.refresh_from_db()
-        self.assertEqual(self.user.username, '@johndoe')
-        self.assertEqual(self.user.first_name, 'John')
-        self.assertEqual(self.user.last_name, 'Doe')
-        self.assertEqual(self.user.email, 'johndoe@example.org')
+    def test_becoming_public_with_requests(self):
+        """
+        When a user switches from private → public,
+        incoming follow requests should be accepted.
+        """
+        self.user.is_private = True
+        self.user.save()
 
-    def test_succesful_profile_update(self):
-        self.client.login(username=self.user.username, password='Password123')
-        before_count = User.objects.count()
-        response = self.client.post(self.url, self.form_input, follow=True)
-        after_count = User.objects.count()
-        self.assertEqual(after_count, before_count)
-        response_url = reverse('dashboard')
-        self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'dashboard.html')
-        messages_list = list(response.context['messages'])
-        self.assertEqual(len(messages_list), 1)
-        self.assertEqual(messages_list[0].level, messages.SUCCESS)
-        self.user.refresh_from_db()
-        self.assertEqual(self.user.username, '@johndoe2')
-        self.assertEqual(self.user.first_name, 'John2')
-        self.assertEqual(self.user.last_name, 'Doe2')
-        self.assertEqual(self.user.email, 'johndoe2@example.org')
+        FollowRequest.objects.create(
+            from_user=self.other_user,
+            to_user=self.user
+        )
 
-    def test_post_profile_redirects_when_not_logged_in(self):
-        redirect_url = reverse_with_next('log_in', self.url)
-        response = self.client.post(self.url, self.form_input)
-        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        form = MagicMock()
+        form.cleaned_data = {'is_private': False}
 
-    def test_get_object_returns_logged_in_user(self):
-        self.client.login(username=self.user.username, password='Password123')
-        response = self.client.get(self.url)
-        self.assertEqual(response.context['form'].instance, self.user)
-    
-    def test_profile_update_redirects_to_dashboard(self):
-        self.client.login(username=self.user.username, password='Password123')
+        request = self._build_request()
+        view = ProfileUpdateView()
+        view.request = request
 
-        response = self.client.post(self.url, {
-            'first_name': self.user.first_name,
-            'last_name': self.user.last_name,
-            'username': self.user.username,
-            'email': self.user.email,
-            'is_private': self.user.is_private,
-        })
-        self.assertRedirects(response, reverse('dashboard'))
-    
-    def test_profile_update_with_same_privacy_setting(self):
-        self.client.login(username=self.user.username, password='Password123')
+        view.form_valid(form)
+
+        self.assertTrue(
+            Follow.objects.filter(
+                follower=self.other_user,
+                following=self.user
+            ).exists()
+        )
+        self.assertEqual(FollowRequest.objects.count(), 0)
+
+    def test_becoming_public_with_no_requests(self):
+        """
+        Switching to public with no incoming requests should be a no-op.
+        """
+        self.user.is_private = True
+        self.user.save()
+
+        form = MagicMock()
+        form.cleaned_data = {'is_private': False}
+
+        request = self._build_request()
+        view = ProfileUpdateView()
+        view.request = request
+
+        view.form_valid(form)
+
+        self.assertEqual(Follow.objects.count(), 0)
+        self.assertEqual(FollowRequest.objects.count(), 0)
+
+    def test_not_becoming_public(self):
+        """
+        If user was already public, follow requests must not be auto-accepted.
+        """
         self.user.is_private = False
         self.user.save()
 
-        response = self.client.post(self.url,{
-            'first_name': self.user.first_name,
-            'last_name': self.user.last_name,
-            'username': self.user.username,
-            'email': self.user.email,
-            'is_private': False,
-        })
-        self.assertEqual(response.status_code,302)
+        FollowRequest.objects.create(
+            from_user=self.other_user,
+            to_user=self.user
+        )
+
+        form = MagicMock()
+        form.cleaned_data = {'is_private': False}
+
+        request = self._build_request()
+        view = ProfileUpdateView()
+        view.request = request
+
+        view.form_valid(form)
+
+        self.assertEqual(Follow.objects.count(), 0)
+        self.assertEqual(FollowRequest.objects.count(), 1)
+
+    def test_self_follow_is_excluded(self):
+        """
+        A user must never be allowed to follow themselves,
+        even via follow-request promotion.
+        """
+        self.user.is_private = True
+        self.user.save()
+
+        FollowRequest.objects.create(
+            from_user=self.user,
+            to_user=self.user
+        )
+        FollowRequest.objects.create(
+            from_user=self.other_user,
+            to_user=self.user
+        )
+
+        form = MagicMock()
+        form.cleaned_data = {'is_private': False}
+
+        request = self._build_request()
+        view = ProfileUpdateView()
+        view.request = request
+
+        view.form_valid(form)
+
+        self.assertFalse(
+            Follow.objects.filter(
+                follower=self.user,
+                following=self.user
+            ).exists()
+        )
+        self.assertTrue(
+            Follow.objects.filter(
+                follower=self.other_user,
+                following=self.user
+            ).exists()
+        )

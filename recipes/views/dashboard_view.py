@@ -214,28 +214,28 @@ class DashboardView(LoginRequiredMixin, ListView):
         return queryset
     
     def apply_sorting(self, queryset):
-        """Apply sorting based on user selection."""
         sort_by = self.request.GET.get("sort", "time")
-        
+
         if sort_by == "popular":
-            # Sort by rating score (avg_rating * rating_count) descending
             queryset = queryset.annotate(
                 popularity_score=F('avg_rating') * F('rating_count')
-            ).order_by('-popularity_score', '-avg_rating')
+            ).order_by('-popularity_score', '-avg_rating', '-pk')
+
         elif sort_by == "trending":
-            # Sort by recipes with most active viewers
             recipes_list = list(queryset)
-            recipes_list.sort(key=lambda r: r.get_active_viewers(), reverse=True)
-            # Return as list (already evaluated)
+            recipes_list.sort(
+                key=lambda r: r.get_active_viewers(),
+                reverse=True
+            )
             return recipes_list
+
         elif sort_by == "most_viewed":
-            # Sort by total views descending
-            queryset = queryset.order_by('-total_views')
-        elif sort_by == "newest":
-            # Sort by creation date descending
-            queryset = queryset.order_by('-created_at')
-        else:  # Default: "time"
-            # Sort by preparation time ascending
-            queryset = queryset.order_by('time')
-        
+            queryset = queryset.order_by('-total_views', '-pk')
+
+        elif sort_by in {"newest", "new", "latest", "recent"}:
+            queryset = queryset.order_by('-created_at', '-pk')
+
+        else:  # default = time
+            queryset = queryset.order_by('time', '-pk')
+
         return queryset
